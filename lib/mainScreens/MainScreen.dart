@@ -32,8 +32,9 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 2;
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
+    MyMatches(),
     ScoreScreen(),
-    MyMatches()
+
   ];
 
 
@@ -73,6 +74,7 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: AppColor.lightGrey,
       body:  _widgetOptions[_selectedIndex],
       bottomNavigationBar:  BottomNavigationBar(
+        elevation: 10,
               items: const <BottomNavigationBarItem>[
                 BottomNavigationBarItem(
                     icon: ImageIcon(

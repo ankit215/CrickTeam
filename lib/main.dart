@@ -1,12 +1,15 @@
 import 'package:crick_team/splashOnBoardRelatedFiles/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 final navigatorKey = GlobalKey<NavigatorState>();
 
 get getContext => navigatorKey.currentState?.overlay?.context;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   runApp(const MyApp());
 }
 
@@ -19,9 +22,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
+      theme: ThemeData.light().copyWith(
+        primaryColor: Colors.white,
+        brightness: Brightness.light,
+        dividerColor: Colors.white,
+        colorScheme: const ColorScheme.light(primary: Colors.white),
+      ),
       home: const MyHomePage(),
     );
   }
+
 /*
   Future<void> getPermissions() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -58,6 +68,7 @@ class MyApp extends StatelessWidget {
     // debugPrint('FCM_TOKEN__$fcmToken');
     // setValue(deviceToken, fcmToken);
   }
+
   Future<void> chooseUser() async {
     // await iniSharePref();
   }

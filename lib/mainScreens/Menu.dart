@@ -30,6 +30,7 @@ class _Menu extends State<Menu> {
               height: 200,
               width: 200,
               fit: BoxFit.contain,
+
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -47,7 +48,7 @@ class _Menu extends State<Menu> {
                     (route) => false);*/
               },
               child: const CustomListTile(
-                image: "assets/home_icon.png",
+                image: "assets/trophy.png",
                 title: 'HOME',
               ),
             ),
@@ -59,7 +60,7 @@ class _Menu extends State<Menu> {
                 widget.bottomIndex(userType == "2" ? 4 : 3);
               },
               child: const CustomListTile(
-                image: "assets/profile_icon.png",
+                image: "assets/trophy.png",
                 title: 'PROFILE',
               ),
             ),
@@ -70,7 +71,7 @@ class _Menu extends State<Menu> {
                 Scaffold.of(context).openEndDrawer();
               },
               child: const CustomListTile(
-                image: "assets/bell_icon.png",
+                image: "assets/trophy.png",
                 title: 'NOTIFICATIONS',
               ),
             ),
@@ -168,7 +169,7 @@ class _Menu extends State<Menu> {
                 );
               },
               child: const CustomListTile(
-                image: "assets/logout.png",
+                image: "assets/trophy.png",
                 title: 'LOGOUT',
               ),
             ),
