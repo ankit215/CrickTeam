@@ -64,12 +64,15 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKeys,
-      drawer: Menu(
-        bottomIndex: (int index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+      drawer: SizedBox(
+        width: 350,
+        child: Menu(
+          bottomIndex: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
       ),
       backgroundColor: AppColor.lightGrey,
       body:  _widgetOptions[_selectedIndex],

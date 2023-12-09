@@ -1,4 +1,6 @@
 import 'package:crick_team/main.dart';
+import 'package:crick_team/profileRelatedScrees/MyInformationScreen.dart';
+import 'package:crick_team/profileRelatedScrees/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/AppColor.dart';
@@ -57,7 +59,11 @@ class _Menu extends State<Menu> {
                   primary: AppColor.white, elevation: 0),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
-                widget.bottomIndex(userType == "2" ? 4 : 3);
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                        const ProfileScreen()));
               },
               child: const CustomListTile(
                 image: "assets/trophy.png",
