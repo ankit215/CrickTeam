@@ -1,3 +1,4 @@
+import 'package:crick_team/profileRelatedScrees/EditProfileScreen.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../mainScreens/Menu.dart';
@@ -17,193 +18,301 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-   
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.center, children: [
-      Scaffold(
-        // key: scaffoldKey,
-        backgroundColor: AppColor.lightGrey,
-        body: Container(
-          margin: const EdgeInsets.only(top: 90),
-          padding: const EdgeInsets.all(20),
-          height: MediaQuery.of(context).size.height * 0.8,
-          decoration: const BoxDecoration(
-              color: AppColor.white,
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0)),
-              boxShadow: [
-                BoxShadow(
-                  offset: Offset(0, 0),
-                  blurRadius: 1,
-                  spreadRadius: 1,
-                  color: AppColor.grey,
-                ),
-              ]),
-          child: Padding(
-            padding: const EdgeInsets.only(
-                top: 100, left: 10, right: 10, bottom: 10),
-            child: SingleChildScrollView(
+    return Stack(
+      children: [
+        Image.asset(
+          "assets/app_background2.png",
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          fit: BoxFit.cover,
+        ),
+        Scaffold(
+          // key: scaffoldKey,
+          backgroundColor: AppColor.transparent,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Column(
-                children: <Widget>[
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: AppColor.white, elevation: 0),
-                    onPressed: () {
-                    
-                    },
-                    child: const CustomListTile(
-                      image: "assets/trophy.png",
-                      title: 'MY INFORMATION',
-                    ),
-                  ),
-                  (user == "5")
-                      ? ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              primary: AppColor.white, elevation: 0),
-                          onPressed: () {
-                          
+                children: [
+                  SizedBox(
+                    height: 250,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
                           },
-                          child: const CustomListTile(
-                            image: "assets/trophy.png",
-                            title: 'LOCATIONS',
+                          child: Image.asset(
+                            "assets/back_arrow.png",
+                            width: 30,
+                            height: 30,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Stack(children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(100),
+                                        color: AppColor.white,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(3.0),
+                                        child: CircleAvatar(
+                                          radius: 55,
+                                          backgroundColor: Colors.white,
+                                          child: ClipOval(
+                                              child: Image.asset(
+                                            "assets/dummy.jpeg",
+                                            fit: BoxFit.contain,
+                                          )),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                        top: 80,
+                                        left: 85,
+                                        child: Container(
+                                          width: 30,
+                                          height: 30,
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                            color: AppColor.brown2,
+                                          ),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                  getContext,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const EditProfileScreen()));
+                                            },
+                                            child: Center(
+                                                child: Image.asset(
+                                              "assets/editing.png",
+                                              width: 15,
+                                              height: 15,
+                                              fit: BoxFit.contain,
+                                              color: AppColor.white,
+                                            )),
+                                          ),
+                                        ))
+                                  ]),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Container(
+                                    width: MediaQuery.sizeOf(context).width * 0.55,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Anil Dogra',
+                                          style: TextStyle(
+                                              fontSize: 25,
+                                              fontFamily: "Lato_Bold",
+                                              letterSpacing: 1,
+                                              color: AppColor.brown2),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Image.asset(
+                                              "assets/location.png",
+                                              height: 20,
+                                              width: 20,
+                                              color: AppColor.brown2,
+                                            ),
+                                            const Text(
+                                              'Shimla',
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontFamily: "Lato_Semibold",
+                                                  letterSpacing: 1,
+                                                  color: AppColor.brown2),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         )
-                      : const SizedBox(),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: AppColor.white, elevation: 0),
-                    onPressed: () {
-                      
-                    },
-                    child: const CustomListTile(
-                      image: "assets/trophy.png",
-                      title: 'ACCOUNT SETTINGS',
+                      ],
                     ),
                   ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: AppColor.white, elevation: 0),
-                    onPressed: () {
-                    
-                    },
-                    child: const CustomListTile(
-                      image: "assets/trophy.png",
-                      title: 'PAYMENT',
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: AppColor.white, elevation: 0),
-                    onPressed: () {
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                /*      decoration: const BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            // AppColor.yellow.withOpacity(0.5),
+                            AppColor.white,
+                            AppColor.white,
 
-                    },
-                    child: const CustomListTile(
-                      image: "assets/trophy.png",
-                      title: 'HELP',
-                    ),
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                        primary: AppColor.white, elevation: 0),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return Dialog(
-                            insetPadding: const EdgeInsets.all(10),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            elevation: 16,
-                            child: ListView(
-                              shrinkWrap: true,
-                              children: <Widget>[
-                                const SizedBox(height: 20),
-                                Container(
-                                  color: AppColor.lightGrey,
-                                  height: 60,
-                                  child: const Padding(
-                                    padding: EdgeInsets.only(
-                                        right: 40.0, left: 40.0),
-                                    child: Center(
-                                      child: Text(
-                                        'ARE YOU SURE YOU WANT TO LOG OUT?',
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: "Ubuntu_Regular",
-                                            letterSpacing: 1,
-                                            color: AppColor.brown2),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 100, left: 100),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        primary: AppColor.orange_0,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(80.0))),
-                                    child: Container(
-                                      height: 20,
-                                      alignment: Alignment.center,
-                                      child: const Text(
-                                        "Log Out",
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 16,
-                                            fontFamily: "Ubuntu_Bold"),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(
-                                      right: 30.0, left: 30.0, top: 20),
-                                  child: Divider(
-                                    height: 1,
-                                    color: AppColor.medGrey,
-                                    thickness: 1,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(getContext);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                        primary: AppColor.white, elevation: 0),
-                                    child: const Text(
-                                      "Cancel",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: AppColor.brown2,
-                                        fontFamily: "Ubuntu_Regular",
-                                      ),
-                                    )),
-                                const SizedBox(height: 10)
-                              ],
+                            // AppColor.yellowMed.withOpacity(0.5),
+                          ]),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(20.0),
+                              topRight: Radius.circular(20.0)),
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 0),
+                              blurRadius: 1,
+                              spreadRadius: 1,
+                              color: AppColor.grey,
                             ),
-                          );
-                        },
-                      );
-                    },
-                    child: const CustomListTile(
-                      image: "assets/trophy.png",
-                      title: 'LOGOUT',
+                          ]),*/
+                      child: Column(
+                        children: <Widget>[
+                          SizedBox(
+                            height: 50,
+                          ),
+                          const CustomListTile(
+                            image: "assets/my_info.png",
+                            title: 'MY INFORMATION',
+                          ),
+                          const CustomListTile(
+                            image: "assets/trophy.png",
+                            title: 'ACCOUNT SETTINGS',
+                          ),
+                          const CustomListTile(
+                            image: "assets/privacy_policy.png",
+                            title: 'PRIVACY POLICY',
+                          ),
+                          const CustomListTile(
+                            image: "assets/terms_and_conditions.png",
+                            title: 'TERMS &  CONDITIONS',
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    insetPadding: const EdgeInsets.all(10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10)),
+                                    elevation: 16,
+                                    child: ListView(
+                                      shrinkWrap: true,
+                                      children: <Widget>[
+                                        const SizedBox(height: 20),
+                                        Container(
+                                          color: AppColor.lightGrey,
+                                          height: 60,
+                                          child: const Padding(
+                                            padding: EdgeInsets.only(
+                                                right: 40.0, left: 40.0),
+                                            child: Center(
+                                              child: Text(
+                                                'ARE YOU SURE YOU WANT TO LOG OUT?',
+                                                style: TextStyle(
+                                                    fontSize: 16,
+                                                    fontFamily: "Lato_Regular",
+                                                    letterSpacing: 1,
+                                                    color: AppColor.brown2),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 100, left: 100),
+                                          child: ElevatedButton(
+                                            onPressed: () {},
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: AppColor.orange_0,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            80.0))),
+                                            child: Container(
+                                              height: 20,
+                                              alignment: Alignment.center,
+                                              child: const Text(
+                                                "Log Out",
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 16,
+                                                    fontFamily: "Lato_Bold"),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const Padding(
+                                          padding: EdgeInsets.only(
+                                              right: 30.0, left: 30.0, top: 20),
+                                          child: Divider(
+                                            height: 1,
+                                            color: AppColor.medGrey,
+                                            thickness: 1,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        ElevatedButton(
+                                            onPressed: () {
+                                              Navigator.pop(getContext);
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                backgroundColor: AppColor.white,
+                                                elevation: 0),
+                                            child: const Text(
+                                              "Cancel",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: AppColor.brown2,
+                                                fontFamily: "Lato_Regular",
+                                              ),
+                                            )),
+                                        const SizedBox(height: 10)
+                                      ],
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: const CustomListTile(
+                              image: "assets/logout.png",
+                              title: 'LOGOUT',
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -211,64 +320,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
         ),
-      ),
-      Positioned(
-        top: 150,
-        child: Column(
-          children: [
-            Stack(children: [
-              CircleAvatar(
-                radius: 70,
-                backgroundColor: Colors.white,
-                child: Padding(
-                  padding: const EdgeInsets.all(8), // Border radius
-                  child: ClipOval(
-                      child:Image.asset(
-                              "assets/manager.png",
-                              fit: BoxFit.contain,
-                              height: 150,
-                              width: 150,
-                            )
-                          ),
-                ),
-              ),
-              Positioned(
-                  top: 80,
-                  left: 110,
-                  child: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.white,
-                    ),
-                    child: GestureDetector(
-                      onTap: () {
-
-                      },
-                      child: Center(
-                          child: Image.asset(
-                        "assets/edit.png",
-                        width: 30,
-                        height: 30,
-                      )),
-                    ),
-                  ))
-            ]),
-            Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 20),
-              child: Text(
-                name,
-                style: const TextStyle(
-                    fontSize: 20,
-                    fontFamily: "Ubuntu_Bold",
-                    color: AppColor.orange),
-              ),
-            ),
-          ],
-        ),
-      )
-    ]);
+      ],
+    );
   }
-
 }

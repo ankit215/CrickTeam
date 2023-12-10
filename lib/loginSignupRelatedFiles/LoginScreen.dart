@@ -216,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text(
                         "Forgot your password?",
                         style: TextStyle(
-                            fontFamily: "Ubuntu_Italic",
+                            fontFamily: "Lato_Italic",
                             fontSize: 14,
                             color: AppColor.brown2),
                       )),
@@ -263,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 16),
                     )),
               ),
-              GestureDetector(
+             /* GestureDetector(
                 onTap: () {
                   Navigator.pushReplacement(
                       getContext,
@@ -289,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
-              ),
+              ),*/
               const SizedBox(
                 height: 40,
               )

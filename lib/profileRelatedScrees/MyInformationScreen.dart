@@ -52,7 +52,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                   const Text(
                     "My Information",
                     style: TextStyle(
-                        fontFamily: "Ubuntu_Bold",
+                        fontFamily: "Lato_Bold",
                         fontSize: 20,
                         color: AppColor.brown2),
                   ),
@@ -65,14 +65,14 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Name",
                         style: TextStyle(
-                            fontFamily: "Ubuntu_Bold",
+                            fontFamily: "Lato_Bold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),
                       Text(
                         'User 1',
                         style: const TextStyle(
-                            fontFamily: "Ubuntu_Regular",
+                            fontFamily: "Lato_Regular",
                             fontSize: 16,
                             color: AppColor.textColor),
                       ),
@@ -95,14 +95,14 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Birthday",
                         style: TextStyle(
-                            fontFamily: "Ubuntu_Bold",
+                            fontFamily: "Lato_Bold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),
                       Text(
                         "15/10/1998",
                         style: const TextStyle(
-                            fontFamily: "Ubuntu_Regular",
+                            fontFamily: "Lato_Regular",
                             fontSize: 16,
                             color: AppColor.textColor),
                       ),
@@ -126,14 +126,14 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Joined",
                         style: TextStyle(
-                            fontFamily: "Ubuntu_Bold",
+                            fontFamily: "Lato_Bold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),
                       Text(
                         date,
                         style: const TextStyle(
-                            fontFamily: "Ubuntu_Regular",
+                            fontFamily: "Lato_Regular",
                             fontSize: 16,
                             color: AppColor.textColor),
                       ),

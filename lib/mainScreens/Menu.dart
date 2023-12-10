@@ -22,6 +22,7 @@ class _Menu extends State<Menu> {
   @override
   Widget build(BuildContext ctxt) {
     return Scaffold(
+
       body: Drawer(
         backgroundColor: Colors.white,
         width: double.infinity,
@@ -36,27 +37,19 @@ class _Menu extends State<Menu> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: AppColor.white, elevation: 0),
+                  primary: AppColor.transparent, elevation: 0),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
                 widget.bottomIndex(userType == "2" ? 2 : 0);
-                /*  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => (userType == "2")
-                          ? const MainScreen(index: 2)
-                          : const MainScreen(index: 0),
-                    ),
-                    (route) => false);*/
               },
               child: const CustomListTile(
-                image: "assets/trophy.png",
+                image: "assets/home_icon.png",
                 title: 'HOME',
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: AppColor.white, elevation: 0),
+                  primary: AppColor.transparent, elevation: 0),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
                 Navigator.push(
@@ -66,24 +59,24 @@ class _Menu extends State<Menu> {
                         const ProfileScreen()));
               },
               child: const CustomListTile(
-                image: "assets/trophy.png",
+                image: "assets/my_info.png",
                 title: 'PROFILE',
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.white, elevation: 0),
+                  backgroundColor: AppColor.transparent, elevation: 0),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
               },
               child: const CustomListTile(
-                image: "assets/trophy.png",
+                image: "assets/bell.png",
                 title: 'NOTIFICATIONS',
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: AppColor.white, elevation: 0),
+                  backgroundColor: AppColor.transparent, elevation: 0),
               onPressed: () {
                 showDialog(
                   context: context,
@@ -107,7 +100,7 @@ class _Menu extends State<Menu> {
                                   'ARE YOU SURE YOU WANT TO LOG OUT?',
                                   style: TextStyle(
                                       fontSize: 16,
-                                      fontFamily: "Ubuntu_Regular",
+                                      fontFamily: "Lato_Regular",
                                       letterSpacing: 1,
                                       color: AppColor.brown2),
                                   textAlign: TextAlign.center,
@@ -125,7 +118,7 @@ class _Menu extends State<Menu> {
                               onPressed: () async {
                               },
                               style: ElevatedButton.styleFrom(
-                                  primary: AppColor.orange_0,
+                                  backgroundColor: AppColor.orange_0,
                                   shape: RoundedRectangleBorder(
                                       borderRadius:
                                           BorderRadius.circular(80.0))),
@@ -138,7 +131,7 @@ class _Menu extends State<Menu> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
-                                      fontFamily: "Ubuntu_Bold"),
+                                      fontFamily: "Lato_Bold"),
                                 ),
                               ),
                             ),
@@ -158,13 +151,13 @@ class _Menu extends State<Menu> {
                                 Navigator.pop(getContext);
                               },
                               style: ElevatedButton.styleFrom(
-                                  primary: AppColor.white, elevation: 0),
+                                  backgroundColor: AppColor.white, elevation: 0),
                               child: const Text(
                                 "Cancel",
                                 style: TextStyle(
                                   fontSize: 16,
                                   color: AppColor.brown2,
-                                  fontFamily: "Ubuntu_Regular",
+                                  fontFamily: "Lato_Regular",
                                 ),
                               )),
                           const SizedBox(height: 10)
@@ -175,7 +168,7 @@ class _Menu extends State<Menu> {
                 );
               },
               child: const CustomListTile(
-                image: "assets/trophy.png",
+                image: "assets/logout.png",
                 title: 'LOGOUT',
               ),
             ),
@@ -206,6 +199,7 @@ class _CustomListTile extends State<CustomListTile> {
       child: Container(
         height: 70,
         alignment: Alignment.center,
+
         width: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -225,10 +219,9 @@ class _CustomListTile extends State<CustomListTile> {
                 Text(
                   widget.title,
                   style: const TextStyle(
-                      fontFamily: "Ubuntu_Regular",
+                      fontFamily: "Lato_Semibold",
                       fontSize: 16,
-                      color: AppColor.medBrown,
-                      letterSpacing: 1),
+                      color: AppColor.medBrown,),
                 )
               ],
             ),

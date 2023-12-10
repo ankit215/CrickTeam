@@ -37,6 +37,34 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_otp_text_field: ^1.1.1
 
+  intl: ^0.17.0
+  http: ^0.13.4 #https://pub.dev/packages/http
+  camera: ^0.10.0+4
+  video_player: ^2.4.7
+  permission_handler: ^10.2.0
+  path_provider: ^2.0.11
+  shared_preferences: ^2.0.15
+  lottie: ^1.4.2
+  barcode_scan2: ^4.2.1
+  qr_code_scanner: ^1.0.1
+  calendar_date_picker2: ^0.3.1
+  simple_gradient_text: ^1.2.4
+  html: ^0.15.0
+  flutter_html: ^3.0.0-alpha.5
+  connectivity_plus: ^2.3.6
+  fluttertoast: ^8.0.9
+  image_picker: ^0.8.5+3
+  url_launcher: ^6.1.6
+  flutter_native_image: ^0.0.6+1
+
+  #firebase
+  firebase_auth: 3.7.0
+  firebase_core: 1.21.1
+  firebase_messaging: 11.4.4
+  firebase_crashlytics: 2.8.9
+  flutter_local_notifications: 9.9.1
+  syncfusion_flutter_barcodes: ^20.4.43
+  webview_flutter: ^4.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

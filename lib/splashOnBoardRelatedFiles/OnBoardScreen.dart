@@ -73,15 +73,15 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                     shadowColor: MaterialStateProperty.all(Colors.transparent),
                   ),
                   onPressed: () {
-                    Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SignUpScreen()));
+                    Navigator.push(getContext, MaterialPageRoute(builder: (context) => const LoginScreen()));
                   },
                   child: const Text(
-                    'Sign Up',
+                    'Sign In',
                     textAlign: TextAlign.center,
                     style: TextStyle(fontFamily: "Lato_Bold", fontSize: 16,color: AppColor.white),
                   )),
             ),
-            GestureDetector(
+          /*  GestureDetector(
               onTap: (){
                 Navigator.push(getContext, MaterialPageRoute(builder: (context) => const LoginScreen()));
 
@@ -96,7 +96,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                   textAlign: TextAlign.center,
                 ),
               ),
-            ),
+            ),*/
             SizedBox(height: 30,)
           ]),
         ),
