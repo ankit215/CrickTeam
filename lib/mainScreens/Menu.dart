@@ -1,6 +1,7 @@
 import 'package:crick_team/main.dart';
 import 'package:crick_team/profileRelatedScrees/MyInformationScreen.dart';
 import 'package:crick_team/profileRelatedScrees/ProfileScreen.dart';
+import 'package:crick_team/startMatchRelatedScreens/SelectPlayingTeams.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/AppColor.dart';
@@ -49,7 +50,7 @@ class _Menu extends State<Menu> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                  primary: AppColor.transparent, elevation: 0),
+                  backgroundColor: AppColor.transparent, elevation: 0),
               onPressed: () {
                 Scaffold.of(context).openEndDrawer();
                 Navigator.push(
@@ -72,6 +73,21 @@ class _Menu extends State<Menu> {
               child: const CustomListTile(
                 image: "assets/bell.png",
                 title: 'NOTIFICATIONS',
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.transparent, elevation: 0),
+              onPressed: () {
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                        const SelectPlayingTeams()));
+              },
+              child: const CustomListTile(
+                image: "assets/bell.png",
+                title: 'START THE MATCH',
               ),
             ),
             ElevatedButton(

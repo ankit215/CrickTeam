@@ -129,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.only(top: 4),
               ),
               Container(
-                height: MediaQuery.sizeOf(context).height*0.25,
+                height: MediaQuery.sizeOf(context).height*0.27,
                 width: MediaQuery.sizeOf(context).width*1,
                 margin: const EdgeInsets.only(left: 5,bottom: 10),
                 child: ListView.builder(

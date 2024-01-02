@@ -24,7 +24,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: navigatorKey,
       theme: ThemeData.light().copyWith(
         primaryColor: Colors.white,
-        brightness: Brightness.light,
+        scaffoldBackgroundColor: Colors.white,
+        textSelectionTheme: TextSelectionThemeData(cursorColor: Colors.orange),
         dividerColor: Colors.white,
         colorScheme: const ColorScheme.light(primary: Colors.white),
       ),
