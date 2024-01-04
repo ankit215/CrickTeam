@@ -49,7 +49,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
           children: [
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam()));
+                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "A",)));
               },
               child: const Center(
                   child: Icon(
@@ -60,7 +60,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
             ),
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam()));
+                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam(team: "A",)));
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -81,13 +81,13 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                 ),
               ),
             ),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
             Image.asset("assets/vs.png",color:AppColor.brown2,width: 40,height: 40,fit: BoxFit.contain,),
-            SizedBox(height: 10,),
+            const SizedBox(height: 10,),
 
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam()));
+                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
               },
               child: const Center(
                   child: Icon(
@@ -98,7 +98,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
             ),
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam()));
+                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
               },
               child: Container(
                 decoration: BoxDecoration(

@@ -7,7 +7,8 @@ import '../utils/AppColor.dart';
 import 'AddTeams.dart';
 
 class SelectTeam extends StatefulWidget {
-  const SelectTeam({super.key});
+  final String team;
+  const SelectTeam({super.key, required this.team});
 
   @override
   State<SelectTeam> createState() => _SelectTeamState();
@@ -53,8 +54,8 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
               ),
             ),
           ),
-          title: const Text(
-            "Select Playing Teams",
+          title:  Text(
+            "Select Team ${widget.team}",
             style: TextStyle(
               fontSize: 20,
               fontFamily: "Lato_Bold",
