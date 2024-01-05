@@ -51,7 +51,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   style: TextStyle(
                       color: AppColor.brown2,
                       fontSize: 30,
-                      fontFamily: "Lato_Bold"),
+                      fontFamily: "Lato_Semibold"),
                 )),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 50.0),
@@ -71,7 +71,7 @@ class _OtpScreenState extends State<OtpScreen> {
                             text: 'Mobile No.',
                             style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: "Lato_Bold",
+                                fontFamily: "Lato_Semibold",
                                 color: AppColor.orange_light)),
                       ],
                     ),
@@ -83,7 +83,7 @@ class _OtpScreenState extends State<OtpScreen> {
                   style: TextStyle(
                       color: AppColor.brown2,
                       fontSize: 16,
-                      fontFamily: "Lato_Bold"),
+                      fontFamily: "Lato_Semibold"),
                 )),
                 SizedBox(
                   height: 20,
@@ -169,7 +169,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
                                               fontSize: 25,
-                                              fontFamily: "Lato_Bold",
+                                              fontFamily: "Lato_Semibold",
                                               color: AppColor.yellowMed),
                                         ),
                                         const SizedBox(height: 20),
@@ -220,7 +220,7 @@ class _OtpScreenState extends State<OtpScreen> {
                                                         fontSize: 18,
                                                         color: AppColor.white,
                                                         fontFamily:
-                                                            "Lato_Bold"),
+                                                            "Lato_Semibold"),
                                                     textAlign:
                                                         TextAlign.center)),
                                           ),
@@ -240,7 +240,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             color: AppColor.white,
-                            fontFamily: "Lato_Bold",
+                            fontFamily: "Lato_Semibold",
                             fontSize: 16),
                       )),
                 )

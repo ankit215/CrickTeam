@@ -47,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Welcome back!",
                   style: TextStyle(
                       fontSize: 35,
-                      fontFamily: "Lato_Bold",
+                      fontFamily: "Lato_Semibold",
                       color: AppColor.brown2),
                 ),
               ),*/
@@ -57,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       style: TextStyle(
                           fontSize: 25.0,
                           color: AppColor.brown2,
-                          fontFamily: "Lato_Bold"),
+                          fontFamily: "Lato_Semibold"),
                     ),
                   ),
               SizedBox(height: 20,),
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                     fontSize: 16.0,
                     color: AppColor.brown2,
-                    fontFamily: "Lato_Bold"),
+                    fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 style: TextStyle(
                     fontSize: 16.0,
                     color: AppColor.brown2,
-                    fontFamily: "Lato_Bold"),
+                    fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -259,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: AppColor.white,
-                          fontFamily: "Lato_Bold",
+                          fontFamily: "Lato_Semibold",
                           fontSize: 16),
                     )),
               ),

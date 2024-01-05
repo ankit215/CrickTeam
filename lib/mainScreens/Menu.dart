@@ -147,7 +147,7 @@ class _Menu extends State<Menu> {
                                   style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 16,
-                                      fontFamily: "Lato_Bold"),
+                                      fontFamily: "Lato_Semibold"),
                                 ),
                               ),
                             ),

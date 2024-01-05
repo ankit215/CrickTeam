@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 "45",
                 style: TextStyle(
                   fontSize: 18,
-                  fontFamily: "Lato_Bold",
+                  fontFamily: "Lato_Semibold",
                   color: AppColor.brown2,
                 ),
                 textAlign: TextAlign.center,
@@ -175,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     child: Text(
                                   "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
                                   style: const TextStyle(
-                                      fontFamily: "Lato_Bold",
+                                      fontFamily: "Lato_Semibold",
                                       color: AppColor.brown2,
                                       fontSize: 16),
                                 )),
@@ -261,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Text(
                                           matchList[index].matchTimeRemaining!,
                                           style: const TextStyle(
-                                              fontFamily: "Lato_Bold",
+                                              fontFamily: "Lato_Semibold",
                                               color: Colors.red,
                                               fontSize: 16),
                                         ),
@@ -271,7 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text(
                                   matchList[index].matchDateTime!,
                                   style: const TextStyle(
-                                      fontFamily: "Lato_Bold",
+                                      fontFamily: "Lato_Semibold",
                                       color: AppColor.brown2,
                                       fontSize: 16),
                                 ),
@@ -298,13 +298,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             fontSize: 25.0,
                             color: AppColor.brown2,
-                            fontFamily: "Lato_Bold")),
+                            fontFamily: "Lato_Semibold")),
                     TextSpan(
                         text: "Matches",
                         style: TextStyle(
                             fontSize: 25.0,
                             color: AppColor.orange_light,
-                            fontFamily: "Lato_Bold"))
+                            fontFamily: "Lato_Semibold"))
                   ]),
                   textAlign: TextAlign.center,
                 ),
@@ -352,7 +352,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Text(
                                     "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
                                     style: const TextStyle(
-                                        fontFamily: "Lato_Bold",
+                                        fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
                                         fontSize: 16),
                                   )),
@@ -410,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     Text(
                                       matchList[index].matchTimeRemaining!,
                                       style: const TextStyle(
-                                          fontFamily: "Lato_Bold",
+                                          fontFamily: "Lato_Semibold",
                                           color: Colors.red,
                                           fontSize: 16),
                                     ),],),
@@ -454,7 +454,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 matchList[index].matchDateTime!,
                                 style: const TextStyle(
-                                    fontFamily: "Lato_Bold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.brown2,
                                     fontSize: 16),
                               ),

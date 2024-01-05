@@ -45,7 +45,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               const Center(
                 child: Text(
                   "Reset Password",
-                  style: TextStyle(fontSize: 30, fontFamily: "Lato_Bold"),
+                  style: TextStyle(fontSize: 30, fontFamily: "Lato_Semibold"),
                 ),
               ),
               const SizedBox(
@@ -53,7 +53,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               const Text(
                 "New Password",
-                style: TextStyle(fontSize: 16.0, color: AppColor.black, fontFamily: "Lato_Bold"),
+                style: TextStyle(fontSize: 16.0, color: AppColor.black, fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -74,7 +74,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               ),
               const Text(
                 "Repeat Password",
-                style: TextStyle(fontSize: 16.0, color: AppColor.black, fontFamily: "Lato_Bold"),
+                style: TextStyle(fontSize: 16.0, color: AppColor.black, fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -115,7 +115,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     child: const Text(
                       'Save',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: "Lato_Bold", fontSize: 16),
+                      style: TextStyle(fontFamily: "Lato_Semibold", fontSize: 16),
                     )),
               ),
             ]),

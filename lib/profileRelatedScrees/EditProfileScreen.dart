@@ -204,7 +204,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             fontSize: 20.0,
                             letterSpacing: 2,
                             color: AppColor.brown2,
-                            fontFamily: "Lato_Bold"),
+                            fontFamily: "Lato_Semibold"),
                         textAlign: TextAlign.center),
                     const Spacer(),
                     const SizedBox(
@@ -284,7 +284,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontSize: 16.0,
                         letterSpacing: 1,
                         color: AppColor.brown2,
-                        fontFamily: "Lato_Bold"),
+                        fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
                     height: 10,
@@ -311,7 +311,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontSize: 16.0,
                         letterSpacing: 1,
                         color: AppColor.brown2,
-                        fontFamily: "Lato_Bold"),
+                        fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
                     height: 10,
@@ -338,7 +338,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontSize: 16.0,
                         letterSpacing: 1,
                         color: AppColor.brown2,
-                        fontFamily: "Lato_Bold"),
+                        fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
                     height: 10,
@@ -368,7 +368,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontSize: 16.0,
                         letterSpacing: 1,
                         color: AppColor.brown2,
-                        fontFamily: "Lato_Bold"),
+                        fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
                     height: 10,
@@ -520,7 +520,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontSize: 16.0,
                         letterSpacing: 1,
                         color: AppColor.brown2,
-                        fontFamily: "Lato_Bold"),
+                        fontFamily: "Lato_Semibold"),
                   ),
                   Container(
                     decoration: BoxDecoration(
@@ -595,7 +595,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,
-                                    fontFamily: "Lato_Bold"),
+                                    fontFamily: "Lato_Semibold"),
                               ),
                             ),
                           ),

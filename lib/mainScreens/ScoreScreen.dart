@@ -86,7 +86,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
               "Scoreboard",
               style: TextStyle(
                 fontSize: 20,
-                fontFamily: "Lato_Bold",
+                fontFamily: "Lato_Semibold",
                 color: AppColor.brown2,
               ),
               textAlign: TextAlign.center,
@@ -107,7 +107,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                   "45",
                   style: TextStyle(
                     fontSize: 18,
-                    fontFamily: "Lato_Bold",
+                    fontFamily: "Lato_Semibold",
                     color: AppColor.brown2,
                   ),
                   textAlign: TextAlign.center,
@@ -207,7 +207,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                             child: Text(
                               "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
                               style: const TextStyle(
-                                  fontFamily: "Lato_Bold",
+                                  fontFamily: "Lato_Semibold",
                                   color: AppColor.brown2,
                                   fontSize: 16),
                             ),
@@ -243,7 +243,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                     decoration: BoxDecoration(
                                       color: AppColor.yellowMed.withOpacity(0.4),
                                     ),
-                                    child: const Text("140/6 (20)",style: TextStyle(fontFamily: "Lato_Bold",color: AppColor.brown2),),
+                                    child: const Text("140/6 (20)",style: TextStyle(fontFamily: "Lato_Semibold",color: AppColor.brown2),),
                                   ),
                                 ),
                                 Row(
@@ -327,7 +327,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                             Text(
                               matchList[index].matchTimeRemaining!,
                               style: const TextStyle(
-                                  fontFamily: "Lato_Bold",
+                                  fontFamily: "Lato_Semibold",
                                   color: Colors.red,
                                   fontSize: 16),
                             ),
@@ -394,7 +394,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                           child: Text(
                             "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
                             style: const TextStyle(
-                                fontFamily: "Lato_Bold",
+                                fontFamily: "Lato_Semibold",
                                 color: AppColor.brown2,
                                 fontSize: 16),
                           )),
@@ -454,7 +454,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                 Text(
                                   matchList[index].matchTimeRemaining!,
                                   style: const TextStyle(
-                                      fontFamily: "Lato_Bold",
+                                      fontFamily: "Lato_Semibold",
                                       color: Colors.red,
                                       fontSize: 16),
                                 ),
@@ -500,7 +500,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                       Text(
                         matchList[index].matchDateTime!,
                         style: const TextStyle(
-                            fontFamily: "Lato_Bold",
+                            fontFamily: "Lato_Semibold",
                             color: AppColor.brown2,
                             fontSize: 16),
                       ),

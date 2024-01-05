@@ -1,5 +1,5 @@
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
-import 'package:crick_team/startMatchRelatedScreens/search_delay_function.dart';
+import 'package:crick_team/utils/search_delay_function.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +60,7 @@ class _AddTeamsState extends State<AddTeams> {
           "Select Playing Teams",
           style: TextStyle(
             fontSize: 20,
-            fontFamily: "Lato_Bold",
+            fontFamily: "Lato_Semibold",
             color: AppColor.white,
           ),
           textAlign: TextAlign.center,
@@ -107,7 +107,7 @@ class _AddTeamsState extends State<AddTeams> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontSize: 25,
-                                    fontFamily: "Lato_Bold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.brown2),
                               ),
                               const SizedBox(
@@ -128,7 +128,7 @@ class _AddTeamsState extends State<AddTeams> {
                                   style: TextStyle(
                                       fontSize: 16.0,
                                       color: AppColor.brown2,
-                                      fontFamily: "Lato_Bold"),
+                                      fontFamily: "Lato_Semibold"),
                                 ),
                               ),
                               const SizedBox(
@@ -214,7 +214,7 @@ class _AddTeamsState extends State<AddTeams> {
                                                                   .toString(),
                                                               style: TextStyle(
                                                                 fontSize: 20,
-                                                                fontFamily: "Lato_Bold",
+                                                                fontFamily: "Lato_Semibold",
                                                                 color: playerList2[index]
                                                                     .playerSelected!
                                                                     ? Colors.white
@@ -286,7 +286,7 @@ class _AddTeamsState extends State<AddTeams> {
                                               fontSize: 18,
                                               color: AppColor.white,
                                               fontFamily:
-                                              "Lato_Bold"),
+                                              "Lato_Semibold"),
                                           textAlign:
                                           TextAlign.center)),
                                 ),
@@ -432,7 +432,7 @@ class _AddTeamsState extends State<AddTeams> {
                                                 .toString(),
                                             style: TextStyle(
                                               fontSize: 20,
-                                              fontFamily: "Lato_Bold",
+                                              fontFamily: "Lato_Semibold",
                                               color: playerList[index]
                                                       .playerSelected!
                                                   ? Colors.white

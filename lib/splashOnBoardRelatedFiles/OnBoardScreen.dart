@@ -32,7 +32,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
             ),
             const Text(
               "Rise and shine, its time to play",
-              style: TextStyle(fontSize: 40, fontFamily: "Lato_Bold",color: AppColor.brown2),
+              style: TextStyle(fontSize: 40, fontFamily: "Lato_Semibold",color: AppColor.brown2),
             ),
             const SizedBox(
               height: 10,
@@ -46,8 +46,8 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
             ),
             RichText(
               text: const TextSpan(children: <TextSpan>[
-                TextSpan(text: "Join to ", style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Bold")),
-                TextSpan(text: "start connecting!", style: TextStyle(fontSize: 16.0, color: AppColor.orange_light, fontFamily: "Lato_Bold"))
+                TextSpan(text: "Join to ", style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Semibold")),
+                TextSpan(text: "start connecting!", style: TextStyle(fontSize: 16.0, color: AppColor.orange_light, fontFamily: "Lato_Semibold"))
               ]),
               textAlign: TextAlign.center,
             ),
@@ -78,7 +78,7 @@ class _OnBoardScreenState extends State<OnBoardScreen> {
                   child: const Text(
                     'Sign In',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: "Lato_Bold", fontSize: 16,color: AppColor.white),
+                    style: TextStyle(fontFamily: "Lato_Semibold", fontSize: 16,color: AppColor.white),
                   )),
             ),
           /*  GestureDetector(

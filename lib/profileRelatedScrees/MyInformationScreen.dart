@@ -52,7 +52,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                   const Text(
                     "My Information",
                     style: TextStyle(
-                        fontFamily: "Lato_Bold",
+                        fontFamily: "Lato_Semibold",
                         fontSize: 20,
                         color: AppColor.brown2),
                   ),
@@ -65,7 +65,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Name",
                         style: TextStyle(
-                            fontFamily: "Lato_Bold",
+                            fontFamily: "Lato_Semibold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),
@@ -95,7 +95,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Birthday",
                         style: TextStyle(
-                            fontFamily: "Lato_Bold",
+                            fontFamily: "Lato_Semibold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),
@@ -126,7 +126,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
                       const Text(
                         "Joined",
                         style: TextStyle(
-                            fontFamily: "Lato_Bold",
+                            fontFamily: "Lato_Semibold",
                             fontSize: 16,
                             color: AppColor.brown2),
                       ),

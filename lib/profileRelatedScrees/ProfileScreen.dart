@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           'Anil Dogra',
                                           style: TextStyle(
                                               fontSize: 25,
-                                              fontFamily: "Lato_Bold",
+                                              fontFamily: "Lato_Semibold",
                                               letterSpacing: 1,
                                               color: AppColor.brown2),
                                           textAlign: TextAlign.center,
@@ -269,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 style: TextStyle(
                                                     color: Colors.white,
                                                     fontSize: 16,
-                                                    fontFamily: "Lato_Bold"),
+                                                    fontFamily: "Lato_Semibold"),
                                               ),
                                             ),
                                           ),

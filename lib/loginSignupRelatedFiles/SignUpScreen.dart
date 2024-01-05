@@ -43,7 +43,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const Center(
                 child: Text(
                   "Create an account",
-                  style: TextStyle(fontSize: 35, fontFamily: "Lato_Bold",color: AppColor.brown2),
+                  style: TextStyle(fontSize: 35, fontFamily: "Lato_Semibold",color: AppColor.brown2),
                 ),
               ),
               const SizedBox(
@@ -51,7 +51,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const Text(
                 "Email",
-                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Bold"),
+                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -73,7 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const Text(
                 "Password",
-                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Bold"),
+                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -186,7 +186,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: const Text(
                       'Sign Up',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: "Lato_Bold", fontSize: 16,color: AppColor.white),
+                      style: TextStyle(fontFamily: "Lato_Semibold", fontSize: 16,color: AppColor.white),
                     )),
               ),
               GestureDetector(

@@ -1,4 +1,6 @@
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../main.dart';
 import 'AppColor.dart';
@@ -12,12 +14,79 @@ DateTime lastDayOfMonth(DateTime month) {
 }
 
 class CommonFunctions {
-  /*static Future<String> selectDate() async {
+  static Future<TimeOfDay?> showTimePicker({
+    required BuildContext context,
+    required TimeOfDay initialTime,
+    TransitionBuilder? builder,
+    bool barrierDismissible = true,
+    Color? barrierColor,
+    String? barrierLabel,
+    bool useRootNavigator = true,
+    TimePickerEntryMode initialEntryMode = TimePickerEntryMode.dial,
+    String? cancelText,
+    String? confirmText,
+    String? helpText,
+    String? errorInvalidText,
+    String? hourLabelText,
+    String? minuteLabelText,
+    RouteSettings? routeSettings,
+    EntryModeChangeCallback? onEntryModeChanged,
+    Offset? anchorPoint,
+    Orientation? orientation,
+  }) async {
+    assert(debugCheckHasMaterialLocalizations(context));
+
+    final Widget dialog = TimePickerDialog(
+      initialTime: initialTime,
+      initialEntryMode: initialEntryMode,
+      cancelText: cancelText,
+      confirmText: confirmText,
+      helpText: helpText,
+      errorInvalidText: errorInvalidText,
+      hourLabelText: hourLabelText,
+      minuteLabelText: minuteLabelText,
+      orientation: orientation,
+      onEntryModeChanged: onEntryModeChanged,
+    );
+    return showDialog<TimeOfDay>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      barrierColor: barrierColor,
+      barrierLabel: barrierLabel,
+      useRootNavigator: useRootNavigator,
+      builder: (BuildContext context) {
+        return builder == null ? dialog : builder(context, dialog);
+      },
+      routeSettings: routeSettings,
+      anchorPoint: anchorPoint,
+    );
+  }
+//   static Future<String> selectTime(BuildContext context) async {
+//
+// /*    final ThemeData theme = Theme.of(context);
+//     final TimeOfDay? picked = await showTimePicker(
+//       context: context,
+//       initialTime: TimeOfDay.now(),
+//       builder: (BuildContext? context, Widget? child) {
+//         return *//*theme.isDark
+//             ? MediaQuery(
+//           data: MediaQuery.of(context!).copyWith(alwaysUse24HourFormat: false),
+//           child: child!,
+//         )
+//             : *//*child!;
+//       },
+//     );
+//     if (picked != null)
+//       print({picked.hour.toString() + ':' + picked.minute.toString()});
+//     return '${picked!.hour}:${picked.minute}';*/
+//   }
+  static Future<String> selectDate() async {
     final config = CalendarDatePicker2WithActionButtonsConfig(
       calendarType: CalendarDatePicker2Type.single,
+      firstDate: DateTime.now().subtract(Duration(days: 1)),
       weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       weekdayLabelTextStyle: const TextStyle(
-        color: AppColor.grey,
+        color: AppColor.brown2,
         fontFamily: "Ubuntu_Bold",
         fontWeight: FontWeight.bold,
       ),
@@ -32,14 +101,14 @@ class CommonFunctions {
         fontFamily: "Ubuntu_Regular",
         fontWeight: FontWeight.bold,
       ),
-      selectedDayHighlightColor: AppColor.yellow,
+      selectedDayHighlightColor: AppColor.red,
       todayTextStyle: const TextStyle(
         color: AppColor.orange,
         fontSize: 18,
         fontFamily: "Ubuntu_Bold",
       ),
       selectedDayTextStyle: const TextStyle(
-        color: AppColor.orange,
+        color: AppColor.white,
         fontSize: 18,
         fontFamily: "Ubuntu_Bold",
       ),
@@ -61,7 +130,7 @@ class CommonFunctions {
       debugPrint("Date is not selected");
     }
     return "";
-  }*/
+  }
 
  /* static void showSuccessDialog(String title) {
     showDialog(

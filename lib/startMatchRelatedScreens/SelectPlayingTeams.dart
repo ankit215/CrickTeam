@@ -1,4 +1,5 @@
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
+import 'package:crick_team/startMatchRelatedScreens/StartMatch.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +36,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
           "Select Playing Teams",
           style: TextStyle(
             fontSize: 20,
-            fontFamily: "Lato_Bold",
+            fontFamily: "Lato_Semibold",
             color: AppColor.white,
           ),
           textAlign: TextAlign.center,
@@ -44,33 +45,105 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
       body: SizedBox(
         height: MediaQuery.sizeOf(context).height*0.9,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            GestureDetector(
-              onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "A",)));
-              },
-              child: const Center(
-                  child: Icon(
-                Icons.add_circle_rounded,
-                color: AppColor.medBrown,
-                size: 100,
-              )),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "A",)));
+                    },
+                    child: const Center(
+                        child: Icon(
+                      Icons.add_circle_rounded,
+                      color: AppColor.medBrown,
+                      size: 100,
+                    )),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam(team: "A",)));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColor.brown2,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Select Team A",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: "Lato_Sembold",
+                            color: AppColor.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10,),
+                  Image.asset("assets/vs.png",color:AppColor.brown2,width: 40,height: 40,fit: BoxFit.contain,),
+                  const SizedBox(height: 10,),
+              
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
+                    },
+                    child: const Center(
+                        child: Icon(
+                      Icons.add_circle_rounded,
+                      color: AppColor.medBrown,
+                      size: 100,
+                    )),
+                  ),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: AppColor.brown2,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text(
+                          "Select Team B",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: "Lato_Sembold",
+                            color: AppColor.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam(team: "A",)));
+                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const StartMatch()));
               },
               child: Container(
+                width: double.infinity,
+                height: 50,
+                margin: const EdgeInsets.symmetric(horizontal: 50),
                 decoration: BoxDecoration(
-                  color: AppColor.brown2,
-                  borderRadius: BorderRadius.circular(10),
+                  gradient: const LinearGradient(colors: [
+                    AppColor.red,
+                    AppColor.brown2,
+                  ]),
+                  borderRadius: BorderRadius.circular(50),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(10),
+                child: Center(
                   child: Text(
-                    "Select Team A",
+                    "Continue",
                     style: TextStyle(
                       fontSize: 16,
                       fontFamily: "Lato_Sembold",
@@ -81,44 +154,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                 ),
               ),
             ),
-            const SizedBox(height: 10,),
-            Image.asset("assets/vs.png",color:AppColor.brown2,width: 40,height: 40,fit: BoxFit.contain,),
-            const SizedBox(height: 10,),
-
-            GestureDetector(
-              onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
-              },
-              child: const Center(
-                  child: Icon(
-                Icons.add_circle_rounded,
-                color: AppColor.medBrown,
-                size: 100,
-              )),
-            ),
-            GestureDetector(
-              onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.brown2,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    "Select Team B",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontFamily: "Lato_Sembold",
-                      color: AppColor.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(height: 40,)
           ],
         ),
       ),

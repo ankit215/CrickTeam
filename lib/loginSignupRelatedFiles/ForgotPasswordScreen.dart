@@ -47,7 +47,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               const Center(
                 child: Text(
                   "Forgot your password?",
-                  style: TextStyle(fontSize: 30, fontFamily: "Lato_Bold", color: AppColor.brown2),
+                  style: TextStyle(fontSize: 30, fontFamily: "Lato_Semibold", color: AppColor.brown2),
                 ),
               ),
               const SizedBox(
@@ -64,7 +64,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               const Text(
                 "Email",
-                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Bold"),
+                style: TextStyle(fontSize: 16.0, color: AppColor.brown2, fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -108,7 +108,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     child: const Text(
                       'Send Link',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontFamily: "Lato_Bold", color: AppColor.white,fontSize: 16),
+                      style: TextStyle(fontFamily: "Lato_Semibold", color: AppColor.white,fontSize: 16),
                     )),
               ),
               const Center(
@@ -131,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           )),
                       child: const Text(
                         "Resend",
-                        style: TextStyle(color: AppColor.orange_0, fontFamily: "Lato_Bold", fontSize: 16),
+                        style: TextStyle(color: AppColor.orange_0, fontFamily: "Lato_Semibold", fontSize: 16),
                       )),
                 ),
               ),
@@ -164,7 +164,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: Text(
                 title,
                 style: const TextStyle(
-                  fontFamily: "Lato_Bold",
+                  fontFamily: "Lato_Semibold",
                   fontSize: 16,
                   color: AppColor.black,
                 ),

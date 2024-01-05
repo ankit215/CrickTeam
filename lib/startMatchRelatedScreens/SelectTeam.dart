@@ -58,7 +58,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
             "Select Team ${widget.team}",
             style: TextStyle(
               fontSize: 20,
-              fontFamily: "Lato_Bold",
+              fontFamily: "Lato_Semibold",
               color: AppColor.white,
             ),
             textAlign: TextAlign.center,
@@ -188,7 +188,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                 style: TextStyle(
                     fontSize: 16.0,
                     color: AppColor.brown2,
-                    fontFamily: "Lato_Bold"),
+                    fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -217,7 +217,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                 style: TextStyle(
                     fontSize: 16.0,
                     color: AppColor.brown2,
-                    fontFamily: "Lato_Bold"),
+                    fontFamily: "Lato_Semibold"),
               ),
               const SizedBox(
                 height: 10,
@@ -272,7 +272,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           color: AppColor.white,
-                          fontFamily: "Lato_Bold",
+                          fontFamily: "Lato_Semibold",
                           fontSize: 16),
                     )),
               )
