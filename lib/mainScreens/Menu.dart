@@ -79,6 +79,7 @@ class _Menu extends State<Menu> {
               style: ElevatedButton.styleFrom(
                   backgroundColor: AppColor.transparent, elevation: 0),
               onPressed: () {
+                Navigator.pop(context);
                 Navigator.push(
                     getContext,
                     MaterialPageRoute(
@@ -86,7 +87,7 @@ class _Menu extends State<Menu> {
                         const SelectPlayingTeams()));
               },
               child: const CustomListTile(
-                image: "assets/bell.png",
+                image: "assets/cricket.png",
                 title: 'START THE MATCH',
               ),
             ),

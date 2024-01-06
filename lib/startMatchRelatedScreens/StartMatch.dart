@@ -1,17 +1,27 @@
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
+import 'package:crick_team/startMatchRelatedScreens/TossScreen.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../utils/CommonFunctions.dart';
+import 'AddTeams.dart';
 
 class StartMatch extends StatefulWidget {
   const StartMatch({super.key});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
+}
+
+class MatchOfficials {
+  final String title;
+  bool isSelected;
+
+  MatchOfficials({required this.title, required this.isSelected});
 }
 
 class _StartMatchState extends State<StartMatch> {
@@ -21,6 +31,23 @@ class _StartMatchState extends State<StartMatch> {
   TextEditingController groundController = TextEditingController();
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
+  List<MatchOfficials> matchOfficials = <MatchOfficials>[
+    MatchOfficials(
+      title: 'Scorer',
+      isSelected: false,
+    ),
+    MatchOfficials(
+      title: 'Umpire',
+      isSelected: false,
+    ),
+  ];
+  List<Team> playerList2 = [
+    Team("Ankit", false),
+    Team("Rajat", false),
+    Team("Mohit", false),
+    Team("Akshay", false)
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +94,8 @@ class _StartMatchState extends State<StartMatch> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
                       // AppColor.yellow.withOpacity(0.5),
-                      AppColor.brown2.withOpacity(0.2),
-                      AppColor.brown2.withOpacity(0.2),
+                      AppColor.brown2,
+                      AppColor.brown2,
                       // AppColor.yellowMed.withOpacity(0.5),
                     ]),
                     borderRadius: BorderRadius.circular(10),
@@ -79,9 +106,10 @@ class _StartMatchState extends State<StartMatch> {
                         child: Image.asset(
                           "assets/crick_layout_background.png",
                           fit: BoxFit.contain,
-                          height: 150,
-                          width: 150,
-                          opacity: const AlwaysStoppedAnimation(.09),
+                          height: 140,
+                          width: 120,
+                          color: Colors.white,
+                          opacity: const AlwaysStoppedAnimation(.2),
                         ),
                       ),
                       Column(
@@ -94,12 +122,12 @@ class _StartMatchState extends State<StartMatch> {
                             "Team A vs Team B T20",
                             style: TextStyle(
                                 fontFamily: "Lato_Semibold",
-                                color: AppColor.brown2,
+                                color: AppColor.white,
                                 fontSize: 16),
                           )),
                           Container(
                             height: 1,
-                            color: AppColor.yellowV2,
+                            color: AppColor.lightBrown,
                             margin: const EdgeInsets.only(top: 4),
                           ),
                           const SizedBox(
@@ -118,10 +146,21 @@ class _StartMatchState extends State<StartMatch> {
                                         height: 47,
                                         width:
                                             MediaQuery.sizeOf(context).width *
-                                                0.19,
+                                                0.29,
                                         decoration: BoxDecoration(
                                           color: AppColor.yellowMed
                                               .withOpacity(0.4),
+                                        ),
+                                        child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          margin: EdgeInsets.only(left: 20),
+                                          child: Text(
+                                            "Team A",
+                                            style: TextStyle(
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.white,
+                                                fontSize: 16),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -130,7 +169,7 @@ class _StartMatchState extends State<StartMatch> {
                                         SizedBox(
                                           width:
                                               MediaQuery.sizeOf(context).width *
-                                                  0.1,
+                                                  0.2,
                                         ),
                                         CircleAvatar(
                                           radius: 30,
@@ -146,21 +185,9 @@ class _StartMatchState extends State<StartMatch> {
                                     ),
                                   ],
                                 ),
-                                Column(
-                                  children: [
-                                    const Icon(
-                                      Icons.timer,
-                                      color: Colors.red,
-                                      size: 20,
-                                    ),
-                                    Text(
-                                      "10",
-                                      style: const TextStyle(
-                                          fontFamily: "Lato_Semibold",
-                                          color: Colors.red,
-                                          fontSize: 16),
-                                    ),
-                                  ],
+                                Image.asset(
+                                  "assets/vs.png",
+                                  color: AppColor.white,
                                 ),
                                 Stack(
                                   alignment: Alignment.centerRight,
@@ -169,10 +196,21 @@ class _StartMatchState extends State<StartMatch> {
                                       alignment: Alignment.center,
                                       height: 45,
                                       width: MediaQuery.sizeOf(context).width *
-                                          0.2,
+                                          0.3,
                                       decoration: BoxDecoration(
                                         color:
                                             AppColor.yellowMed.withOpacity(0.4),
+                                      ),
+                                      child: Container(
+                                        alignment: Alignment.centerRight,
+                                        margin: EdgeInsets.only(right: 20),
+                                        child: Text(
+                                          "Team B",
+                                          style: TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.white,
+                                              fontSize: 16),
+                                        ),
                                       ),
                                     ),
                                     Row(
@@ -190,7 +228,7 @@ class _StartMatchState extends State<StartMatch> {
                                         SizedBox(
                                           width:
                                               MediaQuery.sizeOf(context).width *
-                                                  0.1,
+                                                  0.2,
                                         ),
                                       ],
                                     ),
@@ -202,13 +240,13 @@ class _StartMatchState extends State<StartMatch> {
                           const SizedBox(
                             height: 5,
                           ),
-                          Text(
+                          /*  Text(
                             "15:00",
                             style: const TextStyle(
                                 fontFamily: "Lato_Semibold",
-                                color: AppColor.brown2,
+                                color: AppColor.white,
                                 fontSize: 16),
-                          ),
+                          ),*/
                         ],
                       )
                     ],
@@ -426,19 +464,21 @@ class _StartMatchState extends State<StartMatch> {
                           DateTime currentTime = DateTime.now();
                           int currentHour = currentTime.hour;
                           int currentMinute = currentTime.minute;
-                          Time time = Time(hour: currentHour, minute: currentMinute);
-                          Navigator.of(context).push(
-                              showPicker(
-                                context: context,
-                                value: time,
-                                sunrise: const TimeOfDay(hour: 6, minute: 0), // optional
-                                sunset: const TimeOfDay(hour: 18, minute: 0), // optional
-                                duskSpanInMinutes: 120, // optional
-                                onChange: (value){
-                                  debugPrint("TIME"+value.toString());
-                                },
-                              )                          );
-
+                          Time time =
+                              Time(hour: currentHour, minute: currentMinute);
+                          Navigator.of(context).push(showPicker(
+                            context: context,
+                            value: time,
+                            sunrise: const TimeOfDay(hour: 6, minute: 0),
+                            // optional
+                            sunset: const TimeOfDay(hour: 18, minute: 0),
+                            // optional
+                            duskSpanInMinutes: 120,
+                            // optional
+                            onChange: (value) {
+                              debugPrint("TIME" + value.toString());
+                            },
+                          ));
                         },
                         child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.7,
@@ -466,14 +506,109 @@ class _StartMatchState extends State<StartMatch> {
                     Icon(Icons.access_time)
                   ],
                 ),
-              )
-              ,            GestureDetector(
-                onTap: (){
+              ),
+              const Text(
+                "Match Officials",
+                style: TextStyle(
+                    fontSize: 16.0,
+                    color: AppColor.brown2,
+                    fontFamily: "Lato_Semibold"),
+              ),
+              Container(
+                height: 100,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: matchOfficials.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        matchOfficials[index].title.toLowerCase() == "scorer"
+                            ? showScorerDialog()
+                            : showChooseUmpireDialog();
+                        /*   setState(() {
+                          for (int i = 0; i < matchOfficials.length; i++) {
+                            matchOfficials[i].isSelected = false;
+                          }
+                          matchOfficials[index].isSelected = true;
+                        });*/
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.only(left: 5, right: 20),
+                              height: 60,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                gradient: /* (matchOfficials[index].isSelected == true)
+                                    ? const LinearGradient(
+                                        colors: [
+                                          AppColor.yellowV2,
+                                          AppColor.red
+                                        ],
+                                        begin: Alignment.centerLeft,
+                                        end: Alignment.centerRight,
+                                      )
+                                    :*/
+                                    const LinearGradient(
+                                  colors: [
+                                    AppColor.white,
+                                    AppColor.white,
+                                    AppColor.white
+                                  ],
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                ),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    width: 1,
+                                    color:
+                                        /* (matchOfficials[index].isSelected == true)
+                                            ? AppColor.white
+                                            :*/
+                                        AppColor.brown2),
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  matchOfficials[index].title.toLowerCase() ==
+                                          "scorer"
+                                      ? "assets/scorer.png"
+                                      : "assets/umpire.png",
+                                  height: 30,
+                                  width: 30,
+                                ),
+                              )),
+                          Container(
+                            margin: const EdgeInsets.only(left: 5, right: 20),
+                            child: Text(
+                              matchOfficials[index].title,
+                              style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: AppColor.brown2,
+                                  fontFamily: "Lato_Semibold"),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => const TossScreen()));
                 },
                 child: Container(
                   width: double.infinity,
                   height: 50,
-                  margin: const EdgeInsets.symmetric(horizontal: 50,vertical: 30),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(colors: [
                       AppColor.red,
@@ -483,7 +618,7 @@ class _StartMatchState extends State<StartMatch> {
                   ),
                   child: Center(
                     child: Text(
-                      "Continue",
+                      "Continue for toss",
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato_Sembold",
@@ -498,6 +633,628 @@ class _StartMatchState extends State<StartMatch> {
           ),
         ),
       ),
+    );
+  }
+
+  showScorerDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Dialog(
+            surfaceTintColor: Colors.white,
+            backgroundColor: AppColor.white,
+            insetPadding: const EdgeInsets.all(10),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 16,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Icon(
+                              CupertinoIcons.xmark_circle_fill,
+                              color: AppColor.brown2,
+                              size: 40,
+                            )),
+                      ),
+                      const Text(
+                        'Add Scorer',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontFamily: "Lato_Semibold",
+                            color: AppColor.brown2),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Image.asset(
+                        "assets/scorer.png",
+                        width: 80,
+                        height: 80,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Scorer phone no.*",
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              color: AppColor.brown2,
+                              fontFamily: "Lato_Semibold"),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 55,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            color: AppColor.white,
+                            border: Border.all(color: AppColor.border)),
+                        child: Center(
+                          child: TextField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration.collapsed(
+                                hintText: 'Enter phone number',
+                                hintStyle: TextStyle(color: AppColor.grey)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                            itemCount: playerList2.length,
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext context, int index) {
+                              return index != playerList2.length
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          playerList2[index].playerSelected =
+                                              playerList2[index].playerSelected!
+                                                  ? false
+                                                  : true;
+                                        });
+                                      },
+                                      child: Card(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          elevation: 0.2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          child: Container(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.9,
+                                              decoration: BoxDecoration(
+                                                gradient: playerList2[index]
+                                                        .playerSelected!
+                                                    ? const LinearGradient(
+                                                        colors: [
+                                                          AppColor.red,
+                                                          AppColor.brown2
+                                                        ],
+                                                      )
+                                                    : LinearGradient(
+                                                        colors: [
+                                                          AppColor.grey
+                                                              .withOpacity(0.2),
+                                                          AppColor.grey
+                                                              .withOpacity(0.2),
+                                                        ],
+                                                      ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          CircleAvatar(
+                                                            radius: 30,
+                                                            child: ClipOval(
+                                                                child:
+                                                                    Image.asset(
+                                                              "assets/scorer.png",
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                              height: 45,
+                                                              width: 45,
+                                                            )),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Text(
+                                                            playerList2[index]
+                                                                .playerName
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontFamily:
+                                                                  "Lato_Semibold",
+                                                              color: playerList2[
+                                                                          index]
+                                                                      .playerSelected!
+                                                                  ? Colors.white
+                                                                  : AppColor
+                                                                      .medGrey,
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    playerList2[index]
+                                                            .playerSelected!
+                                                        ? const Icon(
+                                                            Icons.check_circle,
+                                                            color: Colors.white,
+                                                            size: 30,
+                                                          )
+                                                        : const SizedBox(),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    )
+                                                  ],
+                                                ),
+                                              ))),
+                                    )
+                                  : SizedBox(
+                                      height: 80,
+                                    );
+                            }),
+                      ),
+                      Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                                colors: [AppColor.red, AppColor.brown2]),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<StadiumBorder>(
+                                  const StadiumBorder(),
+                                ),
+                                elevation: MaterialStateProperty.all(8),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.transparent),
+                                // elevation: MaterialStateProperty.all(3),
+                                shadowColor: MaterialStateProperty.all(
+                                    Colors.transparent),
+                              ),
+                              onPressed: () {},
+                              child: const Text('Add',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColor.white,
+                                      fontFamily: "Lato_Semibold"),
+                                  textAlign: TextAlign.center)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  showUmpireDialog(int umpireCount) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Dialog(
+            surfaceTintColor: Colors.white,
+            backgroundColor: AppColor.white,
+            insetPadding: const EdgeInsets.all(10),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 16,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Icon(
+                              CupertinoIcons.xmark_circle_fill,
+                              color: AppColor.brown2,
+                              size: 40,
+                            )),
+                      ),
+                      Text(
+                        umpireCount == 1 ? 'Add 1st Umpire' : "Add 2nd Umpire",
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 25,
+                            fontFamily: "Lato_Semibold",
+                            color: AppColor.brown2),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Image.asset(
+                        "assets/umpire.png",
+                        width: 80,
+                        height: 80,
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Umpire phone no.*",
+                          style: TextStyle(
+                              fontSize: 16.0,
+                              color: AppColor.brown2,
+                              fontFamily: "Lato_Semibold"),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        height: 55,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            color: AppColor.white,
+                            border: Border.all(color: AppColor.border)),
+                        child: Center(
+                          child: TextField(
+                            controller: phoneController,
+                            keyboardType: TextInputType.phone,
+                            decoration: const InputDecoration.collapsed(
+                                hintText: 'Enter phone number',
+                                hintStyle: TextStyle(color: AppColor.grey)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 200,
+                        child: ListView.builder(
+                            itemCount: playerList2.length,
+                            shrinkWrap: true,
+                            itemBuilder: (BuildContext context, int index) {
+                              return index != playerList2.length
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          playerList2[index].playerSelected =
+                                              playerList2[index].playerSelected!
+                                                  ? false
+                                                  : true;
+                                        });
+                                      },
+                                      child: Card(
+                                          margin: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          elevation: 0.2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          child: Container(
+                                              width: MediaQuery.sizeOf(context)
+                                                      .width *
+                                                  0.9,
+                                              decoration: BoxDecoration(
+                                                gradient: playerList2[index]
+                                                        .playerSelected!
+                                                    ? const LinearGradient(
+                                                        colors: [
+                                                          AppColor.red,
+                                                          AppColor.brown2
+                                                        ],
+                                                      )
+                                                    : LinearGradient(
+                                                        colors: [
+                                                          AppColor.grey
+                                                              .withOpacity(0.2),
+                                                          AppColor.grey
+                                                              .withOpacity(0.2),
+                                                        ],
+                                                      ),
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Row(
+                                                  children: [
+                                                    Expanded(
+                                                      child: Row(
+                                                        children: [
+                                                          CircleAvatar(
+                                                            radius: 30,
+                                                            child: ClipOval(
+                                                                child:
+                                                                    Image.asset(
+                                                              "assets/scorer.png",
+                                                              fit: BoxFit
+                                                                  .contain,
+                                                              height: 45,
+                                                              width: 45,
+                                                            )),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 10,
+                                                          ),
+                                                          Text(
+                                                            playerList2[index]
+                                                                .playerName
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                              fontSize: 20,
+                                                              fontFamily:
+                                                                  "Lato_Semibold",
+                                                              color: playerList2[
+                                                                          index]
+                                                                      .playerSelected!
+                                                                  ? Colors.white
+                                                                  : AppColor
+                                                                      .medGrey,
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    playerList2[index]
+                                                            .playerSelected!
+                                                        ? const Icon(
+                                                            Icons.check_circle,
+                                                            color: Colors.white,
+                                                            size: 30,
+                                                          )
+                                                        : const SizedBox(),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    )
+                                                  ],
+                                                ),
+                                              ))),
+                                    )
+                                  : SizedBox(
+                                      height: 80,
+                                    );
+                            }),
+                      ),
+                      Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: Container(
+                          height: 50,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                                colors: [AppColor.red, AppColor.brown2]),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: ElevatedButton(
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<StadiumBorder>(
+                                  const StadiumBorder(),
+                                ),
+                                elevation: MaterialStateProperty.all(8),
+                                backgroundColor: MaterialStateProperty.all(
+                                    Colors.transparent),
+                                // elevation: MaterialStateProperty.all(3),
+                                shadowColor: MaterialStateProperty.all(
+                                    Colors.transparent),
+                              ),
+                              onPressed: () {},
+                              child: const Text('Add',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppColor.white,
+                                      fontFamily: "Lato_Semibold"),
+                                  textAlign: TextAlign.center)),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  showChooseUmpireDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Dialog(
+            surfaceTintColor: Colors.white,
+            backgroundColor: AppColor.white,
+            insetPadding: const EdgeInsets.all(10),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 16,
+            child: ListView(
+              shrinkWrap: true,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Align(
+                            alignment: Alignment.centerRight,
+                            child: Icon(
+                              CupertinoIcons.xmark_circle_fill,
+                              color: AppColor.brown2,
+                              size: 40,
+                            )),
+                      ),
+                      const Text(
+                        'Select Umpires',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 25,
+                            fontFamily: "Lato_Semibold",
+                            color: AppColor.brown2),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showUmpireDialog(1);
+                            },
+                            child: Container(
+                              width: 120,
+                              height: 140,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: [
+                                  AppColor.grey,
+                                  AppColor.grey,
+                                ]),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/umpire.png",
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Center(
+                                    child: Text(
+                                      "1st Umpire",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Lato_Sembold",
+                                        color: AppColor.text_grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              showUmpireDialog(2);
+                            },
+                            child: Container(
+                              width: 120,
+                              height: 140,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(colors: [
+                                  AppColor.grey,
+                                  AppColor.grey,
+                                ]),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/umpire.png",
+                                    height: 60,
+                                    width: 60,
+                                  ),
+                                  SizedBox(
+                                    height: 15,
+                                  ),
+                                  const Center(
+                                    child: Text(
+                                      "1st Umpire",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Lato_Sembold",
+                                        color: AppColor.text_grey,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+      },
     );
   }
 }
