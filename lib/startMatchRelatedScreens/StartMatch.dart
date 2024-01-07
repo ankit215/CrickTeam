@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import '../mainScreens/MainScreen.dart';
 import '../utils/CommonFunctions.dart';
 import 'AddTeams.dart';
 
@@ -37,10 +38,10 @@ class _StartMatchState extends State<StartMatch> {
       title: 'Scorer',
       isSelected: false,
     ),
-    MatchOfficials(
+    /*MatchOfficials(
       title: 'Umpire',
       isSelected: false,
-    ),
+    ),*/
   ];
   List<Team> playerList2 = [
     Team("Ankit", false),
@@ -292,7 +293,7 @@ class _StartMatchState extends State<StartMatch> {
                   const SizedBox(
                     width: 10,
                   ),
-                  Expanded(
+                 /* Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -324,7 +325,7 @@ class _StartMatchState extends State<StartMatch> {
                         ),
                       ],
                     ),
-                  )
+                  )*/
                 ],
               ),
               SizedBox(
@@ -508,7 +509,7 @@ class _StartMatchState extends State<StartMatch> {
                 ),
               ),
               const Text(
-                "Match Officials",
+                "Match Official",
                 style: TextStyle(
                     fontSize: 16.0,
                     color: AppColor.brown2,
@@ -599,10 +600,101 @@ class _StartMatchState extends State<StartMatch> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) => const TossScreen()));
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) {
+                      return Dialog(
+                        surfaceTintColor: Colors.white,
+                        backgroundColor: AppColor.white,
+                        insetPadding: const EdgeInsets.all(10),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        elevation: 16,
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: Column(
+                                crossAxisAlignment:
+                                CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/logo.png",
+                                    width: 150,
+                                    height: 150,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Match Created Successfully',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 22,
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.brown2),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  Card(
+                                    elevation: 8,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                      BorderRadius.circular(30.0),
+                                    ),
+                                    child: Container(
+                                      height: 50,
+
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                            colors: [
+                                              AppColor.red,
+                                              AppColor.brown2
+                                            ]),
+                                        borderRadius:
+                                        BorderRadius.circular(30),
+                                      ),
+                                      child: ElevatedButton(
+                                          style: ButtonStyle(
+                                            shape: MaterialStateProperty
+                                                .all<StadiumBorder>(
+                                              const StadiumBorder(),
+                                            ),
+                                            elevation:
+                                            MaterialStateProperty.all(
+                                                8),
+                                            backgroundColor:
+                                            MaterialStateProperty.all(
+                                                Colors.transparent),
+                                            // elevation: MaterialStateProperty.all(3),
+                                            shadowColor:
+                                            MaterialStateProperty.all(
+                                                Colors.transparent),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  MainScreen(index: 0,)));
+
+
+                                          },
+                                          child: const Text('Continue',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: AppColor.white,
+                                                  fontFamily:
+                                                  "Lato_Semibold"),
+                                              textAlign:
+                                              TextAlign.center)),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   width: double.infinity,
@@ -618,7 +710,7 @@ class _StartMatchState extends State<StartMatch> {
                   ),
                   child: Center(
                     child: Text(
-                      "Continue for toss",
+                      "Continue",
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: "Lato_Sembold",

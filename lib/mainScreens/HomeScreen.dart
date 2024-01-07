@@ -3,6 +3,8 @@ import 'package:crick_team/mainScreens/ScoreScreen.dart';
 import 'package:crick_team/scoreRelatedScreens/ScorerScreen.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
+
+import '../startMatchRelatedScreens/TossScreen.dart';
 class MatchModel {
   String? teamAName;
   String? teamAShortName;
@@ -142,7 +144,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: (){
-                        Navigator.push(getContext, MaterialPageRoute(builder: (context) => const ScorerScreen(team: "A")));
+                        Navigator.push(
+                            getContext,
+                            MaterialPageRoute(
+                                builder: (context) => const TossScreen()));
+
 
                       },
                       child: Card(
