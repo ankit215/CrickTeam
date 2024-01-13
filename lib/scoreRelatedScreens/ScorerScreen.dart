@@ -1,3 +1,5 @@
+import 'package:crick_team/scoreRelatedScreens/OutScreen.dart';
+import 'package:crick_team/startMatchRelatedScreens/TossScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -374,29 +376,42 @@ class _ScorerScreenState extends State<ScorerScreen>
                       childAspectRatio: 1.38,
                       scrollDirection: Axis.vertical,
                       children: List.generate(3, (index) {
-                        return Container(
-                            height: 20,
-                            width: 30,
-                            color: AppColor.grey,
-                            child: Center(
-                              child: Text(
-                                index == 0
-                                    ? "Undo"
-                                    : index == 1
-                                        ? "5,7"
-                                        : "Out",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: "Lato_Semibold",
-                                  color: index == 0
-                                      ? AppColor.green_neon
+                        return GestureDetector(
+                          onTap: () {
+                            index == 0
+                                ? debugPrint("Undo")
+                                : index == 1
+                                    ? debugPrint("5,7")
+                                    : Navigator.push(
+                                        getContext,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const OutScreen()));
+                          },
+                          child: Container(
+                              height: 20,
+                              width: 30,
+                              color: AppColor.grey,
+                              child: Center(
+                                child: Text(
+                                  index == 0
+                                      ? "Undo"
                                       : index == 1
-                                          ? AppColor.text_grey
-                                          : AppColor.red,
+                                          ? "5,7"
+                                          : "Out",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: "Lato_Semibold",
+                                    color: index == 0
+                                        ? AppColor.green_neon
+                                        : index == 1
+                                            ? AppColor.text_grey
+                                            : AppColor.red,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ));
+                              )),
+                        );
                       }),
                     ),
                   ),
@@ -562,54 +577,57 @@ class _ScorerScreenState extends State<ScorerScreen>
                     )
                   ],
                 ),
-                type=="NB"?Container(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: noBallType.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            for (int i = 0; i < noBallType.length; i++) {
-                              noBallType[i].isSelected = false;
-                            }
-                            noBallType[index].isSelected = true;
-                          });
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            SizedBox(
-                              width: 5,
-                            ),
-                            (noBallType[index].isSelected != null &&
-                                    noBallType[index].isSelected == false)
-                                ? Icon(
-                                    Icons.radio_button_unchecked,
-                                    color: AppColor.brown2,
-                                  )
-                                : Icon(
-                                    Icons.radio_button_checked,
-                                    color: AppColor.brown2,
+                type == "NB"
+                    ? Container(
+                        height: 50,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: noBallType.length,
+                          shrinkWrap: true,
+                          itemBuilder: (BuildContext context, int index) {
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  for (int i = 0; i < noBallType.length; i++) {
+                                    noBallType[i].isSelected = false;
+                                  }
+                                  noBallType[index].isSelected = true;
+                                });
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  SizedBox(
+                                    width: 5,
                                   ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              noBallType[index].title.toString(),
-                              style: TextStyle(
-                                  fontFamily: "Ubuntu_Regular",
-                                  fontSize: 14,
-                                  color: AppColor.brown2),
-                            )
-                          ],
+                                  (noBallType[index].isSelected != null &&
+                                          noBallType[index].isSelected == false)
+                                      ? Icon(
+                                          Icons.radio_button_unchecked,
+                                          color: AppColor.brown2,
+                                        )
+                                      : Icon(
+                                          Icons.radio_button_checked,
+                                          color: AppColor.brown2,
+                                        ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    noBallType[index].title.toString(),
+                                    style: TextStyle(
+                                        fontFamily: "Ubuntu_Regular",
+                                        fontSize: 14,
+                                        color: AppColor.brown2),
+                                  )
+                                ],
+                              ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
-                ):SizedBox(),
+                      )
+                    : SizedBox(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -619,7 +637,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                           color: AppColor.red.withOpacity(0.1),
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Cancel",
                             style: TextStyle(

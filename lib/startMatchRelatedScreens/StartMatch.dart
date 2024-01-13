@@ -44,10 +44,10 @@ class _StartMatchState extends State<StartMatch> {
     ),*/
   ];
   List<Team> playerList2 = [
-    Team("Ankit", false),
-    Team("Rajat", false),
-    Team("Mohit", false),
-    Team("Akshay", false)
+    Team("Ankit", false,""),
+    Team("Rajat", false,""),
+    Team("Mohit", false,""),
+    Team("Akshay", false,"")
   ];
 
   @override
