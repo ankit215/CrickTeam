@@ -16,40 +16,22 @@ class OutScreen extends StatefulWidget {
 }
 
 class _OutScreenState extends State<OutScreen> {
-  List<OutModel> outList2 = [OutModel("Bowled", "assets/bowling.png"),
-    OutModel("Bowled", "assets/bowling.png"),
-    OutModel("Caught", "assets/bowling.png"),
-    OutModel("Caught Behind", "assets/bowling.png"),
-    OutModel("Caught & Bowled", "assets/bowling.png"),
-    OutModel("Stumped", "assets/bowling.png"),
-    OutModel("Run Out", "assets/bowling.png"),
-    OutModel("LBW", "assets/bowling.png"),
-    OutModel("Hit Wicket", "assets/bowling.png"),
-    OutModel("Retired Hurt", "assets/bowling.png"),
-    OutModel("Retired Out", "assets/bowling.png"),
-    OutModel("Run Out", "assets/bowling.png"),
-    OutModel("Absent", "assets/bowling.png"),
-    OutModel("Obstr the field", "assets/bowling.png"),
-    OutModel("Timed Out", "assets/bowling.png"),
-    OutModel("Retired", "assets/bowling.png"),
+  List<OutModel> outList = [OutModel("Bowled", "assets/bowled.png"),
+    OutModel("Caught", "assets/caught.png"),
+    OutModel("Caught Behind", "assets/caught_behind.png"),
+    OutModel("Caught & Bowled", "assets/caught_bowled.png"),
+    OutModel("Stumped", "assets/stumped.png"),
+    OutModel("Run Out", "assets/run_out.png"),
+    OutModel("LBW", "assets/lbw.png"),
+    OutModel("Hit Wicket", "assets/hit_wicket.png"),
+    OutModel("Retired Hurt", "assets/retired_hurt.png"),
+    OutModel("Retired Out", "assets/retired_out.png"),
+    OutModel("Run Out", "assets/run_out.png"),
+    OutModel("Absent", "assets/absent.png"),
+    OutModel("Obstr the field", "assets/obstr_the_field.png"),
+    OutModel("Timed Out", "assets/timed_out.png"),
+    OutModel("Retired", "assets/retired.png"),
 
-  ];
-  List<String> outList = [
-    "Bowled",
-    "Caught",
-    "Caught Behind",
-    "Caught & Bowled",
-    "Stumped",
-    "Run Out",
-    "LBW",
-    "Hit Wicket",
-    "Retired Hurt",
-    "Retired Out",
-    "Run Out",
-    "Absent",
-    "Obstr the field",
-    "Timed Out",
-    "Retired"
   ];
 
   @override
@@ -57,6 +39,7 @@ class _OutScreenState extends State<OutScreen> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {
@@ -90,22 +73,17 @@ class _OutScreenState extends State<OutScreen> {
             padding: const EdgeInsets.all(18.0),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundColor: AppColor.grey,
-                  child: ClipOval(
-                      child: Image.asset(
-                    "assets/cricket.png",
-                    fit: BoxFit.contain,
-                    height: 30,
-                    width: 30,
-                  )),
-                ),
+                Image.asset(
+                  outList[index].outImage.toString(),
+                                  fit: BoxFit.cover,
+                                  height: 60,
+                                  width: 60,
+                                ),
                 SizedBox(
                   height: 10,
                 ),
                 Text(
-                  outList[index],
+                  outList[index].outTitle.toString(),
                   style: const TextStyle(
                     fontSize: 13,
                     fontFamily: "Lato_Semibold",

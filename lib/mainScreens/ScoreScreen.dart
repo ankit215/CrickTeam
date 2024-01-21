@@ -44,7 +44,8 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(120),
         child: AppBar(
-          elevation: 5.0,
+          scrolledUnderElevation: 0.0,
+          elevation: 0.0,
           backgroundColor: AppColor.lightGrey,
           leading: GestureDetector(
             onTap: () {

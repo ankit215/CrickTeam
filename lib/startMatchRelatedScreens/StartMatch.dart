@@ -24,6 +24,12 @@ class MatchOfficials {
 
   MatchOfficials({required this.title, required this.isSelected});
 }
+class Team {
+  final String ?playerName;
+  bool ?playerSelected;
+
+  Team({ this.playerName,  this.playerSelected});
+}
 
 class _StartMatchState extends State<StartMatch> {
   TextEditingController noOfOvers = TextEditingController();
@@ -44,10 +50,8 @@ class _StartMatchState extends State<StartMatch> {
     ),*/
   ];
   List<Team> playerList2 = [
-    Team("Ankit", false,""),
-    Team("Rajat", false,""),
-    Team("Mohit", false,""),
-    Team("Akshay", false,"")
+    Team(playerName: 'Ankit',playerSelected: false),
+
   ];
 
   @override
@@ -55,6 +59,7 @@ class _StartMatchState extends State<StartMatch> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {

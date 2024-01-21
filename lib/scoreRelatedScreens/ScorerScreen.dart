@@ -45,6 +45,7 @@ class _ScorerScreenState extends State<ScorerScreen>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          scrolledUnderElevation: 0.0,
           elevation: 5.0,
           backgroundColor: AppColor.brown2,
           leading: GestureDetector(

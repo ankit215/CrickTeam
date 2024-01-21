@@ -25,6 +25,7 @@ class _TossScreenState extends State<TossScreen> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {

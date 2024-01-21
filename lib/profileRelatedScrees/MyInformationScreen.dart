@@ -22,6 +22,7 @@ class _MyInformationScreenState extends State<MyInformationScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: AppBar(
+          scrolledUnderElevation: 0.0,
           elevation: 0,
           backgroundColor: AppColor.lightGrey,
           leading: GestureDetector(

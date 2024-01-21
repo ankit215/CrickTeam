@@ -1,13 +1,22 @@
 import 'dart:io';
 
+import 'package:crick_team/loginSignupRelatedFiles/ForgotPasswordScreen.dart';
+import 'package:crick_team/utils/constant.dart';
+import 'package:crick_team/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../apiRelatedFiles/api_utils.dart';
+import '../apiRelatedFiles/rest_apis.dart';
+import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
+import '../utils/common.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({Key? key}) : super(key: key);
@@ -21,12 +30,8 @@ String user = "";
 class _EditProfileScreenState extends State<EditProfileScreen> {
   File? imageFile;
   TextEditingController firstNameController = TextEditingController();
-  TextEditingController lastnameController = TextEditingController();
-
-  // TextEditingController dayController = TextEditingController();
-  // TextEditingController yearController = TextEditingController();
-  TextEditingController ssnController = TextEditingController();
-  TextEditingController workIdController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
   String userImage = "";
   var monthList = [
     'MM',
@@ -43,6 +48,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     'Nov',
     'Dec'
   ];
+  List<String> selectGenderList = [
+    'Select Gender',
+    'Male',
+    'Female',
+    'Other',
+  ];
+
   List<String> indianStates = [
     'Select State',
     'Andhra Pradesh',
@@ -84,6 +96,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String dobDay = "DD";
   String dobMonth = "MM";
   String selectState = "Select State";
+  String selectGender = "Select Gender";
   String dobYear = "YYYY";
   DateTime dobNow = DateTime.now();
 
@@ -146,14 +159,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     /**
      * GETTING USER TYPE HERE. (USER TYPE = 2 (CONSUMER) & USER TYPE = 5 (EMPLOYEE)
      **/
-
-    firstNameController.text = "Anil";
-    lastnameController.text = "Dogra";
-    DateTime dobDate = DateFormat('MMM/dd/yyyy').parse("09/12/1998");
-    dobDay = (dobDate.day < 10) ? '0${dobDate.day}' : '${dobDate.day}';
-    dobMonth = monthList[dobDate.month];
-    dobYear = dobDate.year.toString();
-    debugPrint("dobDay__$dobDay/dobMonth__$dobMonth/dobYear__$dobYear/");
+    DateTime dobDate;
+    firstNameController.text = getStringAsync(userName);
+    emailController.text = getStringAsync(userEmail);
+    addressController.text = getStringAsync(address);
+    emailController.text = getStringAsync(userEmail);
+    selectGender=getStringAsync(gender)=="1"?"Male":getStringAsync(gender)=="2"?"Female":getStringAsync(gender)=="3"?"Others":"Select Gender";
+    if (getStringAsync(dob).isNotEmpty) {
+      dobDate = DateFormat('MMM/dd/yyyy').parse(getStringAsync(dob));
+      dobDay = (dobDate.day < 10) ? '0${dobDate.day}' : '${dobDate.day}';
+      dobMonth = monthList[dobDate.month];
+      dobYear = dobDate.year.toString();
+      debugPrint("dobDay__$dobDay/dobMonth__$dobMonth/dobYear__$dobYear/");
+    }
   }
 
   String capitalizeOnlyFirstLater(String value) {
@@ -233,7 +251,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             radius: 55,
                             backgroundColor: Colors.white,
                             child: ClipOval(
-                                child: imageFile == null
+                                child: getStringAsync(image).isNotEmpty&&imageFile==null?
+                                Image.network(
+                                  mediaUrl + getStringAsync(image),
+                                  height: 150,
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                )
+                                    :imageFile == null&&getStringAsync(image).isEmpty
                                     ? Image.asset(
                                         "assets/dummy.jpeg",
                                         fit: BoxFit.cover,
@@ -276,10 +301,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ]),
                   ),
                   const SizedBox(
-                    height: 30,
+                    height: 20,
                   ),
                   const Text(
-                    "FIRST NAME",
+                    "NAME",
                     style: TextStyle(
                         fontSize: 16.0,
                         letterSpacing: 1,
@@ -287,10 +312,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   Container(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         color: AppColor.lightGrey,
@@ -298,7 +323,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: TextField(
                       controller: firstNameController,
                       decoration: const InputDecoration.collapsed(
-                          hintText: 'Enter First Name',
+                          hintText: 'Enter Name',
                           hintStyle: TextStyle(color: AppColor.medBrown)),
                     ),
                   ),
@@ -306,7 +331,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 20,
                   ),
                   const Text(
-                    "LAST NAME",
+                    "EMAIL",
                     style: TextStyle(
                         fontSize: 16.0,
                         letterSpacing: 1,
@@ -317,35 +342,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 10,
                   ),
                   Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: AppColor.lightGrey,
-                        border: Border.all(color: AppColor.grey)),
-                    child: TextField(
-                      controller: lastnameController,
-                      decoration: const InputDecoration.collapsed(
-                          hintText: 'Enter Last Name',
-                          hintStyle: TextStyle(color: AppColor.medBrown)),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Text(
-                    "Email",
-                    style: TextStyle(
-                        fontSize: 16.0,
-                        letterSpacing: 1,
-                        color: AppColor.brown2,
-                        fontFamily: "Lato_Semibold"),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(
-                        MediaQuery.of(context).size.width * 0.04),
+                    padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         color: AppColor.lightGrey,
@@ -353,7 +350,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     child: TextField(
                       maxLines: 1,
                       keyboardType: TextInputType.emailAddress,
-                      controller: ssnController,
+                      controller: emailController,
                       decoration: const InputDecoration.collapsed(
                           hintText: 'Enter Email',
                           hintStyle: TextStyle(color: AppColor.medBrown)),
@@ -371,7 +368,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         fontFamily: "Lato_Semibold"),
                   ),
                   const SizedBox(
-                    height: 10,
+                    height: 5,
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -515,7 +512,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     height: 20,
                   ),
                   const Text(
-                    "State",
+                    "ADRESS",
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        letterSpacing: 1,
+                        color: AppColor.brown2,
+                        fontFamily: "Lato_Semibold"),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: AppColor.lightGrey,
+                        border: Border.all(color: AppColor.grey)),
+                    child: TextField(
+                      controller: addressController,
+                      decoration: const InputDecoration.collapsed(
+                          hintText: 'Enter Address',
+                          hintStyle: TextStyle(color: AppColor.medBrown)),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  const Text(
+                    "STATE",
                     style: TextStyle(
                         fontSize: 16.0,
                         letterSpacing: 1,
@@ -563,11 +587,64 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(
                     height: 20,
                   ),
+                  const Text(
+                    "GENDER",
+                    style: TextStyle(
+                        fontSize: 16.0,
+                        letterSpacing: 1,
+                        color: AppColor.brown2,
+                        fontFamily: "Lato_Semibold"),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: AppColor.lightGrey,
+                        border: Border.all(color: AppColor.grey)),
+                    child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 1),
+                        child: DropdownButtonFormField(
+                          decoration: const InputDecoration(
+                            hintText: "Select Gender",
+                            enabledBorder: UnderlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.transparent)),
+                          ),
+                          value: selectGender,
+                          dropdownColor: AppColor.lightGrey,
+                          iconEnabledColor: AppColor.medBrown,
+                          icon: const Icon(Icons.keyboard_arrow_down),
+                          items: selectGenderList.map((String items) {
+                            return DropdownMenuItem(
+                              value: items,
+                              child: Text(
+                                items,
+                                style: TextStyle(
+                                    color: (selectGender == "Select Gender")
+                                        ? AppColor.medBrown
+                                        : Colors.black,
+                                    fontFamily: "Lato_Regular"),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectGender = newValue!;
+                            });
+                          },
+                        )),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
                   Center(
                     child: SizedBox(
                         height: 50.0,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (checkValidation()) {
+                              updateUserDetails();
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(80.0)),
@@ -613,45 +690,44 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
+  bool validateEmail(String? value) {
+    String pattern =
+        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regex = RegExp(pattern);
+    if (value == null || value.isEmpty || !regex.hasMatch(value)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   bool checkValidation() {
     if (firstNameController.text.trim().toString() == '') {
       CommonFunctions()
           .showToastMessage(getContext, "First Name Field Is Required");
       return false;
-    } else if (lastnameController.text.trim().toString() == '') {
-      CommonFunctions()
-          .showToastMessage(getContext, "Last Name Field Is Required");
+    } else if (validateEmail(emailController.text.trim().toString())) {
+      CommonFunctions().showToastMessage(getContext, "Enter valid email");
       return false;
     } else if (dobDay == "DD") {
       CommonFunctions().showToastMessage(getContext, "Day Field Is Required.");
       return false;
-    }
-    /*else if (dayDropDown=="") {
-      CommonFunctions().showToastMessage(getContext, "Please Add Valid Day.");
-      return false;
-    }*/
-    else if (dobMonth == "MM") {
+    } else if (dobMonth == "MM") {
       CommonFunctions()
           .showToastMessage(getContext, "Month Field Is Required.");
       return false;
     } else if (dobYear == "YYYY") {
       CommonFunctions().showToastMessage(getContext, "Year Field Is Required.");
       return false;
-    }
-    /*else if (yearController.text.trim().length < 4) {
-      CommonFunctions().showToastMessage(getContext, "Please Add Valid Year.");
-      return false;
-    } else if (yearController.text.trim().toString().toInt() >
-        DateTime.now().year) {
-      CommonFunctions().showToastMessage(getContext, "Please Add Valid Year.");
-      return false;
-    }*/
-    else if (user == "5" && ssnController.text.trim().toString().isEmpty) {
-      CommonFunctions().showToastMessage(getContext, "SSN Field Is Required.");
-      return false;
-    } else if (user == "5" && workIdController.text.trim().toString().isEmpty) {
+    } else if (addressController.text.trim().toString().isEmpty) {
       CommonFunctions()
-          .showToastMessage(getContext, "Work Id Field Is Required.");
+          .showToastMessage(getContext, "Address Field Is Required.");
+      return false;
+    } else if (selectGender=="Select Gender") {
+      CommonFunctions()
+          .showToastMessage(getContext, "Gender Field Is Required.");
       return false;
     } else {
       return true;
@@ -714,36 +790,32 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-/*
   Future<void> updateUserDetails() async {
     showLoader();
     MultipartRequest multiPartRequest =
-        await getMultiPartRequest('update_profile', method: 'POST');
+        await getMultiPartRequest('edit_profile', method: 'POST');
     multiPartRequest.fields['id'] = getStringAsync(userId);
-    multiPartRequest.fields['token'] = getStringAsync(token);
-    multiPartRequest.fields['first_name'] =
+    multiPartRequest.fields['name'] =
         firstNameController.text.trim().toString();
-    multiPartRequest.fields['last_name'] =
-        lastnameController.text.trim().toString();
-    multiPartRequest.fields['full_name'] =
-        '${firstNameController.text.trim()} ${lastnameController.text.trim()}';
+    multiPartRequest.fields['email_address'] =
+        emailController.text.trim().toString();
     multiPartRequest.fields['dob'] = "$dobMonth/$dobDay/$dobYear";
+    multiPartRequest.fields['gender'] = selectGender == "Male"
+        ? "1"
+        : selectGender == "Female"
+            ? "2"
+            : "3";
     if (imageFile != null) {
       multiPartRequest.files
-          .add(await MultipartFile.fromPath('file', imageFile!.path));
-    }
-    if (getStringAsync(accountType) == "5") {
-      multiPartRequest.fields['SSN'] = ssnController.text.trim().toString();
-      multiPartRequest.fields['work_id'] =
-          workIdController.text.trim().toString();
+          .add(await MultipartFile.fromPath('profile_photo', imageFile!.path));
     }
     multiPartRequest.headers.addAll(buildHeaderTokens());
     var res = await updateProfile(multiPartRequest);
     hideLoader();
-    if (res.success == true) {
+    if (res.success == 1) {
       toast(res.message);
-      Navigator.pop(getContext, res.data);
-    } else if (res.success == false && res.code == 401) {
+      Navigator.pop(getContext, res.body);
+    } else if (res.success != 1 && res.code == 401) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,
@@ -753,21 +825,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           (route) => false);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.clear();
-    }else if (res.success == false && res.code == 401) {
+    } else if (res.success != 1 && res.code == 401) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,
           MaterialPageRoute(
             builder: (getContext) => const LoginScreen(),
           ),
-              (route) => false);
+          (route) => false);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.clear();
     } else {
       CommonFunctions().showToastMessage(getContext, res.message!);
     }
   }
-*/
 
   static int getDaysInMonth(int year, int month) {
     if (month == DateTime.february) {

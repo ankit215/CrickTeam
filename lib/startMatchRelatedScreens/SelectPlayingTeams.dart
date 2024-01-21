@@ -19,6 +19,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {

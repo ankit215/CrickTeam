@@ -46,13 +46,14 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(120),
         child: AppBar(
-          elevation: 5.0,
-          backgroundColor: AppColor.lightGrey,
+          elevation: 0,
+          scrolledUnderElevation: 0.0,
           leading: GestureDetector(
             onTap: () {
               Scaffold.of(context).openDrawer();
             },
             child: Container(
+              color: Colors.white,
               margin: const EdgeInsets.only(left: 5, top: 5),
               child: Stack(
                 children: [
@@ -157,13 +158,16 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
           ),
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: <Widget>[
-          currentScreen(),
-          upcomingScreen(),
-          completedScreen(),
-        ],
+      body: Container(
+        color: Colors.white,
+        child: TabBarView(
+          controller: tabController,
+          children: <Widget>[
+            currentScreen(),
+            upcomingScreen(),
+            completedScreen(),
+          ],
+        ),
       ),
     );
   }

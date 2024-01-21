@@ -1,13 +1,26 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
 
-import '../loginSignupRelatedFiles/OtpScreen.dart';
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/utils/common.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:http/http.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../apiRelatedFiles/api_utils.dart';
+import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
-import '../profileRelatedScrees/EditProfileScreen.dart';
+import '../modalClasses/GetTeamModel.dart';
 import '../utils/AppColor.dart';
+import '../utils/CommonFunctions.dart';
+import '../utils/constant.dart';
+import '../utils/shared_pref.dart';
 import 'AddTeams.dart';
 
 class SelectTeam extends StatefulWidget {
   final String team;
+
   const SelectTeam({super.key, required this.team});
 
   @override
@@ -18,6 +31,8 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
   late TabController tabController;
   TextEditingController teamController = TextEditingController();
   TextEditingController cityNameController = TextEditingController();
+  File? imageFile;
+  List<GetTeamData> teamList = [];
 
   @override
   void initState() {
@@ -28,6 +43,9 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
+    Future.delayed(Duration.zero, () {
+      getTeamListApi();
+    });
   }
 
   void _handleTabSelection() {
@@ -40,6 +58,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: AppBar(
+          scrolledUnderElevation: 0.0,
           elevation: 5.0,
           backgroundColor: AppColor.brown2,
           leading: GestureDetector(
@@ -54,7 +73,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
               ),
             ),
           ),
-          title:  Text(
+          title: Text(
             "Select Team ${widget.team}",
             style: TextStyle(
               fontSize: 20,
@@ -88,7 +107,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                   width: 100,
                   child: Center(
                     child: Text(
-                      "ADD",
+                      "ADD TEAM",
                       style: TextStyle(
                         fontSize: 18,
                         fontFamily: tabController.index == 2
@@ -106,21 +125,137 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
       body: TabBarView(
         controller: tabController,
         children: <Widget>[
-          currentScreen(),
-          completedScreen(),
+          myTeamsScreen(),
+          addTeamScreen(),
         ],
       ),
     );
   }
 
-  currentScreen() {
+  myTeamsScreen() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
-      child: Text("ssss"),
+      child: ListView.builder(
+        itemCount: teamList.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  getContext,
+                  MaterialPageRoute(
+                      builder: (context) =>  AddTeams(getTeamData: teamList[index],)));
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    // AppColor.yellow.withOpacity(0.5),
+                    AppColor.yellowV2.withOpacity(0.3),
+                    AppColor.brown2.withOpacity(0.2),
+                    // AppColor.yellowMed.withOpacity(0.5),
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 10),
+                      alignment: Alignment.centerRight,
+                      child: Image.asset(
+                        "assets/team_placeholder.png",
+                        fit: BoxFit.cover,
+                        height: 90,
+                        width: 90,
+                        opacity: const AlwaysStoppedAnimation(.09),
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        CircleAvatar(
+                          radius: 45,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                              child: teamList[index].teamPhoto == null
+                                  ? Image.asset(
+                                      "assets/team_placeholder.png",
+                                      fit: BoxFit.contain,
+                                      height: 80,
+                                      width: 80,
+                                    )
+                                  : Image.network(
+                                      mediaUrl +
+                                          teamList[index].teamPhoto.toString(),
+                                      height: 80,
+                                      width: 80,
+                                      fit: BoxFit.cover,
+                                    )),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                teamList[index].name.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Semibold",
+                                    color: AppColor.brown2,
+                                    fontSize: 20),
+                              ),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Image.asset(
+                                    "assets/location.png",
+                                    height: 15,
+                                    width: 15,
+                                    color: AppColor.brown2,
+                                  ),
+                                  Text(
+                                    getStringAsync(address),
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Lato_Semibold",
+                                        letterSpacing: 1,
+                                        color: AppColor.brown2),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
-  completedScreen() {
+  addTeamScreen() {
     return Container(
         margin: const EdgeInsets.only(top: 10),
         padding: EdgeInsets.all(15),
@@ -139,14 +274,21 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                       padding: const EdgeInsets.all(3.0),
                       child: CircleAvatar(
                         radius: 55,
-                        backgroundColor: AppColor.grey,
+                        backgroundColor:AppColor.lightCream,
                         child: ClipOval(
-                            child: Image.asset(
-                          "assets/team_placeholder.png",
-                          fit: BoxFit.contain,
-                          height: 90,
-                          width: 90,
-                        )),
+                            child: imageFile == null
+                                ? Image.asset(
+                                    "assets/team_placeholder.png",
+                                    fit: BoxFit.cover,
+                              color: AppColor.brown2,
+                              height: 60,width: 60,
+                                  )
+                                : Image.file(
+                                    imageFile!,
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    fit: BoxFit.cover,
+                                  )),
                       ),
                     ),
                   ),
@@ -162,11 +304,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                         ),
                         child: GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                                getContext,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const EditProfileScreen()));
+                            _showBottomSheet(context);
                           },
                           child: Center(
                               child: Image.asset(
@@ -256,16 +394,16 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                       ),
                       elevation: MaterialStateProperty.all(8),
                       backgroundColor:
-                      MaterialStateProperty.all(Colors.transparent),
+                          MaterialStateProperty.all(Colors.transparent),
                       // elevation: MaterialStateProperty.all(3),
                       shadowColor:
-                      MaterialStateProperty.all(Colors.transparent),
+                          MaterialStateProperty.all(Colors.transparent),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                          getContext,
-                          MaterialPageRoute(
-                              builder: (context) => const AddTeams()));
+
+                      if (checkValidation()) {
+                        createTeamApi();
+                      }
                     },
                     child: const Text(
                       'Add Team',
@@ -279,5 +417,141 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
             ],
           ),
         ));
+  }
+
+  Future getTeamListApi() async {
+    await getTeamList().then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          teamList = [];
+          teamList.addAll(res.body!);
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+
+  Future<void> createTeamApi() async {
+    showLoader();
+    MultipartRequest multiPartRequest =
+        await getMultiPartRequest('create_team', method: 'POST');
+    multiPartRequest.fields['id'] = getStringAsync(userId);
+    multiPartRequest.fields['name'] = teamController.text.trim().toString();
+    multiPartRequest.fields['city'] = cityNameController.text.trim().toString();
+    if (imageFile != null) {
+      multiPartRequest.files
+          .add(await MultipartFile.fromPath('team_photo', imageFile!.path));
+    }
+    multiPartRequest.headers.addAll(buildHeaderTokens());
+    var res = await createTeam(multiPartRequest);
+    hideLoader();
+    if (res.success == 1) {
+      toast(res.message);
+      Navigator.pop(getContext, res.body);
+    } else if (res.success != 1 && res.code == 401) {
+      toast(res.message);
+      Navigator.pushAndRemoveUntil(
+          getContext,
+          MaterialPageRoute(
+            builder: (getContext) => const LoginScreen(),
+          ),
+          (route) => false);
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.clear();
+    } else if (res.success != 1 && res.code == 401) {
+      toast(res.message);
+      Navigator.pushAndRemoveUntil(
+          getContext,
+          MaterialPageRoute(
+            builder: (getContext) => const LoginScreen(),
+          ),
+          (route) => false);
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+      await preferences.clear();
+    } else {
+      CommonFunctions().showToastMessage(getContext, res.message!);
+    }
+  }
+
+  Future _imagePick(ImageSource source) async {
+    var images = await ImagePicker().pickImage(source: source);
+    if (images != null) {
+      debugPrint("image_path: ${images.path}");
+      imageFile = await FlutterNativeImage.compressImage(images.path,
+          quality: 20, percentage: 60);
+      // await setValue(image, imageFile!.path);
+      setState(() {});
+    }
+  }
+
+  bool checkValidation() {
+    if (teamController.text.trim().toString() == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "Team Name Field Is Required");
+      return false;
+    } else if (cityNameController.text.trim().toString().isEmpty) {
+      CommonFunctions().showToastMessage(getContext, "City Field Is Required.");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.white,
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            ListTile(
+              title: const Text(
+                "Gallery",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400),
+              ),
+              leading: const Icon(Icons.image),
+              onTap: () {
+                _imagePick(ImageSource.gallery);
+                // _getFromGallery();
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text(
+                "Camera",
+                style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w400),
+              ),
+              leading: const Icon(Icons.camera),
+              onTap: () {
+                _imagePick(ImageSource.camera);
+                // _getFromCamera();
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

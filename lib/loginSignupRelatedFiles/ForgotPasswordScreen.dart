@@ -11,9 +11,10 @@ class ForgotPasswordScreen extends StatefulWidget {
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
 }
 
-TextEditingController emailController = TextEditingController();
+
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  TextEditingController emailController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return GestureDetector(

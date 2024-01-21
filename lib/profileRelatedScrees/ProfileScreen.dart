@@ -1,5 +1,12 @@
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/profileRelatedScrees/EditProfileScreen.dart';
+import 'package:crick_team/utils/CommonFunctions.dart';
+import 'package:crick_team/utils/common.dart';
+import 'package:crick_team/utils/constant.dart';
+import 'package:crick_team/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import '../mainScreens/Menu.dart';
 import '../utils/AppColor.dart';
@@ -80,10 +87,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                           radius: 55,
                                           backgroundColor: Colors.white,
                                           child: ClipOval(
-                                              child: Image.asset(
-                                            "assets/dummy.jpeg",
-                                            fit: BoxFit.contain,
-                                          )),
+                                              child: getStringAsync(image).isNotEmpty?
+                                              Image.network(
+                                                mediaUrl + getStringAsync(image),
+                                                height: 150,
+                                                width: 150,
+                                                fit: BoxFit.cover,
+                                              )
+                                                  : Image.asset(
+                                                "assets/user_placeholder.jpeg",
+                                                fit: BoxFit.cover,
+                                              )),
                                         ),
                                       ),
                                     ),
@@ -126,9 +140,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Anil Dogra',
-                                          style: TextStyle(
+                                         Text(
+                                          getStringAsync(userName),
+                                          style: const TextStyle(
                                               fontSize: 25,
                                               fontFamily: "Lato_Semibold",
                                               letterSpacing: 1,
@@ -148,9 +162,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                               width: 20,
                                               color: AppColor.brown2,
                                             ),
-                                            const Text(
-                                              'Shimla',
-                                              style: TextStyle(
+                                             Text(
+                                              getStringAsync(address),
+                                              style: const TextStyle(
                                                   fontSize: 16,
                                                   fontFamily: "Lato_Semibold",
                                                   letterSpacing: 1,
@@ -223,84 +237,89 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10)),
                                     elevation: 16,
-                                    child: ListView(
-                                      shrinkWrap: true,
-                                      children: <Widget>[
-                                        const SizedBox(height: 20),
-                                        Container(
-                                          color: AppColor.lightGrey,
-                                          height: 60,
-                                          child: const Padding(
+                                    child: Container(
+                                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(10)),
+                                      child: ListView(
+                                        shrinkWrap: true,
+                                        children: <Widget>[
+                                          const SizedBox(height: 20),
+                                          Container(
+                                            color: AppColor.lightGrey,
+                                            height: 60,
+                                            child: const Padding(
+                                              padding: EdgeInsets.only(
+                                                  right: 40.0, left: 40.0),
+                                              child: Center(
+                                                child: Text(
+                                                  'ARE YOU SURE YOU WANT TO LOG OUT?',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontFamily: "Lato_Regular",
+                                                      letterSpacing: 1,
+                                                      color: AppColor.brown2),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 100, left: 100),
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                logout();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColor.orange_0,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              80.0))),
+                                              child: Container(
+                                                height: 20,
+                                                alignment: Alignment.center,
+                                                child: const Text(
+                                                  "Log Out",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontFamily: "Lato_Semibold"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
                                             padding: EdgeInsets.only(
-                                                right: 40.0, left: 40.0),
-                                            child: Center(
-                                              child: Text(
-                                                'ARE YOU SURE YOU WANT TO LOG OUT?',
-                                                style: TextStyle(
-                                                    fontSize: 16,
-                                                    fontFamily: "Lato_Regular",
-                                                    letterSpacing: 1,
-                                                    color: AppColor.brown2),
-                                                textAlign: TextAlign.center,
-                                              ),
+                                                right: 30.0, left: 30.0, top: 20),
+                                            child: Divider(
+                                              height: 1,
+                                              color: AppColor.medGrey,
+                                              thickness: 1,
                                             ),
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 100, left: 100),
-                                          child: ElevatedButton(
-                                            onPressed: () {},
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColor.orange_0,
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            80.0))),
-                                            child: Container(
-                                              height: 20,
-                                              alignment: Alignment.center,
+                                          const SizedBox(height: 10),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(getContext);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColor.white,
+                                                  elevation: 0),
                                               child: const Text(
-                                                "Log Out",
-                                                textAlign: TextAlign.center,
+                                                "Cancel",
                                                 style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontFamily: "Lato_Semibold"),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const Padding(
-                                          padding: EdgeInsets.only(
-                                              right: 30.0, left: 30.0, top: 20),
-                                          child: Divider(
-                                            height: 1,
-                                            color: AppColor.medGrey,
-                                            thickness: 1,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 10),
-                                        ElevatedButton(
-                                            onPressed: () {
-                                              Navigator.pop(getContext);
-                                            },
-                                            style: ElevatedButton.styleFrom(
-                                                backgroundColor: AppColor.white,
-                                                elevation: 0),
-                                            child: const Text(
-                                              "Cancel",
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                color: AppColor.brown2,
-                                                fontFamily: "Lato_Regular",
-                                              ),
-                                            )),
-                                        const SizedBox(height: 10)
-                                      ],
+                                                  fontSize: 16,
+                                                  color: AppColor.brown2,
+                                                  fontFamily: "Lato_Regular",
+                                                ),
+                                              )),
+                                          const SizedBox(height: 10)
+                                        ],
+                                      ),
                                     ),
                                   );
                                 },
@@ -323,4 +342,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ],
     );
   }
+  Future logout() async {
+    await logoutUser({"id": getStringAsync(userId).toString()})
+        .then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(getContext, res.message!);
+      }
+    });
+  }
+
 }

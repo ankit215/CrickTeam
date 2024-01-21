@@ -1,5 +1,9 @@
+import 'package:crick_team/profileRelatedScrees/EditProfileScreen.dart';
+import 'package:crick_team/utils/constant.dart';
+import 'package:crick_team/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
+import '../mainScreens/MainScreen.dart';
 import 'OnBoardScreen.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -19,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
         const Duration(seconds: 3),
         () => Navigator.pushReplacement(
               getContext,
-              MaterialPageRoute(builder: (context) => const OnBoardScreen()),
+              MaterialPageRoute(builder: (context) => getStringAsync(userName).isEmpty&&getStringAsync(userId).isNotEmpty?EditProfileScreen():getStringAsync(userName).isNotEmpty&&getStringAsync(userId).isNotEmpty?MainScreen(index: 0,):const OnBoardScreen()),
               // MaterialPageRoute(builder: (context) =>  NavigationScreen(index: 0,)),
             ));
   }

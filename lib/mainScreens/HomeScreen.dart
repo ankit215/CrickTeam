@@ -52,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppColor.transparent,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.transparent,
         leading: GestureDetector(
           onTap: () {

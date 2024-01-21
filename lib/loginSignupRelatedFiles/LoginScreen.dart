@@ -1,7 +1,14 @@
+import 'dart:developer';
+
 import 'package:crick_team/loginSignupRelatedFiles/OtpScreen.dart';
+import 'package:crick_team/profileRelatedScrees/EditProfileScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../apiRelatedFiles/rest_apis.dart';
 import '../main.dart';
 import '../utils/AppColor.dart';
+import '../utils/CommonFunctions.dart';
+import '../utils/common.dart';
 import 'SignUpScreen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,8 +18,6 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-bool _passwordVisible = true;
-bool _passwordRVisible = true;
 bool isBettor = false;
 bool isOrganiser = false;
 bool isScorer = false;
@@ -142,86 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       hintStyle: TextStyle(color: AppColor.grey)),
                 ),
               ),
-            /*  const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Password",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 55,
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: AppColor.white,
-                    border: Border.all(color: AppColor.border)),
-                child: Center(
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: TextField(
-                          controller: passwordController,
-                          keyboardType: TextInputType.visiblePassword,
-                          obscureText: _passwordVisible,
-                          decoration: const InputDecoration.collapsed(
-                              hintText: 'Password',
-                              hintStyle: TextStyle(color: AppColor.grey)),
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.04,
-                      ),
-                      IconButton(
-                        padding: const EdgeInsets.all(0),
-                        icon: Icon(
-                          // Based on passwordVisible state choose the icon
-                          _passwordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: AppColor.text_grey,
-                        ),
-                        onPressed: () {
-                          // Update the state i.e. toogle the state of passwordVisible variable
-                          setState(() {
-                            _passwordVisible = !_passwordVisible;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Spacer(),
-                  GestureDetector(
-                      onTap: () async {
-                        Navigator.push(
-                            getContext,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const ForgotPasswordScreen()));
-                      },
-                      child: const Text(
-                        "Forgot your password?",
-                        style: TextStyle(
-                            fontFamily: "Lato_Italic",
-                            fontSize: 14,
-                            color: AppColor.brown2),
-                      )),
-                ],
-              ),*/
               const SizedBox(
                 height: 30,
               ),
@@ -249,10 +174,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialStateProperty.all(Colors.transparent),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                          getContext,
-                          MaterialPageRoute(
-                              builder: (context) => const OtpScreen()));
+                      if(checkValidations()){
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        loginApi();
+                      }
+
                     },
                     child: const Text(
                       'Log In',
@@ -263,33 +189,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 16),
                     )),
               ),
-             /* GestureDetector(
-                onTap: () {
-                  Navigator.pushReplacement(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) => const SignUpScreen()));
-                },
-                child: Center(
-                  child: RichText(
-                    text: const TextSpan(children: <TextSpan>[
-                      TextSpan(
-                          text: "Don't have an account? ",
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              color: AppColor.brown2,
-                              fontFamily: "Lato_Regular")),
-                      TextSpan(
-                          text: "Sign up",
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              color: AppColor.orange_light,
-                              fontFamily: "Lato_Regular"))
-                    ]),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),*/
               const SizedBox(
                 height: 40,
               )
@@ -298,5 +197,60 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       )),
     );
+  }
+  loginApi() async {
+    var request = {
+      'mobile_number': mobileNoController.text.trim(),
+      'type': isBettor?"2":isScorer?"3":isOrganiser?"1":"",
+    };
+    await login(request).then((res) async {
+      debugPrint("res.body!.name: ${res.body!.name.toString()}");
+      log("LoginScreen accountType: ${res.body!.type}");
+      if (res.success == 1) {
+        toast(res.message);
+        if(res.body!.name==null){
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => const EditProfileScreen()));
+        }else{
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => const OtpScreen()));
+        }
+
+          /*Navigator.pushReplacement(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => const OtpScreen()));*/
+
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  bool checkValidations() {
+    if (isBettor==false&&isScorer==false&&isOrganiser==false) {
+      CommonFunctions().showToastMessage(getContext, "Please select user type.");
+      return false;
+    } else if (mobileNoController.text.trim().toString().isEmpty) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Mobile no. field is required");
+      return false;
+    } else {
+      return true;
+    }
   }
 }

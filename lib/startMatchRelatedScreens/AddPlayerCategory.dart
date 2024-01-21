@@ -1,10 +1,11 @@
+import 'package:crick_team/modalClasses/GetTeamDetailModel.dart';
 import 'package:crick_team/utils/search_delay_function.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
 import 'AddTeams.dart';
 
 class AddPlayerCategory extends StatefulWidget {
-  final List<Team> selectedTeam;
+  final List<GetTeamDetailData> selectedTeam;
 
   const AddPlayerCategory({super.key, required this.selectedTeam});
 
@@ -23,6 +24,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
     return Scaffold(
       backgroundColor: AppColor.white,
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {
@@ -106,7 +108,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                widget.selectedTeam[index].playerName
+                                                widget.selectedTeam[index].userName
                                                     .toString(),
                                                 style: const TextStyle(
                                                   fontSize: 20,
