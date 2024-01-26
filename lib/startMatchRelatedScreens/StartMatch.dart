@@ -8,11 +8,13 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../mainScreens/MainScreen.dart';
+import '../modalClasses/TeamSelected.dart';
 import '../utils/CommonFunctions.dart';
-import 'AddTeams.dart';
 
 class StartMatch extends StatefulWidget {
-  const StartMatch({super.key});
+  final TeamSelected teamASelected;
+  final TeamSelected teamBSelected;
+  const StartMatch({super.key, required this.teamASelected, required this.teamBSelected});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
@@ -98,7 +100,7 @@ class _StartMatchState extends State<StartMatch> {
                 child: Container(
                   width: MediaQuery.sizeOf(context).width * 0.9,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
+                    gradient: const LinearGradient(colors: [
                       // AppColor.yellow.withOpacity(0.5),
                       AppColor.brown2,
                       AppColor.brown2,
@@ -123,10 +125,10 @@ class _StartMatchState extends State<StartMatch> {
                           const SizedBox(
                             height: 10,
                           ),
-                          const Center(
+                           Center(
                               child: Text(
-                            "Team A vs Team B T20",
-                            style: TextStyle(
+                            "${widget.teamASelected.getTeamData!.name} vs ${widget.teamBSelected.getTeamData!.name}",
+                            style: const TextStyle(
                                 fontFamily: "Lato_Semibold",
                                 color: AppColor.white,
                                 fontSize: 16),
@@ -159,8 +161,8 @@ class _StartMatchState extends State<StartMatch> {
                                         ),
                                         child: Container(
                                           alignment: Alignment.centerLeft,
-                                          margin: EdgeInsets.only(left: 20),
-                                          child: Text(
+                                          margin: const EdgeInsets.only(left: 20),
+                                          child: const Text(
                                             "Team A",
                                             style: TextStyle(
                                                 fontFamily: "Lato_Semibold",
@@ -209,8 +211,8 @@ class _StartMatchState extends State<StartMatch> {
                                       ),
                                       child: Container(
                                         alignment: Alignment.centerRight,
-                                        margin: EdgeInsets.only(right: 20),
-                                        child: Text(
+                                        margin: const EdgeInsets.only(right: 20),
+                                        child: const Text(
                                           "Team B",
                                           style: TextStyle(
                                               fontFamily: "Lato_Semibold",
@@ -333,7 +335,7 @@ class _StartMatchState extends State<StartMatch> {
                   )*/
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               const Text(
@@ -391,7 +393,7 @@ class _StartMatchState extends State<StartMatch> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20,
               ),
               const Text(
@@ -405,7 +407,7 @@ class _StartMatchState extends State<StartMatch> {
                 // color: Colors.red,
                 margin: const EdgeInsets.only(top: 10, bottom: 20),
                 height: 55,
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     color: AppColor.lightGrey,
@@ -441,7 +443,7 @@ class _StartMatchState extends State<StartMatch> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
-                    Icon(Icons.calendar_month)
+                    const Icon(Icons.calendar_month)
                   ],
                 ),
               ),
@@ -456,7 +458,7 @@ class _StartMatchState extends State<StartMatch> {
                 // color: Colors.red,
                 margin: const EdgeInsets.only(top: 10, bottom: 20),
                 height: 55,
-                padding: EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     color: AppColor.lightGrey,
@@ -509,7 +511,7 @@ class _StartMatchState extends State<StartMatch> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.01,
                     ),
-                    Icon(Icons.access_time)
+                    const Icon(Icons.access_time)
                   ],
                 ),
               ),
@@ -591,7 +593,7 @@ class _StartMatchState extends State<StartMatch> {
                             margin: const EdgeInsets.only(left: 5, right: 20),
                             child: Text(
                               matchOfficials[index].title,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 16.0,
                                   color: AppColor.brown2,
                                   fontFamily: "Lato_Semibold"),
@@ -713,7 +715,7 @@ class _StartMatchState extends State<StartMatch> {
                     ]),
                     borderRadius: BorderRadius.circular(50),
                   ),
-                  child: Center(
+                  child: const Center(
                     child: Text(
                       "Continue",
                       style: TextStyle(
@@ -922,7 +924,7 @@ class _StartMatchState extends State<StartMatch> {
                                                 ),
                                               ))),
                                     )
-                                  : SizedBox(
+                                  : const SizedBox(
                                       height: 80,
                                     );
                             }),
@@ -1162,7 +1164,7 @@ class _StartMatchState extends State<StartMatch> {
                                                 ),
                                               ))),
                                     )
-                                  : SizedBox(
+                                  : const SizedBox(
                                       height: 80,
                                     );
                             }),
@@ -1253,7 +1255,7 @@ class _StartMatchState extends State<StartMatch> {
                             fontFamily: "Lato_Semibold",
                             color: AppColor.brown2),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       Row(
@@ -1282,7 +1284,7 @@ class _StartMatchState extends State<StartMatch> {
                                     height: 60,
                                     width: 60,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 15,
                                   ),
                                   const Center(
@@ -1323,7 +1325,7 @@ class _StartMatchState extends State<StartMatch> {
                                     height: 60,
                                     width: 60,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     height: 15,
                                   ),
                                   const Center(

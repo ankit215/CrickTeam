@@ -12,6 +12,7 @@ import '../apiRelatedFiles/api_utils.dart';
 import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
 import '../modalClasses/GetTeamModel.dart';
+import '../modalClasses/TeamSelected.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/constant.dart';
@@ -20,8 +21,14 @@ import 'AddTeams.dart';
 
 class SelectTeam extends StatefulWidget {
   final String team;
+  final TeamSelected teamASelected;
+  final TeamSelected teamBSelected;
 
-  const SelectTeam({super.key, required this.team});
+  const SelectTeam(
+      {super.key,
+      required this.team,
+      required this.teamASelected,
+      required this.teamBSelected});
 
   @override
   State<SelectTeam> createState() => _SelectTeamState();
@@ -140,11 +147,59 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-            onTap: (){
-              Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) =>  AddTeams(getTeamData: teamList[index],)));
+            onTap: () {
+              if (widget.teamASelected.getTeamData == teamList[index] ||widget.teamBSelected.getTeamData == teamList[index]) {
+                CommonFunctions().showToastMessage(context, "Team already added for the match.");
+              } else if (widget.team == "A" ) {
+                widget.teamASelected.getTeamData = teamList[index];
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) => AddTeams(
+                          getTeamData: teamList[index],
+                          teamASelected: widget.teamASelected,
+                          teamBSelected: widget.teamBSelected,
+                          team: widget.team,
+                        ))).then((value){
+                  debugPrint("dewdwd"+value);
+                          if(value=="add_teams"){
+                            debugPrint("dadaddadaddsadasdad");
+                            setState(() {
+                              widget.teamASelected.getTeamData = null;
+                            });
+
+                          }
+                });
+              } else if(widget.team == "B" ){
+                widget.teamBSelected.getTeamData = teamList[index];
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) => AddTeams(
+                          getTeamData: teamList[index],
+                          teamASelected: widget.teamASelected,
+                          teamBSelected: widget.teamBSelected,
+                            team: widget.team
+                        ))).then((value) {
+                  debugPrint("dewdwd"+value);
+                  if(value=="add_teams"){
+                    debugPrint("dadaddadaddsadasdad");
+                    setState(() {
+                      widget.teamBSelected.getTeamData = null;
+                    });
+                  }
+                });
+              }/*else{
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) => AddTeams(
+                          getTeamData: teamList[index],
+                          teamASelected: widget.teamASelected,
+                          teamBSelected: widget.teamBSelected,
+                        )));
+              }*/
+
             },
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -274,14 +329,15 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                       padding: const EdgeInsets.all(3.0),
                       child: CircleAvatar(
                         radius: 55,
-                        backgroundColor:AppColor.lightCream,
+                        backgroundColor: AppColor.lightCream,
                         child: ClipOval(
                             child: imageFile == null
                                 ? Image.asset(
                                     "assets/team_placeholder.png",
                                     fit: BoxFit.cover,
-                              color: AppColor.brown2,
-                              height: 60,width: 60,
+                                    color: AppColor.brown2,
+                                    height: 60,
+                                    width: 60,
                                   )
                                 : Image.file(
                                     imageFile!,
@@ -400,7 +456,6 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                           MaterialStateProperty.all(Colors.transparent),
                     ),
                     onPressed: () {
-
                       if (checkValidation()) {
                         createTeamApi();
                       }
@@ -442,7 +497,6 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
       }
     });
   }
-
 
   Future<void> createTeamApi() async {
     showLoader();

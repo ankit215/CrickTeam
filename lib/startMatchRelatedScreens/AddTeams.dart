@@ -14,13 +14,16 @@ import '../apiRelatedFiles/rest_apis.dart';
 import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
 import '../modalClasses/GetTeamModel.dart';
+import '../modalClasses/TeamSelected.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/common.dart';
 
 class AddTeams extends StatefulWidget {
+  final String team;
   final GetTeamData getTeamData;
-
-  const AddTeams({super.key, required this.getTeamData});
+  final TeamSelected teamASelected ;
+  final TeamSelected teamBSelected;
+  const AddTeams({super.key, required this.getTeamData, required this.teamASelected, required this.teamBSelected, required this.team});
 
   @override
   State<AddTeams> createState() => _AddTeamsState();
@@ -53,7 +56,7 @@ class _AddTeamsState extends State<AddTeams> {
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.pop(context,"add_teams");
           },
           child: Padding(
             padding: const EdgeInsets.all(15.0),
@@ -64,7 +67,7 @@ class _AddTeamsState extends State<AddTeams> {
           ),
         ),
         title: const Text(
-          "Select Playing Teams",
+          "Select Playing Players",
           style: TextStyle(
             fontSize: 20,
             fontFamily: "Lato_Semibold",
@@ -227,142 +230,6 @@ class _AddTeamsState extends State<AddTeams> {
                                   ),
                                 ),
                                 const SizedBox(height: 20),
-                                /* SizedBox(
-                                  height: 200,
-                                  child: ListView.builder(
-                                      itemCount: 1,
-                                      shrinkWrap: true,
-                                      itemBuilder:
-                                          (BuildContext context, int index) {
-                                        return index != teamPlayerSearchedList.length
-                                            ? GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    teamPlayerSearchedList[index]
-                                                            .playerSelected =
-                                                    teamPlayerSearchedList[index]
-                                                                .playerSelected!
-                                                            ? false
-                                                            : true;
-                                                  });
-                                                },
-                                                child: Card(
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 15,
-                                                        vertical: 5),
-                                                    elevation: 0.2,
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10.0),
-                                                    ),
-                                                    child: Container(
-                                                        width:
-                                                            MediaQuery.sizeOf(
-                                                                        context)
-                                                                    .width *
-                                                                0.9,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          gradient: teamPlayerSearchedList[
-                                                                      index]
-                                                                  .playerSelected!
-                                                              ? const LinearGradient(
-                                                                  colors: [
-                                                                    AppColor
-                                                                        .red,
-                                                                    AppColor
-                                                                        .brown2
-                                                                  ],
-                                                                )
-                                                              : LinearGradient(
-                                                                  colors: [
-                                                                    AppColor
-                                                                        .grey
-                                                                        .withOpacity(
-                                                                            0.2),
-                                                                    AppColor
-                                                                        .grey
-                                                                        .withOpacity(
-                                                                            0.2),
-                                                                  ],
-                                                                ),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(10),
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Row(
-                                                            children: [
-                                                              Expanded(
-                                                                child: Row(
-                                                                  children: [
-                                                                    CircleAvatar(
-                                                                      radius:
-                                                                          30,
-                                                                      child: ClipOval(
-                                                                          child: Image.asset(
-                                                                        "assets/player.png",
-                                                                        fit: BoxFit
-                                                                            .contain,
-                                                                        height:
-                                                                            45,
-                                                                        width:
-                                                                            45,
-                                                                      )),
-                                                                    ),
-                                                                    const SizedBox(
-                                                                      width: 10,
-                                                                    ),
-                                                                    Text(
-                                                                      teamPlayerSearchedList[
-                                                                              index]
-                                                                          .userName
-                                                                          .toString(),
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontSize:
-                                                                            20,
-                                                                        fontFamily:
-                                                                            "Lato_Semibold",
-                                                                        color: teamPlayerSearchedList[index].playerSelected!
-                                                                            ? Colors.white
-                                                                            : AppColor.medGrey,
-                                                                      ),
-                                                                      textAlign:
-                                                                          TextAlign
-                                                                              .center,
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                              teamPlayerSearchedList[index]
-                                                                      .playerSelected!
-                                                                  ? const Icon(
-                                                                      Icons
-                                                                          .check_circle,
-                                                                      color: Colors
-                                                                          .white,
-                                                                      size: 30,
-                                                                    )
-                                                                  : const SizedBox(),
-                                                              const SizedBox(
-                                                                width: 10,
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ))),
-                                              )
-                                            : SizedBox(
-                                                height: 80,
-                                              );
-                                      }),
-                                ),*/
                                 Card(
                                   elevation: 8,
                                   shape: RoundedRectangleBorder(
@@ -743,7 +610,7 @@ class _AddTeamsState extends State<AddTeams> {
                         getContext,
                         MaterialPageRoute(
                             builder: (context) => AddPlayerCategory(
-                                  selectedTeam: playerSelected,
+                                  selectedTeam: playerSelected,teamASelected: widget.teamASelected,teamBSelected: widget.teamBSelected,team: widget.team,
                                 ))).then((value) => () {
                           if (value == "player_category_screen") {
                             debugPrint("adfdsfsdf");
@@ -777,12 +644,12 @@ class _AddTeamsState extends State<AddTeams> {
       hideLoader();
       if (res.success == 1) {
         setState(() {
-          teamPlayerList = [];
+          teamPlayerList.clear();
           teamPlayerList.addAll(res.body!);
           if(playerSelected.isNotEmpty){
             for(int i =0;i<teamPlayerList.length;i++){
             for(int j =0;j<playerSelected.length;j++){
-              if(teamPlayerList[i].id==playerSelected[i].id){
+              if(teamPlayerList[i].id==playerSelected[j].id){
                 teamPlayerList[i].playerSelected = true;
               }
             }
@@ -819,6 +686,7 @@ class _AddTeamsState extends State<AddTeams> {
           searchController.text = "";
           searchStr = "";
           teamPlayerSearchedList.clear();
+
         });
         Future.delayed(Duration.zero, () {
           getTeamDetailApi();

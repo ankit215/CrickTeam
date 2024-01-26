@@ -1,4 +1,5 @@
 import 'package:crick_team/main.dart';
+import 'package:crick_team/modalClasses/TeamSelected.dart';
 import 'package:crick_team/profileRelatedScrees/MyInformationScreen.dart';
 import 'package:crick_team/profileRelatedScrees/ProfileScreen.dart';
 import 'package:crick_team/startMatchRelatedScreens/SelectPlayingTeams.dart';
@@ -90,7 +91,7 @@ class _Menu extends State<Menu> {
                   Navigator.push(
                       getContext,
                       MaterialPageRoute(
-                          builder: (context) => const SelectPlayingTeams()));
+                          builder: (context) =>  SelectPlayingTeams(teamASelected: TeamSelected(),teamBSelected: TeamSelected(),)));
                 },
                 child: const CustomListTile(
                   image: "assets/cricket.png",

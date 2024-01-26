@@ -1,19 +1,32 @@
+import 'package:crick_team/modalClasses/TeamSelected.dart';
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
 import 'package:crick_team/startMatchRelatedScreens/StartMatch.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import '../utils/CommonFunctions.dart';
 
 
 class SelectPlayingTeams extends StatefulWidget {
-  const SelectPlayingTeams({super.key});
+  final TeamSelected teamASelected ;
+  final TeamSelected teamBSelected;
+  const SelectPlayingTeams({super.key, required this.teamASelected, required this.teamBSelected});
 
   @override
   State<SelectPlayingTeams> createState() => _SelectPlayingState();
 }
 
 class _SelectPlayingState extends State<SelectPlayingTeams> {
+  TeamSelected teamASelected = TeamSelected();
+  TeamSelected teamBSelected = TeamSelected();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    teamASelected= widget.teamASelected;
+    teamBSelected= widget.teamBSelected;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,7 +67,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                 children: [
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "A",)));
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>   SelectTeam(team: "A",teamASelected: teamASelected,teamBSelected: teamBSelected,)));
                     },
                     child: const Center(
                         child: Icon(
@@ -65,18 +78,18 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(getContext, MaterialPageRoute(builder: (context) => const SelectTeam(team: "A",)));
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  SelectTeam(team: "A",teamASelected: teamASelected,teamBSelected:teamBSelected,)));
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: AppColor.brown2,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Padding(
+                      child:  Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "Select Team A",
-                          style: TextStyle(
+                          widget.teamASelected.getTeamData==null?"Select Team A":widget.teamASelected.getTeamData!.name.toString(),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontFamily: "Lato_Sembold",
                             color: AppColor.white,
@@ -92,7 +105,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
               
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>   SelectTeam(team: "B",teamASelected: teamASelected,teamBSelected: teamBSelected,)));
                     },
                     child: const Center(
                         child: Icon(
@@ -103,18 +116,18 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                   ),
                   GestureDetector(
                     onTap: (){
-                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  const SelectTeam(team: "B",)));
+                      Navigator.push(getContext, MaterialPageRoute(builder: (context) =>   SelectTeam(team: "B",teamASelected: teamASelected,teamBSelected:teamBSelected,)));
                     },
                     child: Container(
                       decoration: BoxDecoration(
                         color: AppColor.brown2,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Padding(
-                        padding: EdgeInsets.all(10),
+                      child:  Padding(
+                        padding: const EdgeInsets.all(10),
                         child: Text(
-                          "Select Team B",
-                          style: TextStyle(
+                          widget.teamBSelected.getTeamData==null?"Select Team B":widget.teamBSelected.getTeamData!.name.toString(),
+                          style: const TextStyle(
                             fontSize: 16,
                             fontFamily: "Lato_Sembold",
                             color: AppColor.white,
@@ -129,7 +142,14 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
             ),
             GestureDetector(
               onTap: (){
-                Navigator.push(getContext, MaterialPageRoute(builder: (context) => const StartMatch()));
+                if(teamASelected.getTeamData==null){
+                  CommonFunctions().showToastMessage(getContext, "Please select teams.");
+                }else if(teamBSelected.getTeamData==null){
+                  CommonFunctions().showToastMessage(getContext, "Please select teams.");
+                }else{
+                  Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  StartMatch(teamBSelected: teamBSelected,teamASelected: teamASelected,)));
+                }
+
               },
               child: Container(
                 width: double.infinity,
