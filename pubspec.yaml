@@ -45,8 +45,6 @@ dependencies:
   path_provider: ^2.0.11
   shared_preferences: ^2.0.15
   lottie: ^3.0.0
-  barcode_scan2: ^4.2.1
-  qr_code_scanner: ^1.0.1
   calendar_date_picker2: ^0.5.3
   simple_gradient_text: ^1.2.4
   html: ^0.15.0

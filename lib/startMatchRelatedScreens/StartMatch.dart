@@ -1,20 +1,28 @@
-import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
-import 'package:crick_team/startMatchRelatedScreens/TossScreen.dart';
+import 'dart:convert';
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
 import '../mainScreens/MainScreen.dart';
+import '../modalClasses/GetPlayerSearchModel.dart';
+import '../modalClasses/GetTeamModel.dart';
 import '../modalClasses/TeamSelected.dart';
 import '../utils/CommonFunctions.dart';
+import '../utils/common.dart';
+import '../utils/search_delay_function.dart';
 
 class StartMatch extends StatefulWidget {
   final TeamSelected teamASelected;
   final TeamSelected teamBSelected;
-  const StartMatch({super.key, required this.teamASelected, required this.teamBSelected});
+
+  const StartMatch(
+      {super.key, required this.teamASelected, required this.teamBSelected});
 
   @override
   State<StartMatch> createState() => _StartMatchState();
@@ -26,11 +34,12 @@ class MatchOfficials {
 
   MatchOfficials({required this.title, required this.isSelected});
 }
-class Team {
-  final String ?playerName;
-  bool ?playerSelected;
 
-  Team({ this.playerName,  this.playerSelected});
+class Team {
+  final String? playerName;
+  bool? playerSelected;
+
+  Team({this.playerName, this.playerSelected});
 }
 
 class _StartMatchState extends State<StartMatch> {
@@ -41,6 +50,10 @@ class _StartMatchState extends State<StartMatch> {
   TextEditingController dateController = TextEditingController();
   TextEditingController timeController = TextEditingController();
   TextEditingController phoneController = TextEditingController();
+  final searchDelay = SearchDelayFunction();
+  var searchStr = "";
+  List<GetPlayerSearchData> teamPlayerSearchedList = [];
+  List<GetTeamData> teamList = [];
   List<MatchOfficials> matchOfficials = <MatchOfficials>[
     MatchOfficials(
       title: 'Scorer',
@@ -51,10 +64,22 @@ class _StartMatchState extends State<StartMatch> {
       isSelected: false,
     ),*/
   ];
-  List<Team> playerList2 = [
-    Team(playerName: 'Ankit',playerSelected: false),
+  var timeValue = "";
+  var dateValue = "";
+  var teamOneJson = "";
+  var teamTwoJson = "";
+  var scorerId = "";
 
-  ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // Convert the list to JSON
+    teamOneJson = jsonEncode(widget.teamASelected.players);
+    teamTwoJson = jsonEncode(widget.teamBSelected.players);
+    debugPrint("ffsfdsf" + teamOneJson);
+    debugPrint("ffsfdsf" + teamTwoJson);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +150,7 @@ class _StartMatchState extends State<StartMatch> {
                           const SizedBox(
                             height: 10,
                           ),
-                           Center(
+                          Center(
                               child: Text(
                             "${widget.teamASelected.getTeamData!.name} vs ${widget.teamBSelected.getTeamData!.name}",
                             style: const TextStyle(
@@ -161,7 +186,8 @@ class _StartMatchState extends State<StartMatch> {
                                         ),
                                         child: Container(
                                           alignment: Alignment.centerLeft,
-                                          margin: const EdgeInsets.only(left: 20),
+                                          margin:
+                                              const EdgeInsets.only(left: 20),
                                           child: const Text(
                                             "Team A",
                                             style: TextStyle(
@@ -180,6 +206,7 @@ class _StartMatchState extends State<StartMatch> {
                                                   0.2,
                                         ),
                                         CircleAvatar(
+                                          backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
                                               child: Image.asset(
@@ -211,7 +238,8 @@ class _StartMatchState extends State<StartMatch> {
                                       ),
                                       child: Container(
                                         alignment: Alignment.centerRight,
-                                        margin: const EdgeInsets.only(right: 20),
+                                        margin:
+                                            const EdgeInsets.only(right: 20),
                                         child: const Text(
                                           "Team B",
                                           style: TextStyle(
@@ -224,6 +252,7 @@ class _StartMatchState extends State<StartMatch> {
                                     Row(
                                       children: [
                                         CircleAvatar(
+                                          backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
                                               child: Image.asset(
@@ -288,6 +317,7 @@ class _StartMatchState extends State<StartMatch> {
                           child: Center(
                             child: TextField(
                               controller: noOfOvers,
+                              keyboardType: TextInputType.number,
                               decoration: const InputDecoration.collapsed(
                                   hintText: 'Enter no. of overs',
                                   hintStyle: TextStyle(color: AppColor.grey)),
@@ -300,7 +330,7 @@ class _StartMatchState extends State<StartMatch> {
                   const SizedBox(
                     width: 10,
                   ),
-                 /* Expanded(
+                  /* Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -417,6 +447,9 @@ class _StartMatchState extends State<StartMatch> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
+                          Future.delayed(Duration.zero,(){
+                            FocusManager.instance.primaryFocus?.unfocus();
+                          });
                           var date = await CommonFunctions.selectDate();
                           dateController.text = date;
                         },
@@ -484,7 +517,9 @@ class _StartMatchState extends State<StartMatch> {
                             duskSpanInMinutes: 120,
                             // optional
                             onChange: (value) {
-                              debugPrint("TIME" + value.toString());
+                              timeValue ="${value.hour.toString()}:${value.minute.toString()}" ;
+                              debugPrint("TIME $timeValue");
+                              timeController.text = timeValue;
                             },
                           ));
                         },
@@ -532,9 +567,10 @@ class _StartMatchState extends State<StartMatch> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        matchOfficials[index].title.toLowerCase() == "scorer"
-                            ? showScorerDialog()
-                            : showChooseUmpireDialog();
+                        /* matchOfficials[index].title.toLowerCase() == "scorer"
+                            ?*/
+                        showScorerDialog();
+                        /*: showChooseUmpireDialog();*/
                         /*   setState(() {
                           for (int i = 0; i < matchOfficials.length; i++) {
                             matchOfficials[i].isSelected = false;
@@ -607,101 +643,9 @@ class _StartMatchState extends State<StartMatch> {
               ),
               GestureDetector(
                 onTap: () {
-                  showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (context) {
-                      return Dialog(
-                        surfaceTintColor: Colors.white,
-                        backgroundColor: AppColor.white,
-                        insetPadding: const EdgeInsets.all(10),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        elevation: 16,
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.all(15),
-                              child: Column(
-                                crossAxisAlignment:
-                                CrossAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    "assets/logo.png",
-                                    width: 150,
-                                    height: 150,
-                                  ),
-                                  const SizedBox(height: 10),
-                                  const Text(
-                                    'Match Created Successfully',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 22,
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  Card(
-                                    elevation: 8,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                      BorderRadius.circular(30.0),
-                                    ),
-                                    child: Container(
-                                      height: 50,
-
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                        gradient: const LinearGradient(
-                                            colors: [
-                                              AppColor.red,
-                                              AppColor.brown2
-                                            ]),
-                                        borderRadius:
-                                        BorderRadius.circular(30),
-                                      ),
-                                      child: ElevatedButton(
-                                          style: ButtonStyle(
-                                            shape: MaterialStateProperty
-                                                .all<StadiumBorder>(
-                                              const StadiumBorder(),
-                                            ),
-                                            elevation:
-                                            MaterialStateProperty.all(
-                                                8),
-                                            backgroundColor:
-                                            MaterialStateProperty.all(
-                                                Colors.transparent),
-                                            // elevation: MaterialStateProperty.all(3),
-                                            shadowColor:
-                                            MaterialStateProperty.all(
-                                                Colors.transparent),
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  MainScreen(index: 0,)));
-
-
-                                          },
-                                          child: const Text('Continue',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: AppColor.white,
-                                                  fontFamily:
-                                                  "Lato_Semibold"),
-                                              textAlign:
-                                              TextAlign.center)),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      );
-                    },
-                  );
+                  if(checkValidation()){
+                    createPlayerApi();
+                  }
                 },
                 child: Container(
                   width: double.infinity,
@@ -810,6 +754,26 @@ class _StartMatchState extends State<StartMatch> {
                           child: TextField(
                             controller: phoneController,
                             keyboardType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            onChanged: (value) {
+                              searchStr = value;
+                              searchDelay.run(() async {
+                                if (searchStr.isEmpty) {
+                                  setState(() {
+                                    phoneController.text = "";
+                                    searchStr = "";
+                                    teamPlayerSearchedList.clear();
+                                  });
+                                } else {
+                                  teamPlayerSearchedList =
+                                      await getPlayerSearchApi(searchStr);
+                                  setState(() {});
+                                }
+                              });
+                            },
                             decoration: const InputDecoration.collapsed(
                                 hintText: 'Enter phone number',
                                 hintStyle: TextStyle(color: AppColor.grey)),
@@ -820,113 +784,160 @@ class _StartMatchState extends State<StartMatch> {
                       SizedBox(
                         height: 200,
                         child: ListView.builder(
-                            itemCount: playerList2.length,
+                            itemCount: teamPlayerSearchedList.length,
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
-                              return index != playerList2.length
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          playerList2[index].playerSelected =
-                                              playerList2[index].playerSelected!
-                                                  ? false
-                                                  : true;
-                                        });
-                                      },
-                                      child: Card(
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 15, vertical: 5),
-                                          elevation: 0.2,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
-                                          ),
-                                          child: Container(
-                                              width: MediaQuery.sizeOf(context)
-                                                      .width *
-                                                  0.9,
-                                              decoration: BoxDecoration(
-                                                gradient: playerList2[index]
-                                                        .playerSelected!
-                                                    ? const LinearGradient(
-                                                        colors: [
-                                                          AppColor.red,
-                                                          AppColor.brown2
-                                                        ],
-                                                      )
-                                                    : LinearGradient(
-                                                        colors: [
-                                                          AppColor.grey
-                                                              .withOpacity(0.2),
-                                                          AppColor.grey
-                                                              .withOpacity(0.2),
-                                                        ],
-                                                      ),
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    for(int i = 0; i<teamPlayerSearchedList.length;i++){
+                                      teamPlayerSearchedList[i]
+                                          .playerSelected =false;
+                                    }
+                                    teamPlayerSearchedList[index]
+                                            .playerSelected =true;
+                                    scorerId = teamPlayerSearchedList[index].id.toString();
+                                    print("dfdfsdf"+scorerId);
+                                  });
+                                },
+                                child: Card(
+                                  color: Colors.white,
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    elevation: 0.0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Container(
+                                        width:
+                                            MediaQuery.sizeOf(context).width *
+                                                0.9,
+                                        decoration: BoxDecoration(
+                                          gradient:
+                                              teamPlayerSearchedList[index]
+                                                      .playerSelected
+                                                  ? const LinearGradient(
+                                                      colors: [
+                                                        AppColor.red,
+                                                        AppColor.brown2
+                                                      ],
+                                                    )
+                                                  : LinearGradient(
+                                                      colors: [
+                                                        AppColor.grey
+                                                            .withOpacity(0.2),
+                                                        AppColor.grey
+                                                            .withOpacity(0.2),
+                                                      ],
+                                                    ),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
                                                 child: Row(
                                                   children: [
-                                                    Expanded(
-                                                      child: Row(
-                                                        children: [
-                                                          CircleAvatar(
-                                                            radius: 30,
-                                                            child: ClipOval(
-                                                                child:
-                                                                    Image.asset(
-                                                              "assets/scorer.png",
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                              height: 45,
-                                                              width: 45,
-                                                            )),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 10,
-                                                          ),
-                                                          Text(
-                                                            playerList2[index]
-                                                                .playerName
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                              fontSize: 20,
-                                                              fontFamily:
-                                                                  "Lato_Semibold",
-                                                              color: playerList2[
+                                                    CircleAvatar(
+                                                      backgroundColor: Colors.white,
+                                                      radius: 30,
+                                                      child: ClipOval(
+                                                          child: Image.asset(
+                                                        "assets/scorer.png",
+                                                        fit: BoxFit.contain,
+                                                        height: 45,
+                                                        width: 45,
+                                                      )),
+                                                    ),
+                                                    const SizedBox(
+                                                      width: 10,
+                                                    ),
+                                                    Column(
+                                                      children: [
+                                                        Text(
+                                                          teamPlayerSearchedList[
                                                                           index]
-                                                                      .playerSelected!
+                                                                      .name ==
+                                                                  null
+                                                              ? "Player"
+                                                              : teamPlayerSearchedList[
+                                                                      index]
+                                                                  .name
+                                                                  .toString(),
+                                                          style: TextStyle(
+                                                            fontSize: 20,
+                                                            fontFamily:
+                                                                "Lato_Semibold",
+                                                            color: teamPlayerSearchedList[
+                                                                        index]
+                                                                    .playerSelected
+                                                                ? Colors.white
+                                                                : AppColor
+                                                                    .medGrey,
+                                                          ),
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                              Icons.call,
+                                                              color: teamPlayerSearchedList[
+                                                                          index]
+                                                                      .playerSelected
                                                                   ? Colors.white
                                                                   : AppColor
                                                                       .medGrey,
+                                                              size: 20,
                                                             ),
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                          ),
-                                                        ],
-                                                      ),
+                                                            const SizedBox(
+                                                              width: 5,
+                                                            ),
+                                                            Text(
+                                                              teamPlayerSearchedList[
+                                                                      index]
+                                                                  .mobileNumber
+                                                                  .toString(),
+                                                              style: TextStyle(
+                                                                fontSize: 16,
+                                                                fontFamily:
+                                                                    "Lato_Semibold",
+                                                                color: teamPlayerSearchedList[
+                                                                            index]
+                                                                        .playerSelected
+                                                                    ? Colors
+                                                                        .white
+                                                                    : AppColor
+                                                                        .medGrey,
+                                                              ),
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
-                                                    playerList2[index]
-                                                            .playerSelected!
-                                                        ? const Icon(
-                                                            Icons.check_circle,
-                                                            color: Colors.white,
-                                                            size: 30,
-                                                          )
-                                                        : const SizedBox(),
-                                                    const SizedBox(
-                                                      width: 10,
-                                                    )
                                                   ],
                                                 ),
-                                              ))),
-                                    )
-                                  : const SizedBox(
-                                      height: 80,
-                                    );
+                                              ),
+                                              teamPlayerSearchedList[index]
+                                                      .playerSelected
+                                                  ? const Icon(
+                                                      Icons.check_circle,
+                                                      color: Colors.white,
+                                                      size: 30,
+                                                    )
+                                                  : const SizedBox(),
+                                              const SizedBox(
+                                                width: 10,
+                                              )
+                                            ],
+                                          ),
+                                        ))),
+                              );
                             }),
                       ),
                       Card(
@@ -954,7 +965,9 @@ class _StartMatchState extends State<StartMatch> {
                                 shadowColor: MaterialStateProperty.all(
                                     Colors.transparent),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
                               child: const Text('Add',
                                   style: TextStyle(
                                       fontSize: 18,
@@ -1050,6 +1063,10 @@ class _StartMatchState extends State<StartMatch> {
                           child: TextField(
                             controller: phoneController,
                             keyboardType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
                             decoration: const InputDecoration.collapsed(
                                 hintText: 'Enter phone number',
                                 hintStyle: TextStyle(color: AppColor.grey)),
@@ -1060,15 +1077,17 @@ class _StartMatchState extends State<StartMatch> {
                       SizedBox(
                         height: 200,
                         child: ListView.builder(
-                            itemCount: playerList2.length,
+                            itemCount: teamPlayerSearchedList.length,
                             shrinkWrap: true,
                             itemBuilder: (BuildContext context, int index) {
-                              return index != playerList2.length
+                              return index != teamPlayerSearchedList.length
                                   ? GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          playerList2[index].playerSelected =
-                                              playerList2[index].playerSelected!
+                                          teamPlayerSearchedList[index]
+                                                  .playerSelected =
+                                              teamPlayerSearchedList[index]
+                                                      .playerSelected
                                                   ? false
                                                   : true;
                                         });
@@ -1086,22 +1105,26 @@ class _StartMatchState extends State<StartMatch> {
                                                       .width *
                                                   0.9,
                                               decoration: BoxDecoration(
-                                                gradient: playerList2[index]
-                                                        .playerSelected!
-                                                    ? const LinearGradient(
-                                                        colors: [
-                                                          AppColor.red,
-                                                          AppColor.brown2
-                                                        ],
-                                                      )
-                                                    : LinearGradient(
-                                                        colors: [
-                                                          AppColor.grey
-                                                              .withOpacity(0.2),
-                                                          AppColor.grey
-                                                              .withOpacity(0.2),
-                                                        ],
-                                                      ),
+                                                gradient:
+                                                    teamPlayerSearchedList[
+                                                                index]
+                                                            .playerSelected
+                                                        ? const LinearGradient(
+                                                            colors: [
+                                                              AppColor.red,
+                                                              AppColor.brown2
+                                                            ],
+                                                          )
+                                                        : LinearGradient(
+                                                            colors: [
+                                                              AppColor.grey
+                                                                  .withOpacity(
+                                                                      0.2),
+                                                              AppColor.grey
+                                                                  .withOpacity(
+                                                                      0.2),
+                                                            ],
+                                                          ),
                                                 borderRadius:
                                                     BorderRadius.circular(10),
                                               ),
@@ -1114,6 +1137,7 @@ class _StartMatchState extends State<StartMatch> {
                                                       child: Row(
                                                         children: [
                                                           CircleAvatar(
+                                                            backgroundColor: Colors.white,
                                                             radius: 30,
                                                             child: ClipOval(
                                                                 child:
@@ -1129,16 +1153,17 @@ class _StartMatchState extends State<StartMatch> {
                                                             width: 10,
                                                           ),
                                                           Text(
-                                                            playerList2[index]
-                                                                .playerName
+                                                            teamPlayerSearchedList[
+                                                                    index]
+                                                                .name
                                                                 .toString(),
                                                             style: TextStyle(
                                                               fontSize: 20,
                                                               fontFamily:
                                                                   "Lato_Semibold",
-                                                              color: playerList2[
+                                                              color: teamPlayerSearchedList[
                                                                           index]
-                                                                      .playerSelected!
+                                                                      .playerSelected
                                                                   ? Colors.white
                                                                   : AppColor
                                                                       .medGrey,
@@ -1149,8 +1174,9 @@ class _StartMatchState extends State<StartMatch> {
                                                         ],
                                                       ),
                                                     ),
-                                                    playerList2[index]
-                                                            .playerSelected!
+                                                    teamPlayerSearchedList[
+                                                                index]
+                                                            .playerSelected
                                                         ? const Icon(
                                                             Icons.check_circle,
                                                             color: Colors.white,
@@ -1356,4 +1382,184 @@ class _StartMatchState extends State<StartMatch> {
       },
     );
   }
+
+  createPlayerApi() async {
+    var request = {
+      'team1_id': widget.teamASelected.getTeamData!.id.toString(),
+      'team2_id': widget.teamBSelected.getTeamData!.id.toString(),
+      'total_over': noOfOvers.text.trim(),
+      'city': cityController.text.trim(),
+      'venue_ground': groundController.text.trim(),
+      'match_date': dateController.text.trim(),
+      'match_time': timeValue,
+      'scorer_id': scorerId,
+      'status': "1",
+      'team_one_json': teamOneJson,
+      'team_two_json':teamTwoJson,
+    };
+    await createMatch(request).then((res) async {
+      if (res.success == 1) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) {
+            return Dialog(
+              surfaceTintColor: Colors.white,
+              backgroundColor: AppColor.white,
+              insetPadding: const EdgeInsets.all(10),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              elevation: 16,
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/logo.png",
+                          width: 150,
+                          height: 150,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Match Created Successfully',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontFamily: "Lato_Semibold",
+                              color: AppColor.brown2),
+                        ),
+                        const SizedBox(height: 20),
+                        Card(
+                          elevation: 8,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                          child: Container(
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(colors: [
+                                AppColor.red,
+                                AppColor.brown2
+                              ]),
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: ElevatedButton(
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<
+                                      StadiumBorder>(
+                                    const StadiumBorder(),
+                                  ),
+                                  elevation:
+                                  MaterialStateProperty.all(8),
+                                  backgroundColor:
+                                  MaterialStateProperty.all(
+                                      Colors.transparent),
+                                  // elevation: MaterialStateProperty.all(3),
+                                  shadowColor:
+                                  MaterialStateProperty.all(
+                                      Colors.transparent),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      getContext,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              MainScreen(
+                                                index: 0,
+                                              )));
+                                },
+                                child: const Text('Continue',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: AppColor.white,
+                                        fontFamily: "Lato_Semibold"),
+                                    textAlign: TextAlign.center)),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
+        );
+
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  Future<List<GetPlayerSearchData>> getPlayerSearchApi(String mobileNo) async {
+    await getPlayerSearch(mobileNo).then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          teamPlayerSearchedList.clear();
+          teamPlayerSearchedList.addAll(res.body!);
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+    return teamPlayerSearchedList;
+  }
+
+  bool checkValidation() {
+    if (noOfOvers.text.trim().toString() == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "No. of overs Field Is Required");
+      return false;
+    } else if (cityController.text.trim().toString() == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "City Field Is Required.");
+      return false;
+    } else if (groundController.text.trim().toString() == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "Ground Field Is Required.");
+      return false;
+    } else if (dateController.text.trim().toString() == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "Ground Field Is Required.");
+      return false;
+    } else if (timeValue == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "Time Field Is Required.");
+      return false;
+    }else if (scorerId == '') {
+      CommonFunctions()
+          .showToastMessage(getContext, "Scorer Field Is Required.");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 }

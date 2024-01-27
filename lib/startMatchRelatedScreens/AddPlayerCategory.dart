@@ -12,9 +12,16 @@ import 'AddTeams.dart';
 class AddPlayerCategory extends StatefulWidget {
   final String team;
   final List<GetTeamDetailData> selectedTeam;
-  final TeamSelected teamASelected ;
+  final TeamSelected teamASelected;
+
   final TeamSelected teamBSelected;
-  const AddPlayerCategory({super.key, required this.selectedTeam, required this.teamASelected, required this.teamBSelected, required this.team});
+
+  const AddPlayerCategory(
+      {super.key,
+      required this.selectedTeam,
+      required this.teamASelected,
+      required this.teamBSelected,
+      required this.team});
 
   @override
   State<AddPlayerCategory> createState() => _AddPlayerCategoryState();
@@ -25,16 +32,19 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
   TextEditingController phoneController = TextEditingController();
   final searchDelay = SearchDelayFunction();
   var searchStr = "";
+
   // TeamSelected teamSelected = TeamSelected();
-  List<Players> playersList=[];
-@override
+  List<Players> playersList = [];
+
+  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    for(int i = 0 ; i<widget.selectedTeam.length;i++){
-      widget.selectedTeam[i].playerCategory=null;
+    for (int i = 0; i < widget.selectedTeam.length; i++) {
+      widget.selectedTeam[i].playerCategory = null;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,46 +130,75 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                           const SizedBox(
                                             width: 10,
                                           ),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                widget.selectedTeam[index]
-                                                            .userName ==
-                                                        null
-                                                    ? "Anonymous"
-                                                    : widget.selectedTeam[index]
-                                                        .userName
-                                                        .toString(),
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  fontFamily: "Lato_Semibold",
-                                                  color: AppColor.medGrey,
+                                          Expanded(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  widget.selectedTeam[index]
+                                                              .userName ==
+                                                          null
+                                                      ? "Player"
+                                                      : widget.selectedTeam[index]
+                                                          .userName
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily: "Lato_Semibold",
+                                                    color: AppColor.medGrey,
+                                                  ),
+                                                  textAlign: TextAlign.center,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              Text(
+                                                Text(
                                                 widget.selectedTeam[index]
-                                                        .playerCategory
-                                                        .toString()
-                                                        .isEmpty
-                                                    ? "-"
-                                                    : widget.selectedTeam[index]
-                                                        .playerCategory=="BOW"?"Bowler":widget.selectedTeam[index]
-                                                    .playerCategory=="BAT"?"Batsmen":widget.selectedTeam[index]
-                                                    .playerCategory=="WK"?"Wicket Keeper":widget.selectedTeam[index]
-                                                    .playerCategory=="ALD"?"All Rounder":"-",
-                                                style: const TextStyle(
-                                                  fontSize: 20,
-                                                  fontFamily: "Lato_Semibold",
-                                                  color: AppColor.medGrey,
+                                                          .mobileNumber
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                    fontSize: 14,
+                                                    fontFamily: "Lato_Semibold",
+                                                    color: AppColor.medGrey,
+                                                  ),
+                                                  textAlign: TextAlign.center,
                                                 ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ],
+                                                Text(
+                                                  widget.selectedTeam[index]
+                                                          .playerCategory
+                                                          .toString()
+                                                          .isEmpty
+                                                      ? "-"
+                                                      : widget.selectedTeam[index]
+                                                                  .playerCategory ==
+                                                              "BOW"
+                                                          ? "Bowler"
+                                                          : widget
+                                                                      .selectedTeam[
+                                                                          index]
+                                                                      .playerCategory ==
+                                                                  "BAT"
+                                                              ? "Batsmen"
+                                                              : widget
+                                                                          .selectedTeam[
+                                                                              index]
+                                                                          .playerCategory ==
+                                                                      "WK"
+                                                                  ? "Wicket Keeper"
+                                                                  : widget.selectedTeam[index]
+                                                                              .playerCategory ==
+                                                                          "ALD"
+                                                                      ? "All Rounder"
+                                                                      : "-",
+                                                  style: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontFamily: "Lato_Semibold",
+                                                    color: AppColor.medGrey,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -196,7 +235,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                           /*   for(int i = 0; i<playersList.length;i++){
+                                              /*   for(int i = 0; i<playersList.length;i++){
                                                 if(playersList[i].playerId==widget.selectedTeam[index].id){
                                                   playersList.removeAt(i);
                                                   playersList.add(Players(playerId:widget.selectedTeam[index].id,playerType:"BAT"));
@@ -222,15 +261,20 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              // for(int i = 0; i<playersList.length;i++){
-                                              //   if(playersList[i].playerId==widget.selectedTeam[index].id){
-                                              //     playersList.removeAt(i);
-                                              //     playersList.add(Players(playerId:widget.selectedTeam[index].id,playerType:"WK"));
-                                              //   }
-                                              // }
-                                              widget.selectedTeam[index]
-                                                      .playerCategory =
-                                                  "WK";
+                                              var addWk = true;
+                                              for (int i = 0; i < widget.selectedTeam.length; i++) {
+                                                if (widget.selectedTeam[i].playerCategory.toString().toLowerCase() =="wk") {
+                                                  addWk = false;
+                                                }
+                                              }
+                                              if (addWk) {
+                                                widget.selectedTeam[index]
+                                                    .playerCategory = "WK";
+                                              } else {
+                                                CommonFunctions().showToastMessage(
+                                                    context,
+                                                    "Wicket Keeper already selected.");
+                                              }
                                             });
                                           },
                                           child: Image.asset(
@@ -249,15 +293,14 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                             /* for(int i = 0; i<playersList.length;i++){
+                                              /* for(int i = 0; i<playersList.length;i++){
                                                 if(playersList[i].playerId==widget.selectedTeam[index].id){
                                                   playersList.removeAt(i);
                                                   playersList.add(Players(playerId:widget.selectedTeam[index].id,playerType:"ALD"));
                                                 }
                                               }*/
                                               widget.selectedTeam[index]
-                                                      .playerCategory =
-                                                  "ALD";
+                                                  .playerCategory = "ALD";
                                             });
                                           },
                                           child: Image.asset(
@@ -306,37 +349,40 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                   onPressed: () {
                     playersList.clear();
                     var proceed = true;
-                    for(int i = 0 ; i<widget.selectedTeam.length;i++){
-                      if(widget.selectedTeam[i].playerCategory==null){
+                    for (int i = 0; i < widget.selectedTeam.length; i++) {
+                      if (widget.selectedTeam[i].playerCategory == null) {
                         proceed = false;
                         // CommonFunctions().showToastMessage(context, "Please select player's category.");
-                      }else if(proceed){
-                        playersList.add(Players(playerId: widget.selectedTeam[i].id,playerType: widget.selectedTeam[i].playerCategory));
+                      } else if (proceed) {
+                        playersList.add(Players(
+                            playerId: widget.selectedTeam[i].id,
+                            playerType: widget.selectedTeam[i].playerCategory));
                       }
                     }
-                    debugPrint("TEAM_SELECTED_1_"+playersList.length.toString());
-                    if(playersList.length<11){
-                      CommonFunctions().showToastMessage(context, "Please select player's category.");
-                    }else{
-
-                      if(widget.team=="A"){
-                        widget.teamASelected.players=playersList;
-                        debugPrint("TEAM_SELECTED__A${widget.teamASelected.players!.length}");
-                      }else{
-                        widget.teamBSelected.players=playersList;
-                        debugPrint("TEAM_SELECTED__B${widget.teamBSelected.players!.length}");
+                    debugPrint("TEAM_SELECTED_1_${playersList.length}");
+                    if (playersList.length < 11) {
+                      CommonFunctions().showToastMessage(
+                          context, "Please select player's category.");
+                    } else {
+                      if (widget.team == "A") {
+                        widget.teamASelected.players = playersList;
+                        debugPrint(
+                            "TEAM_SELECTED__A${widget.teamASelected.players!.length}");
+                      } else {
+                        widget.teamBSelected.players = playersList;
+                        debugPrint(
+                            "TEAM_SELECTED__B${widget.teamBSelected.players!.length}");
                       }
-
 
                       Navigator.pushReplacement(
-                        getContext,
-                        MaterialPageRoute(builder: (context) => SelectPlayingTeams(teamASelected: widget.teamASelected,teamBSelected: widget.teamBSelected,),
-                        // MaterialPageRoute(builder: (context) =>  NavigationScreen(index: 0,)),
-                      ));
-
+                          getContext,
+                          MaterialPageRoute(
+                            builder: (context) => SelectPlayingTeams(
+                              teamASelected: widget.teamASelected,
+                              teamBSelected: widget.teamBSelected,
+                            ),
+                          ));
                     }
-
-
                   },
                   child: const Text(
                     'Continue',

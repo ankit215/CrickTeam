@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "258723223868",
+    "project_id": "cric-team-35e34",
+    "storage_bucket": "cric-team-35e34.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258723223868:android:6ead204196d792e0852639",
+        "android_client_info": {
+          "package_name": "com.example.crick_team"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCh9GawQsp5_W4jx34qNXx6FvVqxcfs0SQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

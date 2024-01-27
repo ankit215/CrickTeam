@@ -2,7 +2,9 @@ import 'dart:developer';
 
 import 'package:crick_team/loginSignupRelatedFiles/OtpScreen.dart';
 import 'package:crick_team/profileRelatedScrees/EditProfileScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../apiRelatedFiles/rest_apis.dart';
 import '../main.dart';
@@ -13,6 +15,8 @@ import 'SignUpScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  static String verify = "";
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -47,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   fit: BoxFit.contain,
                 ),
               ),
-             /* const Center(
+              /* const Center(
                 child: Text(
                   "Welcome back!",
                   style: TextStyle(
@@ -56,21 +60,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       color: AppColor.brown2),
                 ),
               ),*/
-                  const Center(
-                    child: Text(
-                      "Log in as",
-                      style: TextStyle(
-                          fontSize: 25.0,
-                          color: AppColor.brown2,
-                          fontFamily: "Lato_Semibold"),
-                    ),
-                  ),
-              SizedBox(height: 20,),
+              const Center(
+                child: Text(
+                  "Log in as",
+                  style: TextStyle(
+                      fontSize: 25.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       setState(() {
                         isBettor = true;
                         isOrganiser = false;
@@ -78,7 +84,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                     child: Image.asset(
-                      isBettor?"assets/bettor_selected.png":"assets/bettor_unselected.png",
+                      isBettor
+                          ? "assets/bettor_selected.png"
+                          : "assets/bettor_unselected.png",
                       height: 90,
                       width: 90,
                     ),
@@ -87,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       setState(() {
                         isBettor = false;
                         isOrganiser = true;
@@ -95,7 +103,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                     child: Image.asset(
-                      isOrganiser?"assets/organiser_selected.png":"assets/organiser_unselected.png",
+                      isOrganiser
+                          ? "assets/organiser_selected.png"
+                          : "assets/organiser_unselected.png",
                       height: 90,
                       width: 90,
                     ),
@@ -104,7 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: 20,
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       setState(() {
                         isBettor = false;
                         isOrganiser = false;
@@ -112,7 +122,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       });
                     },
                     child: Image.asset(
-                      isScorer?"assets/scorer_selected.png":"assets/scorer_unselected.png",
+                      isScorer
+                          ? "assets/scorer_selected.png"
+                          : "assets/scorer_unselected.png",
                       height: 90,
                       width: 90,
                     ),
@@ -133,18 +145,42 @@ class _LoginScreenState extends State<LoginScreen> {
                 height: 10,
               ),
               Container(
+                width: MediaQuery.sizeOf(context).width * 1,
                 height: 55,
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(18),
                     color: AppColor.white,
                     border: Border.all(color: AppColor.border)),
-                child: TextField(
-                  controller: mobileNoController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration.collapsed(
-                      hintText: 'Enter mobile no',
-                      hintStyle: TextStyle(color: AppColor.grey)),
+                child: Row(
+                  children: [
+                    Text(
+                      "+91",
+                      style: TextStyle(
+                          color: AppColor.grey,
+                          fontFamily: "Lato_Semibold",
+                          fontSize: 16),
+                    ),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      width: 2,
+                      height: 40,
+                      color: AppColor.grey,
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: mobileNoController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        decoration: const InputDecoration.collapsed(
+                            hintText: 'Enter mobile no',
+                            hintStyle: TextStyle(color: AppColor.grey)),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(
@@ -173,12 +209,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       shadowColor:
                           MaterialStateProperty.all(Colors.transparent),
                     ),
-                    onPressed: () {
-                      if(checkValidations()){
-                        FocusManager.instance.primaryFocus?.unfocus();
+                    onPressed: () async {
+                      if (checkValidations()) {
+                        /*    FocusManager.instance.primaryFocus?.unfocus();
+                        await FirebaseAuth.instance.verifyPhoneNumber(
+                          phoneNumber: "+91${mobileNoController.text.trim()}",
+                          verificationCompleted: (PhoneAuthCredential credential) {},
+                          verificationFailed: (FirebaseAuthException e) {},
+                          codeSent: (String verificationId, int? resendToken) {
+                            LoginScreen.verify = verificationId;
+                            var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
+                            Navigator.push(
+                                getContext,
+                                MaterialPageRoute(
+                                    builder: (context) =>  OtpScreen(mobileNo:mobileNoController.text.trim().toString(), type: type,)));
+                          },
+                          codeAutoRetrievalTimeout: (String verificationId) {},
+                        );*/
                         loginApi();
                       }
-
                     },
                     child: const Text(
                       'Log In',
@@ -198,6 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
       )),
     );
   }
+
   loginApi() async {
     var request = {
       'mobile_number': mobileNoController.text.trim(),
@@ -212,18 +262,13 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.push(
               getContext,
               MaterialPageRoute(
-                  builder: (context) => const EditProfileScreen()));
+                  builder: (context) =>  const EditProfileScreen(from:"login_screen",)));
         }else{
           Navigator.push(
               getContext,
               MaterialPageRoute(
-                  builder: (context) => const OtpScreen()));
+                  builder: (context) =>  OtpScreen(mobileNo: mobileNoController.text.trim(), type: isBettor?"2":isScorer?"3":isOrganiser?"1":"",)));
         }
-
-          /*Navigator.pushReplacement(
-              getContext,
-              MaterialPageRoute(
-                  builder: (context) => const OtpScreen()));*/
 
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
@@ -242,8 +287,9 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   bool checkValidations() {
-    if (isBettor==false&&isScorer==false&&isOrganiser==false) {
-      CommonFunctions().showToastMessage(getContext, "Please select user type.");
+    if (isBettor == false && isScorer == false && isOrganiser == false) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please select user type.");
       return false;
     } else if (mobileNoController.text.trim().toString().isEmpty) {
       CommonFunctions()

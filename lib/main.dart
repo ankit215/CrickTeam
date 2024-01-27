@@ -1,6 +1,7 @@
 import 'package:crick_team/splashOnBoardRelatedFiles/SplashScreen.dart';
 import 'package:crick_team/utils/constant.dart';
 import 'package:crick_team/utils/shared_pref.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,23 +29,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     // LocalNotificationService.initNotification();
-    // init();
+    init();
     chooseUser();
   }
 
-/*
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
-    getPermissions();
+    // getPermissions();
     await Firebase.initializeApp(
       options: const FirebaseOptions(
-          apiKey: "AIzaSyCrWBUbpZ3Gbp1y_cewjgNACoNP7nLJ8Xk",
-          appId: "1:107063697561:android:56dff05956c6c7ecf75808",
-          messagingSenderId: "107063697561",
-          projectId: "raves-and-rants"),
+          apiKey: "AIzaSyCh9GawQsp5_W4jx34qNXx6FvVqxcfs0SQ",
+          appId: "1:258723223868:android:6ead204196d792e0852639",
+          messagingSenderId: "258723223868",
+          projectId: "cric-team-35e34"),
     );
   }
-*/
 
   // This widget is the root of your application.
   @override

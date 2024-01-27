@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:crick_team/loginSignupRelatedFiles/ForgotPasswordScreen.dart';
 import 'package:crick_team/utils/constant.dart';
 import 'package:crick_team/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
@@ -14,12 +12,14 @@ import '../apiRelatedFiles/api_utils.dart';
 import '../apiRelatedFiles/rest_apis.dart';
 import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
+import '../mainScreens/MainScreen.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/common.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({Key? key}) : super(key: key);
+  final String from;
+  const EditProfileScreen({super.key, required this.from});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -217,8 +217,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                     ),
                     const Spacer(),
-                    const Text("EDIT PROFILE",
-                        style: TextStyle(
+                     Text(widget.from=="profile_screen"?"EDIT PROFILE":"ADD DETAILS",
+                        style: const TextStyle(
                             fontSize: 20.0,
                             letterSpacing: 2,
                             color: AppColor.brown2,
@@ -260,7 +260,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                 )
                                     :imageFile == null&&getStringAsync(image).isEmpty
                                     ? Image.asset(
-                                        "assets/dummy.jpeg",
+                                        "assets/user_placeholder.png",
                                         fit: BoxFit.cover,
                                       )
                                     : Image.file(
@@ -799,6 +799,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         firstNameController.text.trim().toString();
     multiPartRequest.fields['email_address'] =
         emailController.text.trim().toString();
+    multiPartRequest.fields['address'] = addressController.text.trim().toString();
     multiPartRequest.fields['dob'] = "$dobMonth/$dobDay/$dobYear";
     multiPartRequest.fields['gender'] = selectGender == "Male"
         ? "1"
@@ -814,7 +815,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     hideLoader();
     if (res.success == 1) {
       toast(res.message);
-      Navigator.pop(getContext, res.body);
+      if(widget.from=="profile_screen"){
+        Navigator.pop(getContext, res.body);
+      }else{
+        Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  MainScreen(index: 0,)));
+      }
+
     } else if (res.success != 1 && res.code == 401) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(

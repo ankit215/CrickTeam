@@ -141,7 +141,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
 
   myTeamsScreen() {
     return Container(
-      margin: const EdgeInsets.only(top: 10),
+      margin: const EdgeInsets.only(top: 10,bottom: 10),
       child: ListView.builder(
         itemCount: teamList.length,
         shrinkWrap: true,
@@ -160,9 +160,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                           teamASelected: widget.teamASelected,
                           teamBSelected: widget.teamBSelected,
                           team: widget.team,
-                        ))).then((value){
-                  debugPrint("dewdwd"+value);
-                          if(value=="add_teams"){
+                        ))).then((value){if(value=="add_teams"){
                             debugPrint("dadaddadaddsadasdad");
                             setState(() {
                               widget.teamASelected.getTeamData = null;
@@ -282,7 +280,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
                                     color: AppColor.brown2,
                                   ),
                                   Text(
-                                    getStringAsync(address),
+                                    teamList[index].city.toString(),
                                     style: const TextStyle(
                                         fontSize: 16,
                                         fontFamily: "Lato_Semibold",
@@ -502,7 +500,6 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
     showLoader();
     MultipartRequest multiPartRequest =
         await getMultiPartRequest('create_team', method: 'POST');
-    multiPartRequest.fields['id'] = getStringAsync(userId);
     multiPartRequest.fields['name'] = teamController.text.trim().toString();
     multiPartRequest.fields['city'] = cityNameController.text.trim().toString();
     if (imageFile != null) {
@@ -514,7 +511,50 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
     hideLoader();
     if (res.success == 1) {
       toast(res.message);
-      Navigator.pop(getContext, res.body);
+      teamController.text = "";
+      cityNameController.text = "";
+      imageFile = null;
+      Future.delayed(Duration.zero, () {
+        getTeamListApi();
+      });
+      // if (widget.team == "A" ) {
+      //   widget.teamASelected.getTeamData = teamList[index];
+      //   Navigator.push(
+      //       getContext,
+      //       MaterialPageRoute(
+      //           builder: (context) => AddTeams(
+      //             getTeamData: teamList[index],
+      //             teamASelected: widget.teamASelected,
+      //             teamBSelected: widget.teamBSelected,
+      //             team: widget.team,
+      //           ))).then((value){if(value=="add_teams"){
+      //     debugPrint("dadaddadaddsadasdad");
+      //     setState(() {
+      //       widget.teamASelected.getTeamData = null;
+      //     });
+      //
+      //   }
+      //   });
+      // } else if(widget.team == "B" ){
+      //   widget.teamBSelected.getTeamData = teamList[index];
+      //   Navigator.push(
+      //       getContext,
+      //       MaterialPageRoute(
+      //           builder: (context) => AddTeams(
+      //               getTeamData: teamList[index],
+      //               teamASelected: widget.teamASelected,
+      //               teamBSelected: widget.teamBSelected,
+      //               team: widget.team
+      //           ))).then((value) {
+      //     debugPrint("dewdwd"+value);
+      //     if(value=="add_teams"){
+      //       debugPrint("dadaddadaddsadasdad");
+      //       setState(() {
+      //         widget.teamBSelected.getTeamData = null;
+      //       });
+      //     }
+      //   });
+      // }
     } else if (res.success != 1 && res.code == 401) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(

@@ -1,10 +1,15 @@
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
-import 'package:crick_team/mainScreens/ScoreScreen.dart';
-import 'package:crick_team/scoreRelatedScreens/ScorerScreen.dart';
+import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/utils/AppColor.dart';
+import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../startMatchRelatedScreens/TossScreen.dart';
+import '../utils/CommonFunctions.dart';
 class MatchModel {
   String? teamAName;
   String? teamAShortName;
@@ -34,18 +39,38 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<MatchModel> matchList = [
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-    MatchModel("South Africa", "SA", "Sri Lanka", "SL", "37m 56s",
-        "10:00 AM (05 Dec)", "assets/sl.png", "assets/sa.png"),
-    MatchModel("Sri Lanka", "SL", "West Indies", "WI", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/sl.png", "assets/india.png"),
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-  ];
+  List<GetMatchData> matchList = [];
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration.zero,(){
+      getMatchListApi();
+    });
+  }
+  Future getMatchListApi() async {
+    await getMatchList().then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          matchList = [];
+          matchList.addAll(res.body!);
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Stack(
               children: [
                 CircleAvatar(
+                  backgroundColor: Colors.white,
                   radius: 24,
                   child: ClipOval(
                       child: Image.asset(
@@ -126,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SizedBox(
         height: double.infinity,
         child: SingleChildScrollView(
-          physics: AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
               Container(
@@ -188,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   Center(
                                       child: Text(
-                                    "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
+                                    "${matchList[index].team1Name} vs ${matchList[index].team2Name}",
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
@@ -202,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   const SizedBox(
                                     height: 10,
                                   ),
-                                  Container(
+                                  SizedBox(
                                     height: 50,
                                     width:
                                     MediaQuery.sizeOf(context).width *
@@ -235,20 +261,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               CircleAvatar(
+                                                backgroundColor: Colors.white,
                                                 radius: 30,
                                                 child: ClipOval(
                                                     child: Image.asset(
-                                                  matchList[index].teamAFlag!,
+                                                  "assets/team_placeholder.png",
                                                   fit: BoxFit.contain,
                                                   height: 45,
                                                   width: 45,
                                                 )),
                                               ),
                                               CircleAvatar(
+                                                backgroundColor: Colors.white,
                                                 radius: 30,
                                                 child: ClipOval(
                                                     child: Image.asset(
-                                                  matchList[index].teamBFlag!,
+                                                      "assets/team_placeholder.png",
                                                   fit: BoxFit.contain,
                                                   height: 45,
                                                   width: 45,
@@ -274,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
 
                                           Text(
-                                            matchList[index].matchTimeRemaining!,
+                                            DateFormat('h:mm a').format(DateFormat.Hm().parse(matchList[index].matchTime.toString())),
                                             style: const TextStyle(
                                                 fontFamily: "Lato_Semibold",
                                                 color: Colors.red,
@@ -284,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       )),
                                   const SizedBox(height: 5,),
                                   Text(
-                                    matchList[index].matchDateTime!,
+                                    matchList[index].matchDate!,
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
@@ -328,7 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ListView.builder(
                 itemCount: matchList.length,
                 shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
+                physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
                   return Card(
                     margin:
@@ -366,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Center(
                                   child: Text(
-                                    "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
+                                    "${matchList[index].team1Name} vs ${matchList[index].team2Name} T20",
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
@@ -381,7 +409,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 10,
                               ),
 
-                              Container(
+                              SizedBox(
                                 height: 50,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -405,10 +433,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                         SizedBox(width: MediaQuery.sizeOf(context).width *
                                             0.1,),
                                         CircleAvatar(
+                                          backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
                                               child: Image.asset(
-                                                matchList[index].teamAFlag!,
+                                                "assets/team_placeholder.png",
                                                 fit: BoxFit.contain,
                                                 height: 45,
                                                 width: 45,
@@ -424,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
 
                                     Text(
-                                      matchList[index].matchTimeRemaining!,
+                                      DateFormat('h:mm a').format(DateFormat.Hm().parse(matchList[index].matchTime.toString())),
                                       style: const TextStyle(
                                           fontFamily: "Lato_Semibold",
                                           color: Colors.red,
@@ -448,10 +477,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       children: [
 
                                         CircleAvatar(
+                                          backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
                                               child: Image.asset(
-                                                matchList[index].teamBFlag!,
+                                                "assets/team_placeholder.png",
                                                 fit: BoxFit.contain,
                                                 height: 45,
                                                 width: 45,
@@ -468,7 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                               const SizedBox(height: 5,),
                               Text(
-                                matchList[index].matchDateTime!,
+                                matchList[index].matchDate!,
                                 style: const TextStyle(
                                     fontFamily: "Lato_Semibold",
                                     color: AppColor.brown2,

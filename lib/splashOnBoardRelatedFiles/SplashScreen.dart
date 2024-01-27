@@ -23,7 +23,7 @@ class _MyHomePageState extends State<MyHomePage> {
         const Duration(seconds: 3),
         () => Navigator.pushReplacement(
               getContext,
-              MaterialPageRoute(builder: (context) => getStringAsync(userName).isEmpty&&getStringAsync(userId).isNotEmpty?EditProfileScreen():getStringAsync(userName).isNotEmpty&&getStringAsync(userId).isNotEmpty?MainScreen(index: 0,):const OnBoardScreen()),
+              MaterialPageRoute(builder: (context) => getStringAsync(userName).isEmpty&&getStringAsync(userId).isNotEmpty?const EditProfileScreen(from: "splash_screen"):getStringAsync(userName).isNotEmpty&&getStringAsync(userId).isNotEmpty?MainScreen(index: 0,):const OnBoardScreen()),
               // MaterialPageRoute(builder: (context) =>  NavigationScreen(index: 0,)),
             ));
   }

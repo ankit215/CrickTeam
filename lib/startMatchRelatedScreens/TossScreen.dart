@@ -105,6 +105,7 @@ class _TossScreenState extends State<TossScreen> {
                               children: [
                                 CircleAvatar(
                                   radius: 30,
+                                  backgroundColor: Colors.white,
                                   child: ClipOval(
                                       child: Image.asset(
                                     "assets/team_placeholder.png",
@@ -156,6 +157,7 @@ class _TossScreenState extends State<TossScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircleAvatar(
+                                  backgroundColor: Colors.white,
                                   radius: 30,
                                   child: ClipOval(
                                       child: Image.asset(

@@ -122,7 +122,7 @@ class CommonFunctions {
       dialogBackgroundColor: Colors.white,
     );
     if (values != null) {
-      String formattedDate = DateFormat('MMMM dd, yyyy').format(values.single!);
+      String formattedDate = DateFormat('yyyy-MM-dd').format(values.single!);
       debugPrint(
           "SELECTED_DATE___$formattedDate"); //get the picked date in the format => 2022-07-04 00:00:00.000
       return formattedDate;

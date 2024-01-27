@@ -34,6 +34,7 @@ class GetPlayerSearchData {
   int? id;
   String? name;
   String? mobileNumber;
+  bool playerSelected = false;
 
   GetPlayerSearchData({this.id, this.name, this.mobileNumber});
 

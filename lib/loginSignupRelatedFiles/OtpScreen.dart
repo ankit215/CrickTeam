@@ -1,19 +1,30 @@
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/mainScreens/MainScreen.dart';
 import 'package:crick_team/utils/AppColor.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
+import '../profileRelatedScrees/EditProfileScreen.dart';
+import '../utils/CommonFunctions.dart';
+import '../utils/common.dart';
+import 'LoginScreen.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final String mobileNo;
+  final String type;
+
+  const OtpScreen({super.key, required this.mobileNo, required this.type});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  var otpTextStyles = [TextStyle(color: Colors.red)];
+  var otpTextStyles = [const TextStyle(color: Colors.red)];
+  var smsCode = "";
 
   @override
   Widget build(BuildContext context) {
@@ -77,19 +88,19 @@ class _OtpScreenState extends State<OtpScreen> {
                     ),
                   ),
                 ),
-                const Center(
+                Center(
                     child: Text(
-                  "+91-8454654585",
-                  style: TextStyle(
+                  "+91-${widget.mobileNo}",
+                  style: const TextStyle(
                       color: AppColor.brown2,
                       fontSize: 16,
                       fontFamily: "Lato_Semibold"),
                 )),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 OtpTextField(
-                  numberOfFields: 5,
+                  numberOfFields: 6,
                   borderColor: AppColor.orange_light,
                   focusedBorderColor: AppColor.orange_light,
                   //set to true to show as box or false to show asF dash
@@ -102,17 +113,10 @@ class _OtpScreenState extends State<OtpScreen> {
                   //runs when every textfield is filled
                   onSubmit: (String verificationCode) {
                     debugPrint("OTP_SUBMIT__$verificationCode");
-                    /* showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Text("Verification Code"),
-                            content: Text('Code entered is $verificationCode'),
-                          );
-                        });*/
+                    smsCode = verificationCode;
                   }, // end onSubmit
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 60,
                 ),
                 Container(
@@ -138,7 +142,30 @@ class _OtpScreenState extends State<OtpScreen> {
                         shadowColor:
                             MaterialStateProperty.all(Colors.transparent),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        /*FirebaseAuth auth = FirebaseAuth.instance;
+
+                        await auth.verifyPhoneNumber(
+                          phoneNumber: "+91${widget.mobileNo}",
+                          codeSent:
+                              (String verificationId, int? resendToken) async {
+                            // Update the UI - wait for the user to enter the SMS code
+
+                            // Create a PhoneAuthCredential with the code
+                            PhoneAuthCredential credential =
+                                PhoneAuthProvider.credential(
+                                    verificationId: LoginScreen.verify,
+                                    smsCode: smsCode);
+
+                            // Sign the user in (or link) with the credential
+                            await auth.signInWithCredential(credential);
+                          },
+                          verificationCompleted:
+                              (PhoneAuthCredential phoneAuthCredential) {loginApi();},
+                          verificationFailed: (FirebaseAuthException error) {},
+                          codeAutoRetrievalTimeout: (String verificationId) {},
+                        );*/
+
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -181,7 +208,6 @@ class _OtpScreenState extends State<OtpScreen> {
                                           ),
                                           child: Container(
                                             height: 50,
-
                                             width: double.infinity,
                                             decoration: BoxDecoration(
                                               gradient: const LinearGradient(
@@ -211,9 +237,13 @@ class _OtpScreenState extends State<OtpScreen> {
                                                           Colors.transparent),
                                                 ),
                                                 onPressed: () {
-                                                  Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  MainScreen(index: 0,)));
-
-
+                                                  Navigator.push(
+                                                      getContext,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MainScreen(
+                                                                index: 0,
+                                                              )));
                                                 },
                                                 child: const Text('Continue',
                                                     style: TextStyle(
@@ -250,5 +280,50 @@ class _OtpScreenState extends State<OtpScreen> {
         ),
       ),
     );
+  }
+
+  loginApi() async {
+    var request = {
+      'mobile_number': widget.mobileNo,
+      'type': widget.type,
+    };
+    await login(request).then((res) async {
+      debugPrint("res.body!.name: ${res.body!.name.toString()}");
+      if (res.success == 1) {
+        toast(res.message);
+        if (res.body!.name == null) {
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => const EditProfileScreen(
+                        from: "login_screen",
+                      )));
+        } else {
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(
+                        index: 0,
+                      )));
+        }
+
+        /*Navigator.pushReplacement(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => const OtpScreen()));*/
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
   }
 }

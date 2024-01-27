@@ -56,6 +56,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
               child: Stack(
                 children: [
                   CircleAvatar(
+                    backgroundColor: Colors.white,
                     radius: 24,
                     child: ClipOval(
                         child: Image.asset(
@@ -68,8 +69,8 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                   Align(
                       alignment: Alignment.bottomRight,
                       child: CircleAvatar(
+                        backgroundColor: Colors.white,
                         radius: 12,
-                        backgroundColor: AppColor.white,
                         child: ClipOval(
                             child: Image.asset(
                               "assets/menu.png",
@@ -254,6 +255,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                       MediaQuery.sizeOf(context).width * 0.2,
                                     ),
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -284,6 +286,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -432,6 +435,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                       MediaQuery.sizeOf(context).width * 0.1,
                                     ),
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -475,6 +479,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(

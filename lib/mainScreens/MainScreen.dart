@@ -23,7 +23,7 @@ class MainScreen extends StatefulWidget {
   }*/
 }
 
-final GlobalKey<ScaffoldState> scaffoldKeys = GlobalKey<ScaffoldState>();
+// final GlobalKey<ScaffoldState> scaffoldKeys = GlobalKey<ScaffoldState>();
 
 String userType = "";
 
@@ -63,7 +63,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKeys,
+      // key: scaffoldKeys,
       drawer: SizedBox(
         width: 350,
         child: Menu(

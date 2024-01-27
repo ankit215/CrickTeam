@@ -6,6 +6,7 @@ import 'package:crick_team/utils/search_delay_function.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -34,8 +35,8 @@ class _AddTeamsState extends State<AddTeams> {
   TextEditingController phoneController = TextEditingController();
   final searchDelay = SearchDelayFunction();
   var searchStr = "";
-  List<GetTeamDetailData> teamPlayerList = [];
   List<GetPlayerSearchData> teamPlayerSearchedList = [];
+  List<GetTeamDetailData> teamPlayerList = [];
   List<GetTeamDetailData> playerSelected = [];
 
   @override
@@ -94,6 +95,10 @@ class _AddTeamsState extends State<AddTeams> {
                     child: TextField(
                       controller: searchController,
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10),
+                      ],
                       onChanged: (value) {
                         searchStr = value;
                         searchDelay.run(() {
@@ -221,6 +226,10 @@ class _AddTeamsState extends State<AddTeams> {
                                     child: TextField(
                                       controller: phoneController,
                                       keyboardType: TextInputType.phone,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(10),
+                                      ],
                                       decoration:
                                           const InputDecoration.collapsed(
                                               hintText: 'Enter phone number',
@@ -399,7 +408,7 @@ class _AddTeamsState extends State<AddTeams> {
                                             Text(
                                               teamPlayerList[index].userName ==
                                                   null
-                                                  ? "Anonymus"
+                                                  ? "Player"
                                                   : teamPlayerList[index]
                                                   .userName
                                                   .toString(),
@@ -525,7 +534,7 @@ class _AddTeamsState extends State<AddTeams> {
                                             Text(
                                               teamPlayerSearchedList[index].name ==
                                                       null
-                                                  ? "Anonymus"
+                                                  ? "Player"
                                                   : teamPlayerSearchedList[index]
                                                       .name
                                                       .toString(),

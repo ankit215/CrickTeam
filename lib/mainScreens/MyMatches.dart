@@ -58,6 +58,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
               child: Stack(
                 children: [
                   CircleAvatar(
+                    backgroundColor: Colors.white,
                     radius: 24,
                     child: ClipOval(
                         child: Image.asset(
@@ -270,6 +271,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       MediaQuery.sizeOf(context).width * 0.2,
                                     ),
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -300,6 +302,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -449,6 +452,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       MediaQuery.sizeOf(context).width * 0.1,
                                     ),
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -492,6 +496,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -623,6 +628,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       MediaQuery.sizeOf(context).width * 0.1,
                                     ),
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(
@@ -666,6 +672,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                 Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       radius: 30,
                                       child: ClipOval(
                                           child: Image.asset(

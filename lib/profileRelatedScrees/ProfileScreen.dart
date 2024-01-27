@@ -95,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                 fit: BoxFit.cover,
                                               )
                                                   : Image.asset(
-                                                "assets/user_placeholder.jpeg",
+                                                "assets/user_placeholder.png",
                                                 fit: BoxFit.cover,
                                               )),
                                         ),
@@ -118,7 +118,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                                   getContext,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
-                                                          const EditProfileScreen()));
+                                                          const EditProfileScreen(from: "profile_screen",)));
                                             },
                                             child: Center(
                                                 child: Image.asset(
