@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../modalClasses/AddTeamModel.dart';
 import '../modalClasses/GetMatchModel.dart';
 import '../modalClasses/GetPlayerSearchModel.dart';
 import '../modalClasses/GetTeamDetailModel.dart';
@@ -128,9 +129,9 @@ Future<UpdateProfileModel> updateProfile(
   await saveUpdateUserData(updateProfileModel.body!);
   return updateProfileModel;
 }
-Future<SimpleApiModel> createTeam(
+Future<AddTeamModel> createTeam(
     MultipartRequest multiPartRequest) async {
-  var createTeamModel = SimpleApiModel.fromJson(
+  var createTeamModel = AddTeamModel.fromJson(
       await (handleResponse(await buildMultiPartRequest(multiPartRequest))));
   return createTeamModel;
 }
@@ -154,10 +155,10 @@ Future<SimpleApiModel> createMatch(Map request) async {
   hideLoader();
   return createPlayer;
 }
-Future<GetTeamModel> getTeamList() async {
+Future<GetTeamModel> getTeamList(String search) async {
   showLoader();
   return GetTeamModel.fromJson(await (handleResponse(
-      await buildHttpResponse("team_list",method: HttpMethod.get))));
+      await buildHttpResponse("team_list?search_parameters=$search",method: HttpMethod.get))));
 }
 Future<GetMatchModel> getMatchList() async {
   showLoader();

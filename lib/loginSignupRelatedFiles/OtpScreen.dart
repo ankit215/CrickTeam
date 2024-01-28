@@ -143,30 +143,23 @@ class _OtpScreenState extends State<OtpScreen> {
                             MaterialStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () async {
-                        /*FirebaseAuth auth = FirebaseAuth.instance;
+                        FirebaseAuth auth = FirebaseAuth.instance;
+                        try{
+                          PhoneAuthCredential credential =
+                          PhoneAuthProvider.credential(
+                              verificationId: LoginScreen.verify,
+                              smsCode: smsCode);
 
-                        await auth.verifyPhoneNumber(
-                          phoneNumber: "+91${widget.mobileNo}",
-                          codeSent:
-                              (String verificationId, int? resendToken) async {
-                            // Update the UI - wait for the user to enter the SMS code
+                          // Sign the user in (or link) with the credential
+                          await auth.signInWithCredential(credential);
+                          loginApi();
+                        }catch(e){
+                          CommonFunctions().showToastMessage(getContext, "OTP is incorrect.");
+                        }
 
-                            // Create a PhoneAuthCredential with the code
-                            PhoneAuthCredential credential =
-                                PhoneAuthProvider.credential(
-                                    verificationId: LoginScreen.verify,
-                                    smsCode: smsCode);
 
-                            // Sign the user in (or link) with the credential
-                            await auth.signInWithCredential(credential);
-                          },
-                          verificationCompleted:
-                              (PhoneAuthCredential phoneAuthCredential) {loginApi();},
-                          verificationFailed: (FirebaseAuthException error) {},
-                          codeAutoRetrievalTimeout: (String verificationId) {},
-                        );*/
 
-                        showDialog(
+                        /*showDialog(
                           context: context,
                           builder: (context) {
                             return Dialog(
@@ -263,7 +256,7 @@ class _OtpScreenState extends State<OtpScreen> {
                               ),
                             );
                           },
-                        );
+                        );*/
                       },
                       child: const Text(
                         'Submit',

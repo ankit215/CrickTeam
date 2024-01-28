@@ -81,7 +81,7 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                         Navigator.push(getContext, MaterialPageRoute(builder: (context) =>   SelectTeam(team: "A",teamASelected: teamASelected,teamBSelected: teamBSelected,)));
                       },
                       child:  Center(
-                          child:teamASelected.getTeamData==null/*&&teamASelected.getTeamData.teamPhoto == null*/
+                          child:teamASelected.getTeamData==null||teamASelected.getTeamData!.teamPhoto == null
                               ? const Icon(
                         Icons.add_circle_rounded,
                         color: AppColor.medBrown,
@@ -130,12 +130,24 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
                       onTap: (){
                         Navigator.push(getContext, MaterialPageRoute(builder: (context) =>   SelectTeam(team: "B",teamASelected: teamASelected,teamBSelected: teamBSelected,)));
                       },
-                      child: const Center(
-                          child: Icon(
-                        Icons.add_circle_rounded,
-                        color: AppColor.medBrown,
-                        size: 100,
-                      )),
+                      child:Center(
+                        child:teamBSelected.getTeamData==null||teamBSelected.getTeamData!.teamPhoto == null
+                            ? const Icon(
+                          Icons.add_circle_rounded,
+                          color: AppColor.medBrown,
+                          size: 100,
+                        ):  CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                              child: Image.network(
+                                mediaUrl +
+                                    teamBSelected.getTeamData!.teamPhoto.toString(),
+                                height: 90,
+                                width: 90,
+                                fit: BoxFit.cover,
+                              )),
+                        ),),
                     ),
                     GestureDetector(
                       onTap: (){
@@ -205,4 +217,6 @@ class _SelectPlayingState extends State<SelectPlayingTeams> {
       ),
     );
   }
+
+
 }

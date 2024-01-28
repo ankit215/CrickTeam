@@ -15,6 +15,7 @@ import '../modalClasses/GetTeamModel.dart';
 import '../modalClasses/TeamSelected.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/common.dart';
+import '../utils/constant.dart';
 import '../utils/search_delay_function.dart';
 
 class StartMatch extends StatefulWidget {
@@ -188,9 +189,11 @@ class _StartMatchState extends State<StartMatch> {
                                           alignment: Alignment.centerLeft,
                                           margin:
                                               const EdgeInsets.only(left: 20),
-                                          child: const Text(
-                                            "Team A",
-                                            style: TextStyle(
+                                          child: Text(
+                                            getFirstLetters(widget
+                                                .teamASelected.getTeamData!.name
+                                                .toString()),
+                                            style: const TextStyle(
                                                 fontFamily: "Lato_Semibold",
                                                 color: AppColor.white,
                                                 fontSize: 16),
@@ -209,12 +212,28 @@ class _StartMatchState extends State<StartMatch> {
                                           backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
-                                              child: Image.asset(
-                                            "assets/team_placeholder.png",
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
+                                              child: widget
+                                                          .teamASelected
+                                                          .getTeamData!
+                                                          .teamPhoto ==
+                                                      null
+                                                  ? Image.asset(
+                                                      "assets/team_placeholder.png",
+                                                      fit: BoxFit.cover,
+                                                      height: 45,
+                                                      width: 45,
+                                                    )
+                                                  : Image.network(
+                                                      mediaUrl +
+                                                          widget
+                                                              .teamASelected
+                                                              .getTeamData!
+                                                              .teamPhoto
+                                                              .toString(),
+                                                      fit: BoxFit.contain,
+                                                      height: 45,
+                                                      width: 45,
+                                                    )),
                                         ),
                                       ],
                                     ),
@@ -240,9 +259,11 @@ class _StartMatchState extends State<StartMatch> {
                                         alignment: Alignment.centerRight,
                                         margin:
                                             const EdgeInsets.only(right: 20),
-                                        child: const Text(
-                                          "Team B",
-                                          style: TextStyle(
+                                        child: Text(
+                                          getFirstLetters(widget
+                                              .teamBSelected.getTeamData!.name
+                                              .toString()),
+                                          style: const TextStyle(
                                               fontFamily: "Lato_Semibold",
                                               color: AppColor.white,
                                               fontSize: 16),
@@ -255,12 +276,28 @@ class _StartMatchState extends State<StartMatch> {
                                           backgroundColor: Colors.white,
                                           radius: 30,
                                           child: ClipOval(
-                                              child: Image.asset(
-                                            "assets/team_placeholder.png",
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
+                                              child: widget
+                                                          .teamBSelected
+                                                          .getTeamData!
+                                                          .teamPhoto ==
+                                                      null
+                                                  ? Image.asset(
+                                                      "assets/team_placeholder.png",
+                                                      fit: BoxFit.cover,
+                                                      height: 45,
+                                                      width: 45,
+                                                    )
+                                                  : Image.network(
+                                                      mediaUrl +
+                                                          widget
+                                                              .teamBSelected
+                                                              .getTeamData!
+                                                              .teamPhoto
+                                                              .toString(),
+                                                      fit: BoxFit.cover,
+                                                      height: 45,
+                                                      width: 45,
+                                                    )),
                                         ),
                                         SizedBox(
                                           width:
@@ -447,7 +484,7 @@ class _StartMatchState extends State<StartMatch> {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          Future.delayed(Duration.zero,(){
+                          Future.delayed(Duration.zero, () {
                             FocusManager.instance.primaryFocus?.unfocus();
                           });
                           var date = await CommonFunctions.selectDate();
@@ -517,7 +554,8 @@ class _StartMatchState extends State<StartMatch> {
                             duskSpanInMinutes: 120,
                             // optional
                             onChange: (value) {
-                              timeValue ="${value.hour.toString()}:${value.minute.toString()}" ;
+                              timeValue =
+                                  "${value.hour.toString()}:${value.minute.toString()}";
                               debugPrint("TIME $timeValue");
                               timeController.text = timeValue;
                             },
@@ -643,7 +681,7 @@ class _StartMatchState extends State<StartMatch> {
               ),
               GestureDetector(
                 onTap: () {
-                  if(checkValidation()){
+                  if (checkValidation()) {
                     createPlayerApi();
                   }
                 },
@@ -790,18 +828,22 @@ class _StartMatchState extends State<StartMatch> {
                               return GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    for(int i = 0; i<teamPlayerSearchedList.length;i++){
-                                      teamPlayerSearchedList[i]
-                                          .playerSelected =false;
+                                    for (int i = 0;
+                                        i < teamPlayerSearchedList.length;
+                                        i++) {
+                                      teamPlayerSearchedList[i].playerSelected =
+                                          false;
                                     }
                                     teamPlayerSearchedList[index]
-                                            .playerSelected =true;
-                                    scorerId = teamPlayerSearchedList[index].id.toString();
-                                    print("dfdfsdf"+scorerId);
+                                        .playerSelected = true;
+                                    scorerId = teamPlayerSearchedList[index]
+                                        .id
+                                        .toString();
+                                    print("dfdfsdf" + scorerId);
                                   });
                                 },
                                 child: Card(
-                                  color: Colors.white,
+                                    color: Colors.white,
                                     margin: const EdgeInsets.symmetric(
                                         horizontal: 15, vertical: 5),
                                     elevation: 0.0,
@@ -841,7 +883,8 @@ class _StartMatchState extends State<StartMatch> {
                                                 child: Row(
                                                   children: [
                                                     CircleAvatar(
-                                                      backgroundColor: Colors.white,
+                                                      backgroundColor:
+                                                          Colors.white,
                                                       radius: 30,
                                                       child: ClipOval(
                                                           child: Image.asset(
@@ -1137,7 +1180,8 @@ class _StartMatchState extends State<StartMatch> {
                                                       child: Row(
                                                         children: [
                                                           CircleAvatar(
-                                                            backgroundColor: Colors.white,
+                                                            backgroundColor:
+                                                                Colors.white,
                                                             radius: 30,
                                                             child: ClipOval(
                                                                 child:
@@ -1395,7 +1439,7 @@ class _StartMatchState extends State<StartMatch> {
       'scorer_id': scorerId,
       'status': "1",
       'team_one_json': teamOneJson,
-      'team_two_json':teamTwoJson,
+      'team_two_json': teamTwoJson,
     };
     await createMatch(request).then((res) async {
       if (res.success == 1) {
@@ -1442,34 +1486,28 @@ class _StartMatchState extends State<StartMatch> {
                             height: 50,
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(colors: [
-                                AppColor.red,
-                                AppColor.brown2
-                              ]),
+                              gradient: const LinearGradient(
+                                  colors: [AppColor.red, AppColor.brown2]),
                               borderRadius: BorderRadius.circular(30),
                             ),
                             child: ElevatedButton(
                                 style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                      StadiumBorder>(
+                                  shape:
+                                      MaterialStateProperty.all<StadiumBorder>(
                                     const StadiumBorder(),
                                   ),
-                                  elevation:
-                                  MaterialStateProperty.all(8),
-                                  backgroundColor:
-                                  MaterialStateProperty.all(
+                                  elevation: MaterialStateProperty.all(8),
+                                  backgroundColor: MaterialStateProperty.all(
                                       Colors.transparent),
                                   // elevation: MaterialStateProperty.all(3),
-                                  shadowColor:
-                                  MaterialStateProperty.all(
+                                  shadowColor: MaterialStateProperty.all(
                                       Colors.transparent),
                                 ),
                                 onPressed: () {
                                   Navigator.push(
                                       getContext,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              MainScreen(
+                                          builder: (context) => MainScreen(
                                                 index: 0,
                                               )));
                                 },
@@ -1490,7 +1528,6 @@ class _StartMatchState extends State<StartMatch> {
             );
           },
         );
-
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
@@ -1538,8 +1575,7 @@ class _StartMatchState extends State<StartMatch> {
           .showToastMessage(getContext, "No. of overs Field Is Required");
       return false;
     } else if (cityController.text.trim().toString() == '') {
-      CommonFunctions()
-          .showToastMessage(getContext, "City Field Is Required.");
+      CommonFunctions().showToastMessage(getContext, "City Field Is Required.");
       return false;
     } else if (groundController.text.trim().toString() == '') {
       CommonFunctions()
@@ -1550,10 +1586,9 @@ class _StartMatchState extends State<StartMatch> {
           .showToastMessage(getContext, "Ground Field Is Required.");
       return false;
     } else if (timeValue == '') {
-      CommonFunctions()
-          .showToastMessage(getContext, "Time Field Is Required.");
+      CommonFunctions().showToastMessage(getContext, "Time Field Is Required.");
       return false;
-    }else if (scorerId == '') {
+    } else if (scorerId == '') {
       CommonFunctions()
           .showToastMessage(getContext, "Scorer Field Is Required.");
       return false;
@@ -1562,4 +1597,15 @@ class _StartMatchState extends State<StartMatch> {
     }
   }
 
+  String getFirstLetters(String input) {
+    List<String> words = input.split(" ");
+    String result = "";
+
+    for (String word in words) {
+      if (word.isNotEmpty) {
+        result += word[0];
+      }
+    }
+    return result.toUpperCase(); // Convert to uppercase if needed
+  }
 }

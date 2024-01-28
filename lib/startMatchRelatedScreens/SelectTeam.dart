@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,6 +17,7 @@ import '../modalClasses/TeamSelected.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/constant.dart';
+import '../utils/search_delay_function.dart';
 import '../utils/shared_pref.dart';
 import 'AddTeams.dart';
 
@@ -38,6 +40,9 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
   late TabController tabController;
   TextEditingController teamController = TextEditingController();
   TextEditingController cityNameController = TextEditingController();
+  TextEditingController searchController = TextEditingController();
+  final searchDelay = SearchDelayFunction();
+  var searchStr = "";
   File? imageFile;
   List<GetTeamData> teamList = [];
 
@@ -51,7 +56,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
     );
     tabController.addListener(_handleTabSelection);
     Future.delayed(Duration.zero, () {
-      getTeamListApi();
+      getTeamListApi(searchStr);
     });
   }
 
@@ -140,170 +145,246 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
   }
 
   myTeamsScreen() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10,bottom: 10),
-      child: ListView.builder(
-        itemCount: teamList.length,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              if (widget.teamASelected.getTeamData == teamList[index] ||widget.teamBSelected.getTeamData == teamList[index]) {
-                CommonFunctions().showToastMessage(context, "Team already added for the match.");
-              } else if (widget.team == "A" ) {
-                widget.teamASelected.getTeamData = teamList[index];
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => AddTeams(
-                          getTeamData: teamList[index],
-                          teamASelected: widget.teamASelected,
-                          teamBSelected: widget.teamBSelected,
-                          team: widget.team,
-                        ))).then((value){if(value=="add_teams"){
-                            debugPrint("dadaddadaddsadasdad");
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            height: MediaQuery.of(context).size.height * 0.07,
+            margin: const EdgeInsets.all(10),
+            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.03),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                color: AppColor.white,
+                border: Border.all(color: AppColor.brown2)),
+            child: Center(
+              child: Row(
+                children: <Widget>[
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      onChanged: (value) {
+                        searchStr = value;
+                        searchDelay.run(() {
+                          if(searchStr.isEmpty){
                             setState(() {
-                              widget.teamASelected.getTeamData = null;
+                              searchController.text = "";
+                              searchStr = "";
+                              teamList.clear();
+                              Future.delayed(Duration.zero, () {
+                                getTeamListApi(searchStr);
+                              });
                             });
-
+                          }else{
+                            Future.delayed(Duration.zero, () {
+                              getTeamListApi(searchStr);
+                            });
                           }
-                });
-              } else if(widget.team == "B" ){
-                widget.teamBSelected.getTeamData = teamList[index];
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => AddTeams(
-                          getTeamData: teamList[index],
-                          teamASelected: widget.teamASelected,
-                          teamBSelected: widget.teamBSelected,
-                            team: widget.team
-                        ))).then((value) {
-                  debugPrint("dewdwd"+value);
-                  if(value=="add_teams"){
-                    debugPrint("dadaddadaddsadasdad");
-                    setState(() {
-                      widget.teamBSelected.getTeamData = null;
-                    });
-                  }
-                });
-              }/*else{
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => AddTeams(
-                          getTeamData: teamList[index],
-                          teamASelected: widget.teamASelected,
-                          teamBSelected: widget.teamBSelected,
-                        )));
-              }*/
-
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    // AppColor.yellow.withOpacity(0.5),
-                    AppColor.yellowV2.withOpacity(0.3),
-                    AppColor.brown2.withOpacity(0.2),
-                    // AppColor.yellowMed.withOpacity(0.5),
-                  ]),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Stack(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(right: 10),
-                      alignment: Alignment.centerRight,
-                      child: Image.asset(
-                        "assets/team_placeholder.png",
-                        fit: BoxFit.cover,
-                        height: 90,
-                        width: 90,
-                        opacity: const AlwaysStoppedAnimation(.09),
-                      ),
+      
+                        });
+                      },
+                      decoration: const InputDecoration.collapsed(
+                          hintText: 'Quick Search',
+                          hintStyle: TextStyle(color: AppColor.medBrown)),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        CircleAvatar(
-                          radius: 45,
-                          backgroundColor: Colors.white,
-                          child: ClipOval(
-                              child: teamList[index].teamPhoto == null
-                                  ? Image.asset(
-                                      "assets/team_placeholder.png",
-                                      fit: BoxFit.contain,
-                                      height: 80,
-                                      width: 80,
-                                    )
-                                  : Image.network(
-                                      mediaUrl +
-                                          teamList[index].teamPhoto.toString(),
-                                      height: 80,
-                                      width: 80,
-                                      fit: BoxFit.cover,
-                                    )),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                teamList[index].name.toString(),
-                                style: const TextStyle(
-                                    fontFamily: "Lato_Semibold",
-                                    color: AppColor.brown2,
-                                    fontSize: 20),
-                              ),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Image.asset(
-                                    "assets/location.png",
-                                    height: 15,
-                                    width: 15,
-                                    color: AppColor.brown2,
-                                  ),
-                                  Text(
-                                    teamList[index].city.toString(),
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: "Lato_Semibold",
-                                        letterSpacing: 1,
-                                        color: AppColor.brown2),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.04,
+                  ),
+                  (searchStr == "")
+                      ? Image.asset(
+                    "assets/search.png",
+                    color: Colors.red,
+                  )
+                      : GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          searchController.text = "";
+                          searchStr = "";
+                          teamList.clear();
+                          Future.delayed(Duration.zero, () {
+                            getTeamListApi(searchStr);
+                          });
+                        });
+      
+                      },
+                      child: Image.asset(
+                        "assets/cross.png",
+                        height: 15,
+                        width: 15,
+                        color: AppColor.orange_0,
+                      )),
+                ],
               ),
             ),
-          );
-        },
+          ),
+          SizedBox(
+            child: ListView.builder(
+              itemCount: teamList.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    if (widget.teamASelected.getTeamData == teamList[index] ||widget.teamBSelected.getTeamData == teamList[index]) {
+                      CommonFunctions().showToastMessage(context, "Team already added for the match.");
+                    } else if (widget.team == "A" ) {
+                      widget.teamASelected.getTeamData = teamList[index];
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => AddTeams(
+                                getTeamData: teamList[index],
+                                teamASelected: widget.teamASelected,
+                                teamBSelected: widget.teamBSelected,
+                                team: widget.team,
+                              ))).then((value){if(value=="add_teams"){
+                                  debugPrint("dadaddadaddsadasdad");
+                                  setState(() {
+                                    widget.teamASelected.getTeamData = null;
+                                  });
+
+                                }
+                      });
+                    } else if(widget.team == "B" ){
+                      widget.teamBSelected.getTeamData = teamList[index];
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => AddTeams(
+                                getTeamData: teamList[index],
+                                teamASelected: widget.teamASelected,
+                                teamBSelected: widget.teamBSelected,
+                                  team: widget.team
+                              ))).then((value) {
+                        debugPrint("dewdwd"+value);
+                        if(value=="add_teams"){
+                          debugPrint("dadaddadaddsadasdad");
+                          setState(() {
+                            widget.teamBSelected.getTeamData = null;
+                          });
+                        }
+                      });
+                    }/*else{
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => AddTeams(
+                                getTeamData: teamList[index],
+                                teamASelected: widget.teamASelected,
+                                teamBSelected: widget.teamBSelected,
+                              )));
+                    }*/
+
+                  },
+                  child: Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          // AppColor.yellow.withOpacity(0.5),
+                          AppColor.yellowV2.withOpacity(0.3),
+                          AppColor.brown2.withOpacity(0.2),
+                          // AppColor.yellowMed.withOpacity(0.5),
+                        ]),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(right: 10),
+                            alignment: Alignment.centerRight,
+                            child: Image.asset(
+                              "assets/team_placeholder.png",
+                              fit: BoxFit.cover,
+                              height: 90,
+                              width: 90,
+                              opacity: const AlwaysStoppedAnimation(.09),
+                            ),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              CircleAvatar(
+                                radius: 45,
+                                backgroundColor: Colors.white,
+                                child: ClipOval(
+                                    child: teamList[index].teamPhoto == null
+                                        ? Image.asset(
+                                            "assets/team_placeholder.png",
+                                            fit: BoxFit.contain,
+                                            height: 80,
+                                            width: 80,
+                                          )
+                                        : Image.network(
+                                            mediaUrl +
+                                                teamList[index].teamPhoto.toString(),
+                                            height: 80,
+                                            width: 80,
+                                            fit: BoxFit.cover,
+                                          )),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      teamList[index].name.toString(),
+                                      style: const TextStyle(
+                                          fontFamily: "Lato_Semibold",
+                                          color: AppColor.brown2,
+                                          fontSize: 20),
+                                    ),
+                                    Row(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        Image.asset(
+                                          "assets/location.png",
+                                          height: 15,
+                                          width: 15,
+                                          color: AppColor.brown2,
+                                        ),
+                                        Text(
+                                          teamList[index].city.toString(),
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontFamily: "Lato_Semibold",
+                                              letterSpacing: 1,
+                                              color: AppColor.brown2),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          SizedBox(height: 20,)
+        ],
       ),
     );
   }
@@ -311,7 +392,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
   addTeamScreen() {
     return Container(
         margin: const EdgeInsets.only(top: 10),
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,8 +553,8 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
         ));
   }
 
-  Future getTeamListApi() async {
-    await getTeamList().then((res) async {
+  Future getTeamListApi(String search) async {
+    await getTeamList(search).then((res) async {
       hideLoader();
       if (res.success == 1) {
         setState(() {
@@ -515,46 +596,47 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
       cityNameController.text = "";
       imageFile = null;
       Future.delayed(Duration.zero, () {
-        getTeamListApi();
+        getTeamListApi("");
       });
-      // if (widget.team == "A" ) {
-      //   widget.teamASelected.getTeamData = teamList[index];
-      //   Navigator.push(
-      //       getContext,
-      //       MaterialPageRoute(
-      //           builder: (context) => AddTeams(
-      //             getTeamData: teamList[index],
-      //             teamASelected: widget.teamASelected,
-      //             teamBSelected: widget.teamBSelected,
-      //             team: widget.team,
-      //           ))).then((value){if(value=="add_teams"){
-      //     debugPrint("dadaddadaddsadasdad");
-      //     setState(() {
-      //       widget.teamASelected.getTeamData = null;
-      //     });
-      //
-      //   }
-      //   });
-      // } else if(widget.team == "B" ){
-      //   widget.teamBSelected.getTeamData = teamList[index];
-      //   Navigator.push(
-      //       getContext,
-      //       MaterialPageRoute(
-      //           builder: (context) => AddTeams(
-      //               getTeamData: teamList[index],
-      //               teamASelected: widget.teamASelected,
-      //               teamBSelected: widget.teamBSelected,
-      //               team: widget.team
-      //           ))).then((value) {
-      //     debugPrint("dewdwd"+value);
-      //     if(value=="add_teams"){
-      //       debugPrint("dadaddadaddsadasdad");
-      //       setState(() {
-      //         widget.teamBSelected.getTeamData = null;
-      //       });
-      //     }
-      //   });
-      // }
+      tabController.animateTo(0);
+      if (widget.team == "A" ) {
+        widget.teamASelected.getTeamData = res.body!;
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) => AddTeams(
+                  getTeamData: res.body!,
+                  teamASelected: widget.teamASelected,
+                  teamBSelected: widget.teamBSelected,
+                  team: widget.team,
+                ))).then((value){if(value=="add_teams"){
+          debugPrint("dadaddadaddsadasdad");
+          setState(() {
+            widget.teamASelected.getTeamData = null;
+          });
+
+        }
+        });
+      } else if(widget.team == "B" ){
+        widget.teamBSelected.getTeamData = res.body!;
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) => AddTeams(
+                    getTeamData: res.body!,
+                    teamASelected: widget.teamASelected,
+                    teamBSelected: widget.teamBSelected,
+                    team: widget.team
+                ))).then((value) {
+          debugPrint("dewdwd"+value);
+          if(value=="add_teams"){
+            debugPrint("dadaddadaddsadasdad");
+            setState(() {
+              widget.teamBSelected.getTeamData = null;
+            });
+          }
+        });
+      }
     } else if (res.success != 1 && res.code == 401) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(

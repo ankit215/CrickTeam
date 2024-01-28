@@ -211,22 +211,41 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () async {
                       if (checkValidations()) {
-                        /*    FocusManager.instance.primaryFocus?.unfocus();
+                        // showLoader();
+                        FocusManager.instance.primaryFocus?.unfocus();
                         await FirebaseAuth.instance.verifyPhoneNumber(
                           phoneNumber: "+91${mobileNoController.text.trim()}",
-                          verificationCompleted: (PhoneAuthCredential credential) {},
+                          verificationCompleted:
+                              (PhoneAuthCredential credential) {},
                           verificationFailed: (FirebaseAuthException e) {},
                           codeSent: (String verificationId, int? resendToken) {
                             LoginScreen.verify = verificationId;
-                            var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
+                            var type = isBettor
+                                ? "2"
+                                : isScorer
+                                    ? "3"
+                                    : isOrganiser
+                                        ? "1"
+                                        : "";
+                            // hideLoader();
                             Navigator.push(
                                 getContext,
                                 MaterialPageRoute(
-                                    builder: (context) =>  OtpScreen(mobileNo:mobileNoController.text.trim().toString(), type: type,)));
+                                    builder: (context) => OtpScreen(
+                                          mobileNo: mobileNoController.text
+                                              .trim()
+                                              .toString(),
+                                          type: type,
+                                        )));
                           },
                           codeAutoRetrievalTimeout: (String verificationId) {},
-                        );*/
-                        loginApi();
+                        );
+                        // var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
+                        // Navigator.push(
+                        //     getContext,
+                        //     MaterialPageRoute(
+                        //         builder: (context) =>  OtpScreen(mobileNo:mobileNoController.text.trim().toString(), type: type,)));
+                        // loginApi();
                       }
                     },
                     child: const Text(
@@ -251,25 +270,41 @@ class _LoginScreenState extends State<LoginScreen> {
   loginApi() async {
     var request = {
       'mobile_number': mobileNoController.text.trim(),
-      'type': isBettor?"2":isScorer?"3":isOrganiser?"1":"",
+      'type': isBettor
+          ? "2"
+          : isScorer
+              ? "3"
+              : isOrganiser
+                  ? "1"
+                  : "",
     };
     await login(request).then((res) async {
       debugPrint("res.body!.name: ${res.body!.name.toString()}");
       log("LoginScreen accountType: ${res.body!.type}");
       if (res.success == 1) {
         toast(res.message);
-        if(res.body!.name==null){
+        if (res.body!.name == null) {
           Navigator.push(
               getContext,
               MaterialPageRoute(
-                  builder: (context) =>  const EditProfileScreen(from:"login_screen",)));
-        }else{
+                  builder: (context) => const EditProfileScreen(
+                        from: "login_screen",
+                      )));
+        } else {
           Navigator.push(
               getContext,
               MaterialPageRoute(
-                  builder: (context) =>  OtpScreen(mobileNo: mobileNoController.text.trim(), type: isBettor?"2":isScorer?"3":isOrganiser?"1":"",)));
+                  builder: (context) => OtpScreen(
+                        mobileNo: mobileNoController.text.trim(),
+                        type: isBettor
+                            ? "2"
+                            : isScorer
+                                ? "3"
+                                : isOrganiser
+                                    ? "1"
+                                    : "",
+                      )));
         }
-
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
@@ -277,7 +312,7 @@ class _LoginScreenState extends State<LoginScreen> {
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {

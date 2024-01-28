@@ -394,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Center(
                                   child: Text(
-                                    "${matchList[index].team1Name} vs ${matchList[index].team2Name} T20",
+                                    "${matchList[index].team1Name} vs ${matchList[index].team2Name}",
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
