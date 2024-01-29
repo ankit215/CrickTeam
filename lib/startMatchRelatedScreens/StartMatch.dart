@@ -771,7 +771,7 @@ class _StartMatchState extends State<StartMatch> {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Scorer phone no.*",
+                          "Scorer mobile no.*",
                           style: TextStyle(
                               fontSize: 16.0,
                               color: AppColor.brown2,
@@ -813,7 +813,7 @@ class _StartMatchState extends State<StartMatch> {
                               });
                             },
                             decoration: const InputDecoration.collapsed(
-                                hintText: 'Enter phone number',
+                                hintText: 'Enter mobile number',
                                 hintStyle: TextStyle(color: AppColor.grey)),
                           ),
                         ),
@@ -1009,7 +1009,13 @@ class _StartMatchState extends State<StartMatch> {
                                     Colors.transparent),
                               ),
                               onPressed: () {
-                                Navigator.pop(context);
+                                if (phoneController.text.trim().length<10) {
+                                  CommonFunctions().showToastMessage(context, "Please enter mobile no.");
+                                }if (teamPlayerSearchedList.isEmpty&&phoneController.text.trim().isNotEmpty) {
+                                  loginApi();
+                                } else {
+                                  Navigator.pop(context);
+                                }
                               },
                               child: const Text('Add',
                                   style: TextStyle(
@@ -1030,7 +1036,33 @@ class _StartMatchState extends State<StartMatch> {
       },
     );
   }
-
+  loginApi() async {
+    var request = {
+      'mobile_number':phoneController.text.trim(),
+      'type': '3',
+    };
+    await login(request).then((res) async {
+      debugPrint("res.body!.name: ${res.body!.name.toString()}");
+      if (res.success == 1) {
+        hideLoader();
+        toast("Scorer added successfully");
+        scorerId =res.body!.id.toString();
+        Navigator.pop(context);
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
   showUmpireDialog(int umpireCount) {
     showDialog(
       context: context,
@@ -1085,7 +1117,7 @@ class _StartMatchState extends State<StartMatch> {
                       const Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Umpire phone no.*",
+                          "Umpire mobile no.*",
                           style: TextStyle(
                               fontSize: 16.0,
                               color: AppColor.brown2,
@@ -1111,7 +1143,7 @@ class _StartMatchState extends State<StartMatch> {
                               LengthLimitingTextInputFormatter(10),
                             ],
                             decoration: const InputDecoration.collapsed(
-                                hintText: 'Enter phone number',
+                                hintText: 'Enter mobile number',
                                 hintStyle: TextStyle(color: AppColor.grey)),
                           ),
                         ),

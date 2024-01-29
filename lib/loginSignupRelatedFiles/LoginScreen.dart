@@ -211,13 +211,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () async {
                       if (checkValidations()) {
-                        // showLoader();
+                        showLoader();
                         FocusManager.instance.primaryFocus?.unfocus();
                         await FirebaseAuth.instance.verifyPhoneNumber(
                           phoneNumber: "+91${mobileNoController.text.trim()}",
                           verificationCompleted:
-                              (PhoneAuthCredential credential) {},
-                          verificationFailed: (FirebaseAuthException e) {},
+                              (PhoneAuthCredential credential) { hideLoader();},
+                          verificationFailed: (FirebaseAuthException e) { hideLoader();},
                           codeSent: (String verificationId, int? resendToken) {
                             LoginScreen.verify = verificationId;
                             var type = isBettor
@@ -227,7 +227,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : isOrganiser
                                         ? "1"
                                         : "";
-                            // hideLoader();
+                            hideLoader();
                             Navigator.push(
                                 getContext,
                                 MaterialPageRoute(
@@ -238,7 +238,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           type: type,
                                         )));
                           },
-                          codeAutoRetrievalTimeout: (String verificationId) {},
+                          codeAutoRetrievalTimeout: (String verificationId) { hideLoader();},
                         );
                         // var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
                         // Navigator.push(

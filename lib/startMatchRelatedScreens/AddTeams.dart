@@ -204,7 +204,7 @@ class _AddTeamsState extends State<AddTeams> {
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    "Player phone no.*",
+                                    "Player mobile no.*",
                                     style: TextStyle(
                                         fontSize: 16.0,
                                         color: AppColor.brown2,
@@ -232,7 +232,7 @@ class _AddTeamsState extends State<AddTeams> {
                                       ],
                                       decoration:
                                           const InputDecoration.collapsed(
-                                              hintText: 'Enter phone number',
+                                              hintText: 'Enter mobile number',
                                               hintStyle: TextStyle(
                                                   color: AppColor.grey)),
                                     ),

@@ -161,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.only(top: 4),
               ),
               Container(
-                height: MediaQuery.sizeOf(context).height*0.27,
+                height: MediaQuery.sizeOf(context).height*0.4,
                 width: MediaQuery.sizeOf(context).width*1,
                 margin: const EdgeInsets.only(left: 5,bottom: 10),
                 child: ListView.builder(
@@ -216,9 +216,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Text(
                                     "${matchList[index].team1Name} vs ${matchList[index].team2Name}",
                                     style: const TextStyle(
+
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
                                         fontSize: 16),
+                                        textAlign: TextAlign.center,
                                   )),
                                   Container(
                                     height: 1,
@@ -399,6 +401,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
                                         fontSize: 16),
+                                    textAlign: TextAlign.center,
                                   )),
                               Container(
                                 height: 1,
@@ -503,6 +506,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontFamily: "Lato_Semibold",
                                     color: AppColor.brown2,
                                     fontSize: 16),
+                              ),
+                              const SizedBox(
+                                height: 20,
                               ),
 
                             ],

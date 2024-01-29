@@ -87,7 +87,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
           ),
           title: Text(
             "Select Team ${widget.team}",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontFamily: "Lato_Semibold",
               color: AppColor.white,
@@ -101,31 +101,25 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
             indicatorColor: AppColor.orange_light,
             tabs: <Widget>[
               Tab(
-                child: SizedBox(
-                  width: 100,
-                  child: Text(
-                    "MY TEAMS",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: tabController.index == 0
-                          ? "Lato_Semibold"
-                          : "Lato_Regular",
-                    ),
+                child: Text(
+                  "MY TEAMS",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: tabController.index == 0
+                        ? "Lato_Semibold"
+                        : "Lato_Regular",
                   ),
                 ),
               ),
               Tab(
-                child: SizedBox(
-                  width: 100,
-                  child: Center(
-                    child: Text(
-                      "ADD TEAM",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: tabController.index == 2
-                            ? "Lato_Semibold"
-                            : "Lato_Regular",
-                      ),
+                child: Center(
+                  child: Text(
+                    "ADD TEAM",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: tabController.index == 2
+                          ? "Lato_Semibold"
+                          : "Lato_Regular",
                     ),
                   ),
                 ),
