@@ -25,18 +25,21 @@ class TeamSelected {
 }
 
 class Players {
+  int? teamId;
   int? playerId;
   String? playerType;
 
-  Players({this.playerId, this.playerType});
+  Players({this.teamId,this.playerId, this.playerType});
 
   Players.fromJson(Map<String, dynamic> json) {
+    teamId = json['team_id'];
     playerId = json['player_id'];
     playerType = json['player_type'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['team_id'] = this.teamId;
     data['player_id'] = this.playerId;
     data['player_type'] = this.playerType;
     return data;

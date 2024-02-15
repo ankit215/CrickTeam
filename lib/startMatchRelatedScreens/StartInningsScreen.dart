@@ -1,4 +1,5 @@
 import 'package:crick_team/scoreRelatedScreens/ScorerScreen.dart';
+import 'package:crick_team/startMatchRelatedScreens/SelectPlayerForMatch.dart';
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
 import 'package:crick_team/startMatchRelatedScreens/StartMatch.dart';
 import 'package:crick_team/utils/AppColor.dart';
@@ -6,9 +7,12 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 import '../mainScreens/MainScreen.dart';
+import '../modalClasses/GetMatchModel.dart';
 
 class StartInningsScreen extends StatefulWidget {
-  const StartInningsScreen({super.key});
+  final GetMatchData matchData;
+  final String tossWinnerId;
+  const StartInningsScreen({super.key, required this.matchData, required this.tossWinnerId});
 
   @override
   State<StartInningsScreen> createState() => _StartInningsScreenState();
@@ -80,8 +84,20 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              isStriker = true;
-                              isNonStriker = false;
+                              // isStriker = true;
+                              // isNonStriker = false;
+                              Navigator.push(
+                                  getContext,
+                                  MaterialPageRoute(
+                                      builder: (context) => SelectPlayerForMatch(
+                                        teamId: widget.tossWinnerId,
+                                      )
+                                  )
+                              ).then((value) {
+                                if (value!=null) {
+                                  debugPrint("dadaddadaddsadasdad $value");
+                                }
+                              });
 
                             });
 
@@ -129,8 +145,20 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              isStriker = false;
-                              isNonStriker = true;
+                              // isStriker = false;
+                              // isNonStriker = true;
+                              Navigator.push(
+                                  getContext,
+                                  MaterialPageRoute(
+                                      builder: (context) => SelectPlayerForMatch(
+                                        teamId: widget.tossWinnerId,
+                                      )
+                                  )
+                              ).then((value) {
+                                if (value!=null) {
+                                  debugPrint("dadaddadaddsadasdad $value");
+                                }
+                              });
                             });
 
                           },
@@ -199,7 +227,19 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              isBowlerSelected = true;
+                              // isBowlerSelected = true;
+                              Navigator.push(
+                                  getContext,
+                                  MaterialPageRoute(
+                                      builder: (context) => SelectPlayerForMatch(
+                                        teamId: widget.tossWinnerId.toString()==widget.matchData.team1Id.toString()?widget.matchData.team2Id.toString():widget.matchData.team1Id.toString(),
+                                      )
+                                  )
+                              ).then((value) {
+                                if (value!=null) {
+                                  debugPrint("dadaddadaddsadasdad $value");
+                                }
+                              });
                             });
                           },
                           child: Container(

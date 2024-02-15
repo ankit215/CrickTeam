@@ -355,6 +355,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                         // CommonFunctions().showToastMessage(context, "Please select player's category.");
                       } else if (proceed) {
                         playersList.add(Players(
+                            teamId: widget.selectedTeam[i].teamId,
                             playerId: widget.selectedTeam[i].id,
                             playerType: widget.selectedTeam[i].playerCategory));
                       }

@@ -1,14 +1,22 @@
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/startMatchRelatedScreens/SelectTeam.dart';
 import 'package:crick_team/startMatchRelatedScreens/StartMatch.dart';
 import 'package:crick_team/utils/AppColor.dart';
+import 'package:crick_team/utils/CommonFunctions.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 import '../mainScreens/MainScreen.dart';
+import '../modalClasses/GetMatchModel.dart';
+import '../utils/common.dart';
 import 'StartInningsScreen.dart';
 
 class TossScreen extends StatefulWidget {
-  const TossScreen({super.key});
+  final GetMatchData matchData;
+
+  const TossScreen({super.key, required this.matchData});
 
   @override
   State<TossScreen> createState() => _TossScreenState();
@@ -19,6 +27,14 @@ class _TossScreenState extends State<TossScreen> {
   bool isTeamBSelected = false;
   bool isBatSelected = false;
   bool isBallSelected = false;
+  var tossWinnerId = "";
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    tossWinnerId = "";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +67,7 @@ class _TossScreenState extends State<TossScreen> {
       ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         height: MediaQuery.sizeOf(context).height * 0.9,
         child: Column(
           children: [
@@ -60,7 +76,7 @@ class _TossScreenState extends State<TossScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   const Text(
@@ -70,7 +86,7 @@ class _TossScreenState extends State<TossScreen> {
                         fontFamily: "Lato_Semibold",
                         color: AppColor.brown2),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -83,21 +99,23 @@ class _TossScreenState extends State<TossScreen> {
                             setState(() {
                               isTeamASelected = true;
                               isTeamBSelected = false;
-
+                              tossWinnerId =
+                                  widget.matchData.team1Id.toString();
                             });
-
                           },
                           child: Container(
                             width: 150,
                             height: 140,
                             decoration: BoxDecoration(
-                              gradient:isTeamASelected? const LinearGradient(colors: [
-                                AppColor.red,
-                                AppColor.brown2,
-                              ]):const LinearGradient(colors: [
-                                AppColor.grey,
-                                AppColor.grey,
-                              ]),
+                              gradient: isTeamASelected
+                                  ? const LinearGradient(colors: [
+                                      AppColor.red,
+                                      AppColor.brown2,
+                                    ])
+                                  : const LinearGradient(colors: [
+                                      AppColor.grey,
+                                      AppColor.grey,
+                                    ]),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
@@ -117,13 +135,15 @@ class _TossScreenState extends State<TossScreen> {
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                 Center(
+                                Center(
                                   child: Text(
-                                    "Team A",
+                                    widget.matchData.team1Name.toString(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: "Lato_Sembold",
-                                      color: isTeamASelected?Colors.white:AppColor.text_grey,
+                                      color: isTeamASelected
+                                          ? Colors.white
+                                          : AppColor.text_grey,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -137,20 +157,23 @@ class _TossScreenState extends State<TossScreen> {
                             setState(() {
                               isTeamASelected = false;
                               isTeamBSelected = true;
+                              tossWinnerId =
+                                  widget.matchData.team2Id.toString();
                             });
-
                           },
                           child: Container(
                             width: 150,
                             height: 140,
                             decoration: BoxDecoration(
-                              gradient: isTeamBSelected? const LinearGradient(colors: [
-                                AppColor.red,
-                                AppColor.brown2,
-                              ]):const LinearGradient(colors: [
-                                AppColor.grey,
-                                AppColor.grey,
-                              ]),
+                              gradient: isTeamBSelected
+                                  ? const LinearGradient(colors: [
+                                      AppColor.red,
+                                      AppColor.brown2,
+                                    ])
+                                  : const LinearGradient(colors: [
+                                      AppColor.grey,
+                                      AppColor.grey,
+                                    ]),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
@@ -170,13 +193,15 @@ class _TossScreenState extends State<TossScreen> {
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                 Center(
+                                Center(
                                   child: Text(
-                                    "Team B",
+                                    widget.matchData.team2Name.toString(),
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: "Lato_Sembold",
-                                      color: isTeamBSelected?Colors.white:AppColor.text_grey,
+                                      color: isTeamBSelected
+                                          ? Colors.white
+                                          : AppColor.text_grey,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -188,7 +213,7 @@ class _TossScreenState extends State<TossScreen> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   const Text(
@@ -198,7 +223,7 @@ class _TossScreenState extends State<TossScreen> {
                         fontFamily: "Lato_Semibold",
                         color: AppColor.brown2),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Padding(
@@ -217,13 +242,15 @@ class _TossScreenState extends State<TossScreen> {
                             width: 150,
                             height: 140,
                             decoration: BoxDecoration(
-                              gradient: isBatSelected? const LinearGradient(colors: [
-                                AppColor.red,
-                                AppColor.brown2,
-                              ]):const LinearGradient(colors: [
-                                AppColor.grey,
-                                AppColor.grey,
-                              ]),
+                              gradient: isBatSelected
+                                  ? const LinearGradient(colors: [
+                                      AppColor.red,
+                                      AppColor.brown2,
+                                    ])
+                                  : const LinearGradient(colors: [
+                                      AppColor.grey,
+                                      AppColor.grey,
+                                    ]),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
@@ -233,18 +260,22 @@ class _TossScreenState extends State<TossScreen> {
                                   "assets/bats.png",
                                   height: 50,
                                   width: 60,
-                                  color: isBatSelected?Colors.white:AppColor.text_grey,
+                                  color: isBatSelected
+                                      ? Colors.white
+                                      : AppColor.text_grey,
                                 ),
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                 Center(
+                                Center(
                                   child: Text(
                                     "BAT",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: "Lato_Sembold",
-                                      color: isBatSelected?Colors.white:AppColor.text_grey,
+                                      color: isBatSelected
+                                          ? Colors.white
+                                          : AppColor.text_grey,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -264,13 +295,15 @@ class _TossScreenState extends State<TossScreen> {
                             width: 150,
                             height: 140,
                             decoration: BoxDecoration(
-                              gradient: isBallSelected? const LinearGradient(colors: [
-                                AppColor.red,
-                                AppColor.brown2,
-                              ]):const LinearGradient(colors: [
-                                AppColor.grey,
-                                AppColor.grey,
-                              ]),
+                              gradient: isBallSelected
+                                  ? const LinearGradient(colors: [
+                                      AppColor.red,
+                                      AppColor.brown2,
+                                    ])
+                                  : const LinearGradient(colors: [
+                                      AppColor.grey,
+                                      AppColor.grey,
+                                    ]),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Column(
@@ -280,18 +313,22 @@ class _TossScreenState extends State<TossScreen> {
                                   "assets/ball.png",
                                   height: 50,
                                   width: 60,
-                                  color: isBallSelected?Colors.white:AppColor.text_grey,
+                                  color: isBallSelected
+                                      ? Colors.white
+                                      : AppColor.text_grey,
                                 ),
                                 const SizedBox(
                                   height: 15,
                                 ),
-                                 Center(
+                                Center(
                                   child: Text(
                                     "BALL",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontFamily: "Lato_Sembold",
-                                      color: isBallSelected?Colors.white:AppColor.text_grey,
+                                      color: isBallSelected
+                                          ? Colors.white
+                                          : AppColor.text_grey,
                                     ),
                                     textAlign: TextAlign.center,
                                   ),
@@ -309,10 +346,9 @@ class _TossScreenState extends State<TossScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => const StartInningsScreen()));
+                if (checkValidations()) {
+                  tossResultApi();
+                }
               },
               child: Container(
                 width: double.infinity,
@@ -325,7 +361,7 @@ class _TossScreenState extends State<TossScreen> {
                   ]),
                   borderRadius: BorderRadius.circular(50),
                 ),
-                child: Center(
+                child: const Center(
                   child: Text(
                     "Continue",
                     style: TextStyle(
@@ -338,12 +374,54 @@ class _TossScreenState extends State<TossScreen> {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 50,
             )
           ],
         ),
       ),
     );
+  }
+
+  bool checkValidations() {
+    if (tossWinnerId.isEmpty) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please select who won the toss.");
+      return false;
+    } else if (isBatSelected == false && isBallSelected == false) {
+      CommonFunctions().showToastMessage(
+          getContext, "Please select winner of the toss elected to.");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  tossResultApi() async {
+    var request = {
+      'match_id': widget.matchData.id.toString(),
+      'toss_winner_id': tossWinnerId,
+      'toss_decision': isBatSelected ? "1" : "2",
+    };
+    await tossResult(request).then((res) async {
+      if (res.success == 1) {
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) =>  StartInningsScreen(matchData: widget.matchData,tossWinnerId:tossWinnerId)));
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
   }
 }

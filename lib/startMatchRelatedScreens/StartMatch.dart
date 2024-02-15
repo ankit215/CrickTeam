@@ -55,6 +55,7 @@ class _StartMatchState extends State<StartMatch> {
   var searchStr = "";
   List<GetPlayerSearchData> teamPlayerSearchedList = [];
   List<GetTeamData> teamList = [];
+  List<Players> playersList = [];
   List<MatchOfficials> matchOfficials = <MatchOfficials>[
     MatchOfficials(
       title: 'Scorer',
@@ -69,6 +70,7 @@ class _StartMatchState extends State<StartMatch> {
   var dateValue = "";
   var teamOneJson = "";
   var teamTwoJson = "";
+  var playerListJson = "";
   var scorerId = "";
 
   @override
@@ -78,8 +80,13 @@ class _StartMatchState extends State<StartMatch> {
     // Convert the list to JSON
     teamOneJson = jsonEncode(widget.teamASelected.players);
     teamTwoJson = jsonEncode(widget.teamBSelected.players);
+    playersList.clear();
+    playersList.addAll(widget.teamASelected.players!);
+    playersList.addAll(widget.teamBSelected.players!);
+    playerListJson = jsonEncode(playersList);
     debugPrint("ffsfdsf" + teamOneJson);
     debugPrint("ffsfdsf" + teamTwoJson);
+    debugPrint("ffsfdsf" + playerListJson);
   }
 
   @override
@@ -1009,9 +1016,12 @@ class _StartMatchState extends State<StartMatch> {
                                     Colors.transparent),
                               ),
                               onPressed: () {
-                                if (phoneController.text.trim().length<10) {
-                                  CommonFunctions().showToastMessage(context, "Please enter mobile no.");
-                                }if (teamPlayerSearchedList.isEmpty&&phoneController.text.trim().isNotEmpty) {
+                                if (phoneController.text.trim().length < 10) {
+                                  CommonFunctions().showToastMessage(
+                                      context, "Please enter mobile no.");
+                                }
+                                if (teamPlayerSearchedList.isEmpty &&
+                                    phoneController.text.trim().isNotEmpty) {
                                   loginApi();
                                 } else {
                                   Navigator.pop(context);
@@ -1036,9 +1046,10 @@ class _StartMatchState extends State<StartMatch> {
       },
     );
   }
+
   loginApi() async {
     var request = {
-      'mobile_number':phoneController.text.trim(),
+      'mobile_number': phoneController.text.trim(),
       'type': '3',
     };
     await login(request).then((res) async {
@@ -1046,7 +1057,7 @@ class _StartMatchState extends State<StartMatch> {
       if (res.success == 1) {
         hideLoader();
         toast("Scorer added successfully");
-        scorerId =res.body!.id.toString();
+        scorerId = res.body!.id.toString();
         Navigator.pop(context);
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
@@ -1055,7 +1066,7 @@ class _StartMatchState extends State<StartMatch> {
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -1063,6 +1074,7 @@ class _StartMatchState extends State<StartMatch> {
       }
     });
   }
+
   showUmpireDialog(int umpireCount) {
     showDialog(
       context: context,
@@ -1472,6 +1484,7 @@ class _StartMatchState extends State<StartMatch> {
       'status': "1",
       'team_one_json': teamOneJson,
       'team_two_json': teamTwoJson,
+      'player_list': playerListJson,
     };
     await createMatch(request).then((res) async {
       if (res.success == 1) {

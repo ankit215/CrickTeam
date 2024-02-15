@@ -174,7 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.push(
                             getContext,
                             MaterialPageRoute(
-                                builder: (context) => const TossScreen()));
+                                builder: (context) =>  TossScreen(matchData:matchList[index])));
 
 
                       },

@@ -12,8 +12,8 @@ const userEmail = "email_user";
 
 const userPassword = "password_user";
 const userAuthorization = "authorization_user";
-const mBaseUrl = "http://13.200.174.157:5000/apis/";
-const mediaUrl = "http://13.200.174.157:5000/images/";
+const mBaseUrl = "http://3.108.254.219:5000/apis/";
+const mediaUrl = "http://3.108.254.219:5000/images/";
 const isRemember = "remember_user";
 const userRememberEmail = "email_remember";
 

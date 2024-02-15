@@ -40,8 +40,8 @@ class GetMatchData {
   String? matchDate;
   String? matchTime;
   int? scorerId;
-  String? tossWinnerId;
-  String? tossDecision;
+  int? tossWinnerId;
+  int? tossDecision;
   String? matchResult;
   int? status;
   String? teamOneJson;

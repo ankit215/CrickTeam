@@ -211,7 +211,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     onPressed: () async {
                       if (checkValidations()) {
-                        showLoader();
+                      /*  showLoader();
                         FocusManager.instance.primaryFocus?.unfocus();
                         await FirebaseAuth.instance.verifyPhoneNumber(
                           phoneNumber: "+91${mobileNoController.text.trim()}",
@@ -239,13 +239,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                         )));
                           },
                           codeAutoRetrievalTimeout: (String verificationId) { hideLoader();},
-                        );
-                        // var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
+                        );*/
+                        var type =isBettor?"2":isScorer?"3":isOrganiser?"1":"";
                         // Navigator.push(
                         //     getContext,
                         //     MaterialPageRoute(
                         //         builder: (context) =>  OtpScreen(mobileNo:mobileNoController.text.trim().toString(), type: type,)));
-                        // loginApi();
+                        loginApi();
                       }
                     },
                     child: const Text(
