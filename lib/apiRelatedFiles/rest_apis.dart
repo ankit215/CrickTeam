@@ -165,6 +165,16 @@ Future<SimpleApiModel> tossResult(Map request) async {
   hideLoader();
   return tossResult;
 }
+Future<SimpleApiModel> selectPlayers(Map request) async {
+  showLoader();
+  var tossResult = SimpleApiModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'select_players',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return tossResult;
+}
 Future<GetTeamModel> getTeamList(String search) async {
   showLoader();
   return GetTeamModel.fromJson(await (handleResponse(

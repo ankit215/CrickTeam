@@ -1,17 +1,17 @@
+import 'dart:convert';
+
 import 'package:crick_team/scoreRelatedScreens/OutScreen.dart';
-import 'package:crick_team/startMatchRelatedScreens/TossScreen.dart';
+import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../main.dart';
-import '../profileRelatedScrees/EditProfileScreen.dart';
-import '../startMatchRelatedScreens/AddTeams.dart';
 import '../utils/AppColor.dart';
 
 class ScorerScreen extends StatefulWidget {
-  final String team;
+  final String teamMatch;
+  final Map<String, int> map;
 
-  const ScorerScreen({super.key, required this.team});
+  const ScorerScreen({super.key, required this.teamMatch, required this.map});
 
   @override
   State<ScorerScreen> createState() => _ScorerScreenState();
@@ -35,10 +35,75 @@ class _ScorerScreenState extends State<ScorerScreen>
     BallType("Bye", false),
     BallType("Leg Bye", false)
   ];
+  late io.Socket socket;
+  bool isSocketConnected = false;
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  void init() {
+    socket = io.io('http://3.108.254.219:5000', <String, dynamic>{
+      'transports': ['websocket'],
+      'autoConnect': false,
+    });
+    Future.delayed(Duration.zero, () {
+      connectToSocket();
+    });
+    connectListener();
+  }
+
+  // Function to send a message to the server.
+  void createConnectionSocket() {
+    var map = {
+      "player1_id": 1,
+      "player2_id": 2,
+      "bowler_id": 14,
+      "match_id": 4,
+      "team_id": 1,
+      "team2_id": 2
+    };
+    socket.emit('create_connection', map);
+  }
+
+  void connectListener() {
+    socket.on('connect_listener', (data) {
+      print('Received message: $data');
+    });
+  }
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
+  }
+
+  void connectToSocket() {
+    // Replace 'http://3.108.254.219:5000/apis/' with the URL of your Socket.IO server.
+
+    socket.connect();
+
+    socket.onConnect((_) {
+      setState(() {
+        print('Connected to the socket server');
+        isSocketConnected = true;
+        createConnectionSocket();
+      });
+    });
+
+    socket.onDisconnect((_) {
+      print('Disconnected from the socket server');
+    });
+
+    // createConnectionSocket();
+
+    // Add more event listeners and functionality as needed.
+
+    // To send a message to the server, use:
+    // socket.emit('eventName', 'message data');
   }
 
   @override
@@ -61,7 +126,7 @@ class _ScorerScreenState extends State<ScorerScreen>
             ),
           ),
           title: Text(
-            "Select Team ${widget.team}",
+            widget.teamMatch,
             style: const TextStyle(
               fontSize: 20,
               fontFamily: "Lato_Semibold",
@@ -367,39 +432,40 @@ class _ScorerScreenState extends State<ScorerScreen>
                       }),
                     ),
                   ),
-                  SizedBox(
-                    width: MediaQuery.sizeOf(context).width * 0.25,
+                  Container(
+                    margin: const EdgeInsets.only(left: 1),
+                    width: MediaQuery.sizeOf(context).width * 0.24,
                     child: GridView.count(
                       shrinkWrap: true,
                       crossAxisCount: 1,
-                      crossAxisSpacing: 1.0,
-                      mainAxisSpacing: 1.0,
-                      childAspectRatio: 1.38,
+                      crossAxisSpacing: 2.0,
+                      mainAxisSpacing: 2.0,
+                      childAspectRatio: 0.88,
                       scrollDirection: Axis.vertical,
-                      children: List.generate(3, (index) {
+                      children: List.generate(2, (index) {
                         return GestureDetector(
                           onTap: () {
                             index == 0
-                                ? debugPrint("Undo")
-                                : index == 1
-                                    ? debugPrint("5,7")
-                                    : Navigator.push(
-                                        getContext,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const OutScreen()));
+                                /* ? debugPrint("Undo")
+                                : index == 1*/
+                                ? debugPrint("5,7")
+                                : Navigator.push(
+                                    getContext,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const OutScreen()));
                           },
                           child: Container(
-                              height: 20,
-                              width: 30,
+                              height: 50,
+                              width: 50,
                               color: AppColor.grey,
                               child: Center(
                                 child: Text(
                                   index == 0
-                                      ? "Undo"
-                                      : index == 1
-                                          ? "5,7"
-                                          : "Out",
+                                      /*? "Undo"
+                                      : index == 1*/
+                                      ? "5,7"
+                                      : "Out",
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontFamily: "Lato_Semibold",
@@ -488,7 +554,7 @@ class _ScorerScreenState extends State<ScorerScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Text(
@@ -526,17 +592,17 @@ class _ScorerScreenState extends State<ScorerScreen>
                           borderRadius: BorderRadius.circular(5),
                           color: AppColor.brown2,
                           border: Border.all(color: AppColor.border)),
-                      child: Center(
+                      child: const Center(
                           child: Text(
                         "1",
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Lato_Semibold",
                           color: AppColor.white,
                         ),
                       )),
                     ),
-                    Icon(Icons.add),
+                    const Icon(Icons.add),
                     Container(
                       height: 30,
                       width: 30,
@@ -599,25 +665,25 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   (noBallType[index].isSelected != null &&
                                           noBallType[index].isSelected == false)
-                                      ? Icon(
+                                      ? const Icon(
                                           Icons.radio_button_unchecked,
                                           color: AppColor.brown2,
                                         )
-                                      : Icon(
+                                      : const Icon(
                                           Icons.radio_button_checked,
                                           color: AppColor.brown2,
                                         ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 5,
                                   ),
                                   Text(
                                     noBallType[index].title.toString(),
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontFamily: "Ubuntu_Regular",
                                         fontSize: 14,
                                         color: AppColor.brown2),
@@ -628,7 +694,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                           },
                         ),
                       )
-                    : SizedBox(),
+                    : const SizedBox(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -655,7 +721,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                         decoration: BoxDecoration(
                           color: AppColor.green_neon.withOpacity(0.1),
                         ),
-                        child: Center(
+                        child: const Center(
                           child: Text(
                             "Ok",
                             style: TextStyle(

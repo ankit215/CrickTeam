@@ -408,7 +408,7 @@ class _TossScreenState extends State<TossScreen> {
         Navigator.push(
             getContext,
             MaterialPageRoute(
-                builder: (context) =>  StartInningsScreen(matchData: widget.matchData,tossWinnerId:tossWinnerId)));
+                builder: (context) =>  StartInningsScreen(matchData: widget.matchData,tossWinnerId:tossWinnerId,tossWinnerElected: isBatSelected ? "1" : "2",)));
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(

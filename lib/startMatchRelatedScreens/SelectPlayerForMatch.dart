@@ -14,7 +14,17 @@ import '../utils/common.dart';
 
 class SelectPlayerForMatch extends StatefulWidget {
   final String teamId;
-  const SelectPlayerForMatch({super.key, required this.teamId});
+  final String teamName;
+  final String? strikerId;
+  final String? nonStrikerId;
+  final String? bowlerId;
+
+  const SelectPlayerForMatch(
+      {super.key,
+      required this.teamId,
+      required this.teamName,
+      this.strikerId,
+      this.nonStrikerId, this.bowlerId});
 
   @override
   State<SelectPlayerForMatch> createState() => _SelectPlayerForMatchState();
@@ -46,7 +56,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
         backgroundColor: AppColor.brown2,
         leading: GestureDetector(
           onTap: () {
-            Navigator.pop(context,"add_teams");
+            Navigator.pop(context, "add_teams");
           },
           child: Padding(
             padding: const EdgeInsets.all(15.0),
@@ -56,8 +66,8 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
             ),
           ),
         ),
-        title: const Text(
-          "Select Playing Players",
+        title: Text(
+          widget.teamName,
           style: TextStyle(
             fontSize: 20,
             fontFamily: "Lato_Semibold",
@@ -91,16 +101,15 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                       onChanged: (value) {
                         searchStr = value;
                         searchDelay.run(() {
-                          if(searchStr.isEmpty){
+                          if (searchStr.isEmpty) {
                             setState(() {
                               searchController.text = "";
                               searchStr = "";
                               teamPlayerSearchedList.clear();
                             });
-                          }else{
+                          } else {
                             getPlayerSearchApi(searchStr);
                           }
-
                         });
                       },
                       decoration: const InputDecoration.collapsed(
@@ -113,256 +122,301 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                   ),
                   (searchStr == "")
                       ? Image.asset(
-                    "assets/search.png",
-                    color: Colors.red,
-                  )
+                          "assets/search.png",
+                          color: Colors.red,
+                        )
                       : GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          searchController.text = "";
-                          searchStr = "";
-                          teamPlayerSearchedList.clear();
-                        });
-
-                      },
-                      child: Image.asset(
-                        "assets/cross.png",
-                        height: 15,
-                        width: 15,
-                        color: AppColor.orange_0,
-                      )),
+                          onTap: () {
+                            setState(() {
+                              searchController.text = "";
+                              searchStr = "";
+                              teamPlayerSearchedList.clear();
+                            });
+                          },
+                          child: Image.asset(
+                            "assets/cross.png",
+                            height: 15,
+                            width: 15,
+                            color: AppColor.orange_0,
+                          )),
                 ],
               ),
             ),
           ),
-
           SizedBox(
             height: 10,
           ),
           Expanded(
-            child: teamPlayerSearchedList.isEmpty&&searchStr.isEmpty?
-            ListView.builder(
-                itemCount: teamPlayerList.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context,teamPlayerList[index].id);
-                    },
-                    child: Card(
-                        color: AppColor.transparent,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        elevation: 0.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                            width: MediaQuery.sizeOf(context).width * 0.9,
-                            decoration: BoxDecoration(
-                              gradient: teamPlayerList[index].playerSelected!
-                                  ? const LinearGradient(
-                                colors: [AppColor.red, AppColor.brown2],
-                              )
-                                  : LinearGradient(
-                                colors: [
-                                  AppColor.grey.withOpacity(0.2),
-                                  AppColor.grey.withOpacity(0.2),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
+            child: teamPlayerSearchedList.isEmpty && searchStr.isEmpty
+                ? ListView.builder(
+                    itemCount: teamPlayerList.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          if(teamPlayerList[index].id.toString()==widget.strikerId){
+                            CommonFunctions().showToastMessage(context, "Player already selected as Striker");
+                          }else if(teamPlayerList[index].id.toString()==widget.nonStrikerId){
+                            CommonFunctions().showToastMessage(context, "Player already selected as Non-Striker");
+                          }else{
+                            Navigator.pop(context, teamPlayerList[index].id);
+                          }
+                        },
+                        child: Card(
+                            color: AppColor.transparent,
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
+                            elevation: 0.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundColor: Colors.white,
-                                          child: ClipOval(
-                                              child: Image.asset(
+                            child: Container(
+                                width: MediaQuery.sizeOf(context).width * 0.9,
+                                decoration: BoxDecoration(
+                                  gradient:
+                                      teamPlayerList[index].playerSelected!
+                                          ? const LinearGradient(
+                                              colors: [
+                                                AppColor.red,
+                                                AppColor.brown2
+                                              ],
+                                            )
+                                          : LinearGradient(
+                                              colors: [
+                                                AppColor.grey.withOpacity(0.2),
+                                                AppColor.grey.withOpacity(0.2),
+                                              ],
+                                            ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 30,
+                                              backgroundColor: Colors.white,
+                                              child: ClipOval(
+                                                  child: Image.asset(
                                                 "assets/player.png",
                                                 fit: BoxFit.contain,
                                                 height: 45,
                                                 width: 45,
                                               )),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              teamPlayerList[index].userName ==
-                                                  null
-                                                  ? "Player"
-                                                  : teamPlayerList[index]
-                                                  .userName
-                                                  .toString(),
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontFamily: "Lato_Semibold",
-                                                color: teamPlayerList[index]
-                                                    .playerSelected
-                                                    ? Colors.white
-                                                    : AppColor.medGrey,
-                                              ),
-                                              textAlign: TextAlign.center,
                                             ),
-                                            Row(
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Icon(
-                                                  Icons.call,
-                                                  color: teamPlayerList[index]
-                                                      .playerSelected!
-                                                      ? Colors.white
-                                                      : AppColor.medGrey,
-                                                  size: 20,
-                                                ),
-                                                SizedBox(width: 5,),
                                                 Text(
                                                   teamPlayerList[index]
-                                                      .mobileNumber
-                                                      .toString(),
+                                                              .userName ==
+                                                          null
+                                                      ? "Player"
+                                                      : teamPlayerList[index]
+                                                          .userName
+                                                          .toString(),
                                                   style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 20,
                                                     fontFamily: "Lato_Semibold",
                                                     color: teamPlayerList[index]
-                                                        .playerSelected!
+                                                            .playerSelected
                                                         ? Colors.white
                                                         : AppColor.medGrey,
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.call,
+                                                      color: teamPlayerList[
+                                                                  index]
+                                                              .playerSelected!
+                                                          ? Colors.white
+                                                          : AppColor.medGrey,
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      teamPlayerList[index]
+                                                          .mobileNumber
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            "Lato_Semibold",
+                                                        color: teamPlayerList[
+                                                                    index]
+                                                                .playerSelected!
+                                                            ? Colors.white
+                                                            : AppColor.medGrey,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      teamPlayerList[index].id.toString() ==
+                                              widget.strikerId
+                                          ? Image.asset(
+                                              "assets/striker.png",
+                                              height: 60,
+                                              width: 60,
+                                              color: AppColor.black,
+                                            )
+                                          : teamPlayerList[index]
+                                                      .id
+                                                      .toString() ==
+                                                  widget.nonStrikerId
+                                              ? Image.asset(
+                                                  "assets/non_striker.png",
+                                                  height: 60,
+                                                  width: 60,
+                                                  color: AppColor.black,
+                                                )
+                                              :teamPlayerList[index]
+                                                      .id
+                                                      .toString() ==
+                                                  widget.bowlerId
+                                              ? Image.asset(
+                                                  "assets/bowler.png",
+                                                  height: 60,
+                                                  width: 60,
+                                                  color: AppColor.black,
+                                                )
+                                              : const SizedBox(),
+                                      const SizedBox(
+                                        width: 10,
+                                      )
+                                    ],
                                   ),
-                                  teamPlayerList[index].playerSelected!
-                                      ? const Icon(
-                                    Icons.check_circle,
-                                    color: Colors.white,
-                                    size: 30,
-                                  )
-                                      : const SizedBox(),
-                                  const SizedBox(
-                                    width: 10,
-                                  )
-                                ],
-                              ),
-                            ))),
-                  );
-                }):ListView.builder(
-                itemCount: teamPlayerSearchedList.length,
-                shrinkWrap: true,
-                itemBuilder: (BuildContext context, int index) {
-                  return GestureDetector(
-                    onTap: () {
-
-
-                    },
-                    child: Card(
-                        color: AppColor.transparent,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        elevation: 0.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                            width: MediaQuery.sizeOf(context).width * 0.9,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppColor.grey.withOpacity(0.2),
-                                  AppColor.grey.withOpacity(0.2),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(10),
+                                ))),
+                      );
+                    })
+                : ListView.builder(
+                    itemCount: teamPlayerSearchedList.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Card(
+                            color: AppColor.transparent,
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 5),
+                            elevation: 0.0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 30,
-                                          backgroundColor: Colors.white,
-                                          child: ClipOval(
-                                              child: Image.asset(
+                            child: Container(
+                                width: MediaQuery.sizeOf(context).width * 0.9,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppColor.grey.withOpacity(0.2),
+                                      AppColor.grey.withOpacity(0.2),
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 30,
+                                              backgroundColor: Colors.white,
+                                              child: ClipOval(
+                                                  child: Image.asset(
                                                 "assets/player.png",
                                                 fit: BoxFit.contain,
                                                 height: 45,
                                                 width: 45,
                                               )),
-                                        ),
-                                        const SizedBox(
-                                          width: 10,
-                                        ),
-                                        Column(
-                                          mainAxisAlignment: MainAxisAlignment.start,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              teamPlayerSearchedList[index].name ==
-                                                  null
-                                                  ? "Player"
-                                                  : teamPlayerSearchedList[index]
-                                                  .name
-                                                  .toString(),
-                                              style: TextStyle(
-                                                fontSize: 20,
-                                                fontFamily: "Lato_Semibold",
-                                                color: AppColor.medGrey,
-                                              ),
-                                              textAlign: TextAlign.center,
                                             ),
-                                            Row(
+                                            const SizedBox(
+                                              width: 10,
+                                            ),
+                                            Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Icon(
-                                                  Icons.call,
-                                                  color: AppColor.medGrey,
-                                                  size: 20,
-                                                ),
-                                                SizedBox(width: 5,),
                                                 Text(
                                                   teamPlayerSearchedList[index]
-                                                      .mobileNumber
-                                                      .toString(),
+                                                              .name ==
+                                                          null
+                                                      ? "Player"
+                                                      : teamPlayerSearchedList[
+                                                              index]
+                                                          .name
+                                                          .toString(),
                                                   style: TextStyle(
-                                                    fontSize: 16,
+                                                    fontSize: 20,
                                                     fontFamily: "Lato_Semibold",
                                                     color: AppColor.medGrey,
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.call,
+                                                      color: AppColor.medGrey,
+                                                      size: 20,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 5,
+                                                    ),
+                                                    Text(
+                                                      teamPlayerSearchedList[
+                                                              index]
+                                                          .mobileNumber
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontFamily:
+                                                            "Lato_Semibold",
+                                                        color: AppColor.medGrey,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ],
+                                                ),
                                               ],
                                             ),
                                           ],
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      )
+                                    ],
                                   ),
-                                  const SizedBox(
-                                    width: 10,
-                                  )
-                                ],
-                              ),
-                            ))),
-                  );
-                }),
+                                ))),
+                      );
+                    }),
           ),
-
         ],
       ),
     );
@@ -384,7 +438,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -408,7 +462,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -416,5 +470,4 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
       }
     });
   }
-
 }
