@@ -18,7 +18,7 @@ class _MyHomePageState extends State<MyHomePage> {
   initState() {
     super.initState();
     // init();
-    // iniSharePref();
+    debugPrint("wdddddwded"+getStringAsync(userId).toString());
     Future.delayed(
         const Duration(seconds: 3),
         () => Navigator.pushReplacement(
@@ -27,8 +27,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // MaterialPageRoute(builder: (context) =>  NavigationScreen(index: 0,)),
             ));
   }
-
-  @override
+ @override
   Widget build(BuildContext context) {
     return Container(
         color: Colors.white,

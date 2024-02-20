@@ -658,7 +658,7 @@ class _AddTeamsState extends State<AddTeams> {
           if(playerSelected.isNotEmpty){
             for(int i =0;i<teamPlayerList.length;i++){
             for(int j =0;j<playerSelected.length;j++){
-              if(teamPlayerList[i].id==playerSelected[j].id){
+              if(teamPlayerList[i].userId==playerSelected[j].userId){
                 teamPlayerList[i].playerSelected = true;
               }
             }

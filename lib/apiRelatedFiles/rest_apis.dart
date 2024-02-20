@@ -18,11 +18,6 @@ import '../utils/shared_pref.dart';
 import 'api_utils.dart';
 import 'network_available.dart';
 
-late SharedPreferences sharedPreferences;
-// Must be initialize before using shared preference
-Future<void> iniSharePref() async {
-  sharedPreferences = await SharedPreferences.getInstance();
-}
 
 Future<Response> buildMultiPartRequest(
     MultipartRequest multiPartRequest) async {
@@ -140,6 +135,26 @@ Future<SimpleApiModel> createPlayer(Map request) async {
   var createPlayer = SimpleApiModel.fromJson(
       await (handleResponse(await buildHttpResponse(
           'create_player',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+Future<SimpleApiModel> nextBowler(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'next_bowler',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+Future<SimpleApiModel> changeStriker(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'change_stricker',
           request: request,
           method: HttpMethod.post))));
   hideLoader();

@@ -15,6 +15,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   // await LocalNotificationService.initMainFCM();
+  // Initialize sharedPreferences before using it
+  await iniSharePref();
   runApp(const MyApp());
 }
 class MyApp extends StatefulWidget {
@@ -30,11 +32,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     // LocalNotificationService.initNotification();
     init();
-    chooseUser();
+
+
   }
 
   Future<void> init() async {
     WidgetsFlutterBinding.ensureInitialized();
+    chooseUser();
     // getPermissions();
     await Firebase.initializeApp(
       options: const FirebaseOptions(

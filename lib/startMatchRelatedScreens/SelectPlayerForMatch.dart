@@ -154,12 +154,12 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         onTap: () {
-                          if(teamPlayerList[index].id.toString()==widget.strikerId){
+                          if(teamPlayerList[index].userId.toString()==widget.strikerId){
                             CommonFunctions().showToastMessage(context, "Player already selected as Striker");
-                          }else if(teamPlayerList[index].id.toString()==widget.nonStrikerId){
+                          }else if(teamPlayerList[index].userId.toString()==widget.nonStrikerId){
                             CommonFunctions().showToastMessage(context, "Player already selected as Non-Striker");
                           }else{
-                            Navigator.pop(context, teamPlayerList[index].id);
+                            Navigator.pop(context, teamPlayerList[index].userId);
                           }
                         },
                         child: Card(
@@ -272,7 +272,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                           ],
                                         ),
                                       ),
-                                      teamPlayerList[index].id.toString() ==
+                                      teamPlayerList[index].userId.toString() ==
                                               widget.strikerId
                                           ? Image.asset(
                                               "assets/striker.png",
@@ -281,7 +281,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                               color: AppColor.black,
                                             )
                                           : teamPlayerList[index]
-                                                      .id
+                                                      .userId
                                                       .toString() ==
                                                   widget.nonStrikerId
                                               ? Image.asset(
@@ -291,7 +291,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                   color: AppColor.black,
                                                 )
                                               :teamPlayerList[index]
-                                                      .id
+                                                      .userId
                                                       .toString() ==
                                                   widget.bowlerId
                                               ? Image.asset(

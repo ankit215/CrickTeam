@@ -1,11 +1,19 @@
 import 'dart:convert';
 
+import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/scoreRelatedScreens/OutScreen.dart';
+import 'package:crick_team/utils/common.dart';
+import 'package:crick_team/utils/data_type_extension.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../main.dart';
+import '../modalClasses/socketModels/PlayerDetail.dart';
+import '../modalClasses/socketModels/UpdatedScoreModel.dart';
 import '../utils/AppColor.dart';
+import '../utils/CommonFunctions.dart';
 
 class ScorerScreen extends StatefulWidget {
   final String teamMatch;
@@ -29,18 +37,44 @@ class _ScorerScreenState extends State<ScorerScreen>
   TextEditingController teamController = TextEditingController();
   TextEditingController cityNameController = TextEditingController();
   TextEditingController scoreController = TextEditingController();
+
   int totalRun = 1;
-  List<BallType> noBallType = [
+
+  /*List<BallType> noBallType = [
     BallType("From Bat", false),
     BallType("Bye", false),
     BallType("Leg Bye", false)
+  ];*/
+  List<BallType> noBallType2 = [
+    BallType("Declared Run", false),
+    BallType("Short Run", false)
   ];
   late io.Socket socket;
   bool isSocketConnected = false;
+  PlayerDetail? playerDetail;
+  ScoreUpdate? scoreUpdate;
+  int strikerId = 0;
+  int nonStrikerId = 0;
+  int bowlerId = 0;
+  int matchId = 0;
+  int battingTeamId = 0;
+  int bowlingTeamId = 0;
+
+  // String strikerScore = "0";
+  // String strikerBallsPlayed = "0";
+  // String nonStrikerScore = "0";
+  // String nonStrikerBallsPlayed = "0";
 
   @override
   void initState() {
     super.initState();
+    debugPrint("MAPP__${widget.map}");
+    strikerId = widget.map["player1_id"]!;
+    nonStrikerId = widget.map["player2_id"]!;
+    bowlerId = widget.map["bowler_id"]!;
+    matchId = widget.map["match_id"]!;
+    battingTeamId = widget.map["team_id"]!;
+    bowlingTeamId = widget.map["team2_id"]!;
     init();
   }
 
@@ -53,24 +87,51 @@ class _ScorerScreenState extends State<ScorerScreen>
       connectToSocket();
     });
     connectListener();
+    scoreUpdateListener();
   }
 
-  // Function to send a message to the server.
   void createConnectionSocket() {
-    var map = {
-      "player1_id": 1,
-      "player2_id": 2,
-      "bowler_id": 14,
-      "match_id": 4,
-      "team_id": 1,
-      "team2_id": 2
-    };
-    socket.emit('create_connection', map);
+    socket.emit('create_connection', widget.map);
   }
 
   void connectListener() {
     socket.on('connect_listener', (data) {
-      print('Received message: $data');
+      debugPrint('Received message: $data');
+      try {
+        setState(() {
+          playerDetail = PlayerDetail.fromJson(data);
+        });
+      } catch (e) {
+        debugPrint('Error parsing data: $e');
+      }
+    });
+  }
+
+  void scoreUpdateListener() {
+    debugPrint("Score_update_listener__1");
+    socket.on('score_update_listener', (data) {
+      if (data != null) {
+        debugPrint('score_update_listener11111: $data');
+        String jsonString = json.encode(data);
+        // Parse the JSON string into a Dart map
+        Map<String, dynamic> jsonData = json.decode(jsonString);
+        try {
+          setState(() {
+            scoreUpdate = ScoreUpdate.fromJson(jsonData['update_score']);
+            debugPrint(
+                'score_update_listener2222: ${scoreUpdate!.striker.isStriker}');
+            if (scoreUpdate!.batsman.id == scoreUpdate!.striker.isStriker) {
+              strikerId = scoreUpdate!.batsman.id;
+              nonStrikerId = scoreUpdate!.batsman2.id;
+            } else {
+              strikerId = scoreUpdate!.batsman2.id;
+              nonStrikerId = scoreUpdate!.batsman.id;
+            }
+          });
+        } catch (e) {
+          debugPrint('Error parsing data: $e');
+        }
+      }
     });
   }
 
@@ -82,28 +143,40 @@ class _ScorerScreenState extends State<ScorerScreen>
   }
 
   void connectToSocket() {
-    // Replace 'http://3.108.254.219:5000/apis/' with the URL of your Socket.IO server.
-
     socket.connect();
-
     socket.onConnect((_) {
       setState(() {
-        print('Connected to the socket server');
+        debugPrint('Connected to the socket server');
         isSocketConnected = true;
         createConnectionSocket();
       });
     });
-
     socket.onDisconnect((_) {
-      print('Disconnected from the socket server');
+      debugPrint('Disconnected from the socket server');
     });
+  }
 
-    // createConnectionSocket();
-
-    // Add more event listeners and functionality as needed.
-
-    // To send a message to the server, use:
-    // socket.emit('eventName', 'message data');
+  void scoreUpdateSocket(int strikerId, int nonStrikerId, int bowlerId,
+      int matchId, int battingTeamId, int bowlingTeamId, int type, int run) {
+    var map = {
+      "player1_id": strikerId,
+      "player2_id": nonStrikerId,
+      "bowler_id": bowlerId,
+      "match_id": matchId,
+      "team_id": battingTeamId,
+      "team2_id": bowlingTeamId,
+      "type": type,
+      "run": run
+    };
+    debugPrint("SCORE_UPDATE_FIELDS$map");
+    socket.emit('score_update', map);
+    if(type==5||type==7||type>=8){
+      _showStrikerBottomSheet(
+          context,
+          nonStrikerId.toString(),
+          strikerId.toString(),
+          battingTeamId.toString());
+    }
   }
 
   @override
@@ -153,24 +226,28 @@ class _ScorerScreenState extends State<ScorerScreen>
                   ),
                   child: Column(
                     children: [
-                      const Expanded(
+                      Expanded(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              "0/0",
-                              style: TextStyle(
+                              scoreUpdate != null
+                                  ? scoreUpdate!.scores.totalRun.toString()
+                                  : "0/0",
+                              style: const TextStyle(
                                   fontSize: 30.0,
                                   color: AppColor.white,
                                   fontFamily: "Lato_Bold"),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: 5,
                             ),
                             Text(
-                              "(01/25)",
-                              style: TextStyle(
+                              scoreUpdate != null
+                                  ? "${scoreUpdate!.scores.totalOver}/${scoreUpdate!.scores.matchTotalOvers}"
+                                  : "-",
+                              style: const TextStyle(
                                   fontSize: 14.0,
                                   color: AppColor.white,
                                   fontFamily: "Lato_Bold"),
@@ -186,51 +263,110 @@ class _ScorerScreenState extends State<ScorerScreen>
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              width: MediaQuery.sizeOf(context).width * 0.49,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Colors.orange,
-                                    child: ClipOval(
-                                        child: Image.asset(
-                                      "assets/bats.png",
-                                      fit: BoxFit.cover,
-                                      height: 20,
-                                      width: 20,
-                                    )),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Rajat",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: "Lato_Bold",
-                                            fontSize: 16),
-                                      ),
-                                      Text(
-                                        "0(0)",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: "Lato_Bold",
-                                            fontSize: 16),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                            GestureDetector(
+                              onTap: () {
+                                _showStrikerBottomSheet(
+                                    context,
+                                    playerDetail!.player1Id.toString(),
+                                    playerDetail!.player2Id.toString(),
+                                    battingTeamId.toString());
+                              },
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 0.49,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    CircleAvatar(
+                                      radius: 15,
+                                      backgroundColor: playerDetail != null &&
+                                              scoreUpdate != null &&
+                                              playerDetail!.player1Id ==
+                                                  strikerId
+                                          ? Colors.orange
+                                          : AppColor.grey,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/bats.png",
+                                        fit: BoxFit.cover,
+                                        height: 20,
+                                        width: 20,
+                                      )),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          playerDetail != null
+                                              ? "USER_ID ${playerDetail!.player1Id}"
+                                              : "-",
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Lato_Bold",
+                                              fontSize: 16),
+                                        ),
+                                        scoreUpdate != null &&
+                                                playerDetail != null
+                                            ? Text(
+                                                // 35==39
+                                                // 39==39
+                                                scoreUpdate!.batsman.id ==
+                                                            playerDetail!
+                                                                .player1Id &&
+                                                        scoreUpdate!.striker
+                                                                .isStriker ==
+                                                            playerDetail!
+                                                                .player1Id
+                                                    ? "${scoreUpdate!.batsman.run} (${scoreUpdate!.batsman.balls})"
+                                                    : scoreUpdate!.batsman2
+                                                                    .id ==
+                                                                playerDetail!
+                                                                    .player1Id &&
+                                                            scoreUpdate!.striker
+                                                                    .isStriker ==
+                                                                playerDetail!
+                                                                    .player1Id
+                                                        ? "${scoreUpdate!.batsman2.run} (${scoreUpdate!.batsman2.balls})"
+                                                        : scoreUpdate!.batsman
+                                                                        .id ==
+                                                                    playerDetail!
+                                                                        .player1Id &&
+                                                                scoreUpdate!
+                                                                        .striker
+                                                                        .isStriker !=
+                                                                    playerDetail!
+                                                                        .player1Id
+                                                            ? "${scoreUpdate!.batsman.run} (${scoreUpdate!.batsman.balls})"
+                                                            : scoreUpdate!.batsman2
+                                                                            .id ==
+                                                                        playerDetail!
+                                                                            .player1Id &&
+                                                                    scoreUpdate!
+                                                                            .striker
+                                                                            .isStriker !=
+                                                                        playerDetail!
+                                                                            .player1Id
+                                                                ? "${scoreUpdate!.batsman2.run} (${scoreUpdate!.batsman2.balls})"
+                                                                : "0(0)",
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: "Lato_Bold",
+                                                    fontSize: 16),
+                                              )
+                                            : Text("0(0)"),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                             Container(
@@ -238,51 +374,108 @@ class _ScorerScreenState extends State<ScorerScreen>
                               height: 50,
                               color: Colors.white,
                             ),
-                            Container(
-                              width: MediaQuery.sizeOf(context).width * 0.49,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  CircleAvatar(
-                                    radius: 15,
-                                    backgroundColor: Colors.orange,
-                                    child: ClipOval(
-                                        child: Image.asset(
-                                      "assets/bats.png",
-                                      fit: BoxFit.cover,
-                                      height: 20,
-                                      width: 20,
-                                    )),
-                                  ),
-                                  const SizedBox(
-                                    width: 10,
-                                  ),
-                                  const Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Mohit",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: "Lato_Bold",
-                                            fontSize: 16),
-                                      ),
-                                      Text(
-                                        "0(0)",
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: "Lato_Bold",
-                                            fontSize: 16),
-                                      ),
-                                    ],
-                                  )
-                                ],
+                            GestureDetector(
+                              onTap: () {
+                                _showStrikerBottomSheet(
+                                    context,
+                                    playerDetail!.player2Id.toString(),
+                                    playerDetail!.player1Id.toString(),
+                                    battingTeamId.toString());
+                              },
+                              child: SizedBox(
+                                width: MediaQuery.sizeOf(context).width * 0.49,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    CircleAvatar(
+                                      radius: 15,
+                                      backgroundColor: playerDetail != null &&
+                                              scoreUpdate != null &&
+                                              playerDetail!.player2Id ==
+                                                  strikerId
+                                          ? Colors.orange
+                                          : AppColor.grey,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/bats.png",
+                                        fit: BoxFit.cover,
+                                        height: 20,
+                                        width: 20,
+                                      )),
+                                    ),
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          playerDetail != null
+                                              ? "USER_ID ${playerDetail!.player2Id}"
+                                              : "-",
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Lato_Bold",
+                                              fontSize: 16),
+                                        ),
+                                        scoreUpdate != null &&
+                                                playerDetail != null
+                                            ? Text(
+                                                scoreUpdate!.batsman.id ==
+                                                            playerDetail!
+                                                                .player2Id &&
+                                                        scoreUpdate!.striker
+                                                                .isStriker ==
+                                                            playerDetail!
+                                                                .player2Id
+                                                    ? "${scoreUpdate!.batsman.run} (${scoreUpdate!.batsman.balls})"
+                                                    : scoreUpdate!.batsman2
+                                                                    .id ==
+                                                                playerDetail!
+                                                                    .player2Id &&
+                                                            scoreUpdate!.striker
+                                                                    .isStriker ==
+                                                                playerDetail!
+                                                                    .player2Id
+                                                        ? "${scoreUpdate!.batsman2.run} (${scoreUpdate!.batsman2.balls})"
+                                                        : scoreUpdate!.batsman
+                                                                        .id ==
+                                                                    playerDetail!
+                                                                        .player2Id &&
+                                                                scoreUpdate!
+                                                                        .striker
+                                                                        .isStriker !=
+                                                                    playerDetail!
+                                                                        .player2Id
+                                                            ? "${scoreUpdate!.batsman.run} (${scoreUpdate!.batsman.balls})"
+                                                            : scoreUpdate!.batsman2
+                                                                            .id ==
+                                                                        playerDetail!
+                                                                            .player2Id &&
+                                                                    scoreUpdate!
+                                                                            .striker
+                                                                            .isStriker !=
+                                                                        playerDetail!
+                                                                            .player2Id
+                                                                ? "${scoreUpdate!.batsman2.run} (${scoreUpdate!.batsman2.balls})"
+                                                                : "0(0)",
+                                                style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontFamily: "Lato_Bold",
+                                                    fontSize: 16),
+                                              )
+                                            : Text("0(0)"),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -320,19 +513,32 @@ class _ScorerScreenState extends State<ScorerScreen>
                         const SizedBox(
                           width: 10,
                         ),
-                        const Column(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Rajat",
+                              playerDetail != null
+                                  ? playerDetail!.bowlerName.toString()
+                                  : "-",
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 16),
+                            ),
+                            Text(
+                              scoreUpdate != null
+                                  ? "${scoreUpdate!.bowler.runs} (${scoreUpdate!.bowler.wicket})"
+                                  : "0(0)",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: "Lato_Bold",
                                   fontSize: 16),
                             ),
                             Text(
-                              "0(0)",
+                              scoreUpdate != null
+                                  ? "Balls: ${scoreUpdate!.bowler.balls}"
+                                  : "0(0)",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontFamily: "Lato_Bold",
@@ -359,75 +565,140 @@ class _ScorerScreenState extends State<ScorerScreen>
                       childAspectRatio: 0.9,
                       scrollDirection: Axis.vertical,
                       children: List.generate(6, (index) {
-                        return Container(
-                          height: 50,
-                          width: 50,
-                          color: AppColor.grey,
-                          child: index <= 3
-                              ? Center(
-                                  child: Text(
-                                    index.toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "Lato_Semibold",
-                                      color: AppColor.black,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                )
-                              : index == 4
-                                  ? Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            index.toString(),
-                                            style: const TextStyle(
-                                              fontSize: 20,
-                                              fontFamily: "Lato_Semibold",
-                                              color: AppColor.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          const Text(
-                                            "(Four)",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Lato_Semibold",
-                                              color: AppColor.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
+                        return GestureDetector(
+                          onTap: () {
+                            if (index == 0) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  0,
+                                  0);
+                            } else if (index == 1) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  1,
+                                  1);
+                            } else if (index == 2) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  2,
+                                  2);
+                            } else if (index == 3) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  3,
+                                  3);
+                            } else if (index == 4) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  4,
+                                  4);
+                            } else if (index == 5) {
+                              scoreUpdateSocket(
+                                  strikerId,
+                                  nonStrikerId,
+                                  bowlerId,
+                                  matchId,
+                                  battingTeamId,
+                                  bowlingTeamId,
+                                  6,
+                                  6);
+                            }
+                          },
+                          child: Container(
+                            height: 50,
+                            width: 50,
+                            color: AppColor.grey,
+                            child: index <= 3
+                                ? Center(
+                                    child: Text(
+                                      index.toString(),
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.black,
                                       ),
-                                    )
-                                  : const Center(
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            "6",
-                                            style: TextStyle(
-                                              fontSize: 20,
-                                              fontFamily: "Lato_Semibold",
-                                              color: AppColor.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          Text(
-                                            "(Six)",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontFamily: "Lato_Semibold",
-                                              color: AppColor.black,
-                                            ),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
+                                  )
+                                : index == 4
+                                    ? Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              index.toString(),
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            const Text(
+                                              "(Four)",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      )
+                                    : const Center(
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              "6",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Text(
+                                              "(Six)",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                          ),
                         );
                       }),
                     ),
@@ -448,7 +719,11 @@ class _ScorerScreenState extends State<ScorerScreen>
                             index == 0
                                 /* ? debugPrint("Undo")
                                 : index == 1*/
-                                ? debugPrint("5,7")
+                                ? show5or7BottomSheet(
+                                context,
+                                nonStrikerId.toString(),
+                                strikerId.toString(),
+                                battingTeamId.toString())
                                 : Navigator.push(
                                     getContext,
                                     MaterialPageRoute(
@@ -471,9 +746,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                     fontFamily: "Lato_Semibold",
                                     color: index == 0
                                         ? AppColor.green_neon
-                                        : index == 1
-                                            ? AppColor.text_grey
-                                            : AppColor.red,
+                                        : AppColor.red,
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
@@ -537,6 +810,8 @@ class _ScorerScreenState extends State<ScorerScreen>
   }
 
   void _showBottomSheet(BuildContext context, String type) {
+    totalRun = 1;
+    scoreController.text ="";
     showModalBottomSheet<void>(
       backgroundColor: Colors.white,
       isScrollControlled: true,
@@ -644,8 +919,8 @@ class _ScorerScreenState extends State<ScorerScreen>
                     )
                   ],
                 ),
-                type == "NB"
-                    ? Container(
+                /* type == "NB"
+                    ? SizedBox(
                         height: 50,
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -694,40 +969,65 @@ class _ScorerScreenState extends State<ScorerScreen>
                           },
                         ),
                       )
-                    : const SizedBox(),
+                    : const SizedBox(),*/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColor.red.withOpacity(0.1),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        child: const Center(
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(
-                                color: Colors.red,
-                                fontFamily: "Lato_Bold",
-                                fontSize: 18),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.red.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
                           ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: BoxDecoration(
-                          color: AppColor.green_neon.withOpacity(0.1),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "Ok",
-                            style: TextStyle(
-                                color: AppColor.green2,
-                                fontFamily: "Lato_Bold",
-                                fontSize: 18),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          scoreUpdateSocket(
+                              strikerId,
+                              nonStrikerId,
+                              bowlerId,
+                              matchId,
+                              battingTeamId,
+                              bowlingTeamId,
+                              type == "WD"
+                                  ? 8
+                                  : type == "NB"
+                                      ? 9
+                                      : type == "BYE"
+                                          ? 10
+                                          : 11,
+                              totalRun);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.green_neon.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Ok",
+                              style: TextStyle(
+                                  color: AppColor.green2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
                           ),
                         ),
                       ),
@@ -740,5 +1040,372 @@ class _ScorerScreenState extends State<ScorerScreen>
         });
       },
     );
+  }
+
+  void _showStrikerBottomSheet(BuildContext context, String playerId,
+      String player2Id, String battingTeamId) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        scoreController.text = scoreController.text.toString().isEmpty
+            ? "0"
+            : scoreController.text.toString();
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "Change Striker?",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Lato_Semibold",
+                    color: AppColor.text_grey,
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                  child: const Text(
+                    "Inform the player about the outcome of the current ball.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Lato_Semibold",
+                      color: AppColor.text_grey,
+                    ),
+                  ),
+                ),
+                /*SizedBox(
+                  height: 50,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: noBallType2.length,
+                    shrinkWrap: true,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            for (int i = 0; i < noBallType2.length; i++) {
+                              noBallType2[i].isSelected = false;
+                            }
+                            noBallType2[index].isSelected = true;
+                          });
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            (noBallType2[index].isSelected != null &&
+                                    noBallType2[index].isSelected == false)
+                                ? const Icon(
+                                    Icons.check_box_outline_blank,
+                                    color: AppColor.brown2,
+                                  )
+                                : const Icon(
+                                    Icons.check_box_rounded,
+                                    color: AppColor.brown2,
+                                  ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              noBallType2[index].title.toString(),
+                              style: const TextStyle(
+                                  fontFamily: "Ubuntu_Regular",
+                                  fontSize: 14,
+                                  color: AppColor.brown2),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),*/
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.red.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "Not Now",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          changeStrikerApi(battingTeamId, playerId, player2Id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.green_neon.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(
+                                  color: AppColor.green2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  void show5or7BottomSheet(BuildContext context, String playerId,
+      String player2Id, String battingTeamId) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "How much run?",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Lato_Semibold",
+                    color: AppColor.text_grey,
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                  child: const Text(
+                    "Tap on the run to proceed.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Lato_Semibold",
+                      color: AppColor.text_grey,
+                    ),
+                  ),
+                ),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          scoreUpdateSocket(
+                              strikerId,
+                              nonStrikerId,
+                              bowlerId,
+                              matchId,
+                              battingTeamId.toInt(),
+                              bowlingTeamId,
+                              5,
+                              5);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.grey.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "5",
+                              style: TextStyle(
+                                  color: AppColor.brown2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          scoreUpdateSocket(
+                              strikerId,
+                              nonStrikerId,
+                              bowlerId,
+                              matchId,
+                              battingTeamId.toInt(),
+                              bowlingTeamId,
+                              7,
+                              7);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.grey.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "7",
+                              style: TextStyle(
+                                  color: AppColor.brown2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.red.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "Not Now",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          changeStrikerApi(battingTeamId, playerId, player2Id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.green_neon.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(
+                                  color: AppColor.green2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  nextBowlerApi(String bowlingTeamId, String bowlerId) async {
+    var request = {
+      'match_id': matchId.toString(),
+      'team_id': bowlingTeamId,
+      'player_id': bowlerId,
+    };
+    await nextBowler(request).then((res) async {
+      if (res.success == 1) {
+        toast(res.message);
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  changeStrikerApi(
+      String battingTeamId, String playerId, String player2Id) async {
+    var request = {
+      'match_id': matchId.toString(),
+      'team_id': battingTeamId,
+      'player_id': playerId,
+    };
+    await changeStriker(request).then((res) async {
+      if (res.success == 1) {
+        toast(res.message);
+        setState(() {
+          strikerId = playerId.toInt();
+          nonStrikerId = player2Id.toInt();
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
   }
 }

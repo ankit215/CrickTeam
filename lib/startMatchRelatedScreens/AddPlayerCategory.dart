@@ -356,7 +356,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                       } else if (proceed) {
                         playersList.add(Players(
                             teamId: widget.selectedTeam[i].teamId,
-                            playerId: widget.selectedTeam[i].id,
+                            playerId: widget.selectedTeam[i].userId,
                             playerType: widget.selectedTeam[i].playerCategory));
                       }
                     }
