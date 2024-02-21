@@ -5,21 +5,30 @@ import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/scoreRelatedScreens/OutScreen.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:crick_team/utils/data_type_extension.dart';
+import 'package:crick_team/utils/shared_pref.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../main.dart';
+import '../modalClasses/GetMatchModel.dart';
 import '../modalClasses/socketModels/PlayerDetail.dart';
 import '../modalClasses/socketModels/UpdatedScoreModel.dart';
+import '../startMatchRelatedScreens/SelectPlayerForMatch.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
+import '../utils/constant.dart';
 
 class ScorerScreen extends StatefulWidget {
+  final GetMatchData matchData;
   final String teamMatch;
   final Map<String, int> map;
 
-  const ScorerScreen({super.key, required this.teamMatch, required this.map});
+  const ScorerScreen(
+      {super.key,
+      required this.teamMatch,
+      required this.map,
+      required this.matchData});
 
   @override
   State<ScorerScreen> createState() => _ScorerScreenState();
@@ -59,6 +68,8 @@ class _ScorerScreenState extends State<ScorerScreen>
   int matchId = 0;
   int battingTeamId = 0;
   int bowlingTeamId = 0;
+  List<String> bowlerRuns = [];
+  int bowlerBallsCount = 0;
 
   // String strikerScore = "0";
   // String strikerBallsPlayed = "0";
@@ -69,6 +80,10 @@ class _ScorerScreenState extends State<ScorerScreen>
   void initState() {
     super.initState();
     debugPrint("MAPP__${widget.map}");
+    if (getStringListAsync(bowlerRunsPerOver) != null) {
+      bowlerRuns = getStringListAsync(bowlerRunsPerOver)!;
+      debugPrint("bowlerRuns++++${bowlerRuns}");
+    }
     strikerId = widget.map["player1_id"]!;
     nonStrikerId = widget.map["player2_id"]!;
     bowlerId = widget.map["bowler_id"]!;
@@ -115,6 +130,7 @@ class _ScorerScreenState extends State<ScorerScreen>
         String jsonString = json.encode(data);
         // Parse the JSON string into a Dart map
         Map<String, dynamic> jsonData = json.decode(jsonString);
+        debugPrint('JSON___: $jsonData');
         try {
           setState(() {
             scoreUpdate = ScoreUpdate.fromJson(jsonData['update_score']);
@@ -127,12 +143,52 @@ class _ScorerScreenState extends State<ScorerScreen>
               strikerId = scoreUpdate!.batsman2.id;
               nonStrikerId = scoreUpdate!.batsman.id;
             }
+            if (hasDecimal(scoreUpdate!.bowler.balls)) {
+              int digitAfterDecimal =
+                  ((scoreUpdate!.bowler.balls * 10) % 10).toInt();
+              bowlerBallsCount = digitAfterDecimal;
+              debugPrint('BALLS: $digitAfterDecimal');
+            } else {
+              bowlerBallsCount = bowlerBallsCount + 1;
+              debugPrint('BALLS ELSE: ${scoreUpdate!.bowler.balls}');
+
+              debugPrint('CHANGE OVER');
+              bool isMaidenOver = bowlerRuns.every((element) => element == "0");
+              debugPrint("IS_MAIDEN___$isMaidenOver");
+              if (isMaidenOver) {
+                maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
+              } else {
+                Future.delayed(const Duration(seconds: 2), () {
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => SelectPlayerForMatch(
+                                teamId: bowlingTeamId.toString(),
+                                teamName: widget.matchData.team2Name.toString(),
+                                bowlerId: bowlerId.toString(),
+                              ))).then((value) {
+                    if (value != "add_teams") {
+                      setState(() {
+                        debugPrint("BOWLER_ID $value");
+                        bowlerId = value.toInt();
+                        nextBowlerApi(
+                            bowlingTeamId.toString(), bowlerId.toString());
+                      });
+                    }
+                  });
+                });
+              }
+            }
           });
         } catch (e) {
           debugPrint('Error parsing data: $e');
         }
       }
     });
+  }
+
+  bool hasDecimal(dynamic number) {
+    return number != number.toInt();
   }
 
   @override
@@ -170,12 +226,26 @@ class _ScorerScreenState extends State<ScorerScreen>
     };
     debugPrint("SCORE_UPDATE_FIELDS$map");
     socket.emit('score_update', map);
-    if(type==5||type==7||type>=8){
-      _showStrikerBottomSheet(
-          context,
-          nonStrikerId.toString(),
-          strikerId.toString(),
-          battingTeamId.toString());
+    if (type == 5 || type == 7 || type >= 8) {
+      _showStrikerBottomSheet(context, nonStrikerId.toString(),
+          strikerId.toString(), battingTeamId.toString());
+    }
+    if (bowlerBallsCount <= 6) {
+      setState(() {
+        if (type == 8) {
+          bowlerRuns.add("WD($run)");
+        } else if (type == 9) {
+          bowlerRuns.add("NB($run)");
+        } else if (type == 10) {
+          bowlerRuns.add("BYE($run)");
+        } else if (type == 11) {
+          bowlerRuns.add("LB($run)");
+        } else {
+          bowlerRuns.add(run.toString());
+        }
+
+        setValue(bowlerRunsPerOver, bowlerRuns);
+      });
     }
   }
 
@@ -362,7 +432,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                                     fontFamily: "Lato_Bold",
                                                     fontSize: 16),
                                               )
-                                            : Text("0(0)"),
+                                            : const Text("0(0)"),
                                       ],
                                     )
                                   ],
@@ -471,7 +541,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                                     fontFamily: "Lato_Bold",
                                                     fontSize: 16),
                                               )
-                                            : Text("0(0)"),
+                                            : const Text("0(0)"),
                                       ],
                                     )
                                   ],
@@ -485,70 +555,116 @@ class _ScorerScreenState extends State<ScorerScreen>
                   ),
                 ),
               ),
-              Container(
-                height: 80,
-                color: AppColor.text_grey,
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        CircleAvatar(
-                          radius: 12,
-                          backgroundColor: AppColor.brown2,
-                          child: ClipOval(
-                              child: Image.asset(
-                            "assets/ball.png",
-                            fit: BoxFit.cover,
-                            color: Colors.white,
-                          )),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              playerDetail != null
-                                  ? playerDetail!.bowlerName.toString()
-                                  : "-",
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Lato_Bold",
-                                  fontSize: 16),
-                            ),
-                            Text(
-                              scoreUpdate != null
-                                  ? "${scoreUpdate!.bowler.runs} (${scoreUpdate!.bowler.wicket})"
-                                  : "0(0)",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Lato_Bold",
-                                  fontSize: 16),
-                            ),
-                            Text(
-                              scoreUpdate != null
-                                  ? "Balls: ${scoreUpdate!.bowler.balls}"
-                                  : "0(0)",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: "Lato_Bold",
-                                  fontSize: 16),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => SelectPlayerForMatch(
+                                teamId: bowlingTeamId.toString(),
+                                teamName: widget.matchData.team2Name.toString(),
+                                bowlerId: bowlerId.toString(),
+                              ))).then((value) {
+                    if (value != "add_teams") {
+                      setState(() {
+                        debugPrint("BOWLER_ID $value");
+                        bowlerId = value.toInt();
+                        nextBowlerApi(
+                            bowlingTeamId.toString(), bowlerId.toString());
+                      });
+                    }
+                  });
+                },
+                child: Container(
+                  height: 80,
+                  color: AppColor.text_grey,
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          CircleAvatar(
+                            radius: 12,
+                            backgroundColor: AppColor.brown2,
+                            child: ClipOval(
+                                child: Image.asset(
+                              "assets/ball.png",
+                              fit: BoxFit.cover,
+                              color: Colors.white,
+                            )),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                playerDetail != null && scoreUpdate == null
+                                    ? playerDetail!.bowlerName.toString()
+                                    : playerDetail != null &&
+                                            scoreUpdate != null
+                                        ? "USER_ID ${scoreUpdate!.bowler.id.toString()}"
+                                        : "-",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "Lato_Bold",
+                                    fontSize: 16),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    scoreUpdate != null
+                                        ? "Balls: ${bowlerBallsCount}"
+                                        : "0",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "Lato_Bold",
+                                        fontSize: 16),
+                                  ),
+
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    scoreUpdate != null
+                                        ? "Wickets: ${scoreUpdate!.bowler.wicket}"
+                                        : "Wickets: []",
+                                    style: const TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "Lato_Bold",
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Text(
+                                scoreUpdate != null
+                                    ? "Runs: ${bowlerRuns.toString()}"
+                                    : "Runs: []",
+                                style: const TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: "Lato_Bold",
+                                    fontSize: 16),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Row(
@@ -567,7 +683,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       children: List.generate(6, (index) {
                         return GestureDetector(
                           onTap: () {
-                            if (index == 0) {
+                            if (index == 0 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -577,7 +693,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   0,
                                   0);
-                            } else if (index == 1) {
+                            } else if (index == 1 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -587,7 +703,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   1,
                                   1);
-                            } else if (index == 2) {
+                            } else if (index == 2 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -597,7 +713,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   2,
                                   2);
-                            } else if (index == 3) {
+                            } else if (index == 3 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -607,7 +723,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   3,
                                   3);
-                            } else if (index == 4) {
+                            } else if (index == 4 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -617,7 +733,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   4,
                                   4);
-                            } else if (index == 5) {
+                            } else if (index == 5 && bowlerBallsCount != 6) {
                               scoreUpdateSocket(
                                   strikerId,
                                   nonStrikerId,
@@ -627,6 +743,9 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   6,
                                   6);
+                            } else {
+                              CommonFunctions().showToastMessage(context,
+                                  "Over is finished please select next bowler.");
                             }
                           },
                           child: Container(
@@ -716,19 +835,23 @@ class _ScorerScreenState extends State<ScorerScreen>
                       children: List.generate(2, (index) {
                         return GestureDetector(
                           onTap: () {
-                            index == 0
+                            index == 0 && bowlerBallsCount != 6
                                 /* ? debugPrint("Undo")
                                 : index == 1*/
                                 ? show5or7BottomSheet(
-                                context,
-                                nonStrikerId.toString(),
-                                strikerId.toString(),
-                                battingTeamId.toString())
-                                : Navigator.push(
-                                    getContext,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const OutScreen()));
+                                    context,
+                                    nonStrikerId.toString(),
+                                    strikerId.toString(),
+                                    battingTeamId.toString())
+                                : index == 0 && bowlerBallsCount == 6
+                                    ? CommonFunctions().showToastMessage(
+                                        context,
+                                        "Over is finished please select next bowler.")
+                                    : Navigator.push(
+                                        getContext,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const OutScreen()));
                           },
                           child: Container(
                               height: 50,
@@ -769,15 +892,20 @@ class _ScorerScreenState extends State<ScorerScreen>
                 children: List.generate(4, (index) {
                   return GestureDetector(
                     onTap: () {
-                      _showBottomSheet(
-                          context,
-                          index == 0
-                              ? "WD"
-                              : index == 1
-                                  ? "NB"
-                                  : index == 2
-                                      ? "BYE"
-                                      : "LB");
+                      if (bowlerBallsCount == 6) {
+                        CommonFunctions().showToastMessage(context,
+                            "Over is finished please select next bowler.");
+                      } else {
+                        _showBottomSheet(
+                            context,
+                            index == 0
+                                ? "WD"
+                                : index == 1
+                                    ? "NB"
+                                    : index == 2
+                                        ? "BYE"
+                                        : "LB");
+                      }
                     },
                     child: Container(
                       height: 20,
@@ -811,7 +939,7 @@ class _ScorerScreenState extends State<ScorerScreen>
 
   void _showBottomSheet(BuildContext context, String type) {
     totalRun = 1;
-    scoreController.text ="";
+    scoreController.text = "";
     showModalBottomSheet<void>(
       backgroundColor: Colors.white,
       isScrollControlled: true,
@@ -1073,7 +1201,8 @@ class _ScorerScreenState extends State<ScorerScreen>
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: const Text(
                     "Inform the player about the outcome of the current ball.",
                     style: TextStyle(
@@ -1217,7 +1346,8 @@ class _ScorerScreenState extends State<ScorerScreen>
                   ),
                 ),
                 Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 20),
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: const Text(
                     "Tap on the run to proceed.",
                     style: TextStyle(
@@ -1227,7 +1357,6 @@ class _ScorerScreenState extends State<ScorerScreen>
                     ),
                   ),
                 ),
-
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1295,7 +1424,9 @@ class _ScorerScreenState extends State<ScorerScreen>
                     ),
                   ],
                 ),
-                SizedBox(height: 20,),
+                const SizedBox(
+                  height: 20,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1362,7 +1493,64 @@ class _ScorerScreenState extends State<ScorerScreen>
     };
     await nextBowler(request).then((res) async {
       if (res.success == 1) {
+        setState(() {
+          toast(res.message);
+          debugPrint("NEXT_BOWLER____${res.body.toString()}");
+          bowlerBallsCount = 0;
+          bowlerRuns.clear();
+          setValue(bowlerRunsPerOver, bowlerRuns);
+        });
+      } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  maidenOverApi(String bowlingTeamId, String bowlerId) async {
+    var request = {
+      'match_id': matchId.toString(),
+      'team_id': bowlingTeamId,
+      'bowler_id': bowlerId,
+    };
+    await maidenOver(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          debugPrint("Maiden Over${res.body.toString()}");
+          toast(res.message);
+          setState(() {
+            toast(res.message);
+            debugPrint("NEXT_BOWLER____${res.body.toString()}");
+            bowlerBallsCount = 0;
+            bowlerRuns.clear();
+            setValue(bowlerRunsPerOver, bowlerRuns);
+          });
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => SelectPlayerForMatch(
+                        teamId: bowlingTeamId.toString(),
+                        teamName: widget.matchData.team2Name.toString(),
+                        bowlerId: bowlerId.toString(),
+                      ))).then((value) {
+            if (value != "add_teams") {
+              setState(() {
+                debugPrint("BOWLER_ID $value");
+                bowlerId = value.toString();
+                nextBowlerApi(bowlingTeamId.toString(), bowlerId.toString());
+              });
+            }
+          });
+        });
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(

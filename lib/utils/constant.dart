@@ -1,6 +1,7 @@
 const isLogin = "is_login_user";
 
 const userId = "id_user";
+const bowlerRunsPerOver = "bowler_runs";
 
 const userName = "name_user";
 const dob = "dob";

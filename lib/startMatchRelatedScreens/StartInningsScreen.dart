@@ -397,7 +397,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                 Navigator.push(
                     getContext,
                     MaterialPageRoute(
-                        builder: (context) =>  ScorerScreen(teamMatch: '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',map: map,)));
+                        builder: (context) =>  ScorerScreen(teamMatch: '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',map: map,matchData: widget.matchData,)));
               },
               child: Container(
                 width: double.infinity,

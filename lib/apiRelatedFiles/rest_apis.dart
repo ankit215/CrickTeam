@@ -150,6 +150,16 @@ Future<SimpleApiModel> nextBowler(Map request) async {
   hideLoader();
   return createPlayer;
 }
+Future<SimpleApiModel> maidenOver(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'maiden_over',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
 Future<SimpleApiModel> changeStriker(Map request) async {
   showLoader();
   var createPlayer = SimpleApiModel.fromJson(
