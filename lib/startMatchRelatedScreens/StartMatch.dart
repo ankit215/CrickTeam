@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/utils/AppColor.dart';
+import 'package:crick_team/utils/data_type_extension.dart';
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:day_night_time_picker/lib/daynight_timepicker.dart';
 import 'package:flutter/cupertino.dart';
@@ -1618,6 +1619,10 @@ class _StartMatchState extends State<StartMatch> {
     if (noOfOvers.text.trim().toString() == '') {
       CommonFunctions()
           .showToastMessage(getContext, "No. of overs Field Is Required");
+      return false;
+    } if (noOfOvers.text.trim().toInt()>20) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please add overs below 20.");
       return false;
     } else if (cityController.text.trim().toString() == '') {
       CommonFunctions().showToastMessage(getContext, "City Field Is Required.");

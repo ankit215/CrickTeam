@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../startMatchRelatedScreens/TossScreen.dart';
 import '../utils/CommonFunctions.dart';
+import '../utils/constant.dart';
+import '../utils/shared_pref.dart';
 class MatchModel {
   String? teamAName;
   String? teamAShortName;
@@ -171,6 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: (){
+                        setValue(bowlerRunsPerOver, []);
                         Navigator.push(
                             getContext,
                             MaterialPageRoute(

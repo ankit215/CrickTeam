@@ -115,6 +115,7 @@ class _ScorerScreenState extends State<ScorerScreen>
       try {
         setState(() {
           playerDetail = PlayerDetail.fromJson(data);
+          bowlerId = playerDetail!.bowlerId;
         });
       } catch (e) {
         debugPrint('Error parsing data: $e');
@@ -158,7 +159,7 @@ class _ScorerScreenState extends State<ScorerScreen>
               if (isMaidenOver) {
                 maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
               } else {
-                Future.delayed(const Duration(seconds: 2), () {
+                Future.delayed(const Duration(seconds: 1), () {
                   Navigator.push(
                       getContext,
                       MaterialPageRoute(
@@ -173,6 +174,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                         bowlerId = value.toInt();
                         nextBowlerApi(
                             bowlingTeamId.toString(), bowlerId.toString());
+
                       });
                     }
                   });
@@ -226,7 +228,7 @@ class _ScorerScreenState extends State<ScorerScreen>
     };
     debugPrint("SCORE_UPDATE_FIELDS$map");
     socket.emit('score_update', map);
-    if (type == 5 || type == 7 || type >= 8) {
+    if (/*type == 5 || type == 7 || */type >= 8) {
       _showStrikerBottomSheet(context, nonStrikerId.toString(),
           strikerId.toString(), battingTeamId.toString());
     }
@@ -584,83 +586,96 @@ class _ScorerScreenState extends State<ScorerScreen>
                         height: 10,
                       ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          CircleAvatar(
-                            radius: 12,
-                            backgroundColor: AppColor.brown2,
-                            child: ClipOval(
-                                child: Image.asset(
-                              "assets/ball.png",
-                              fit: BoxFit.cover,
-                              color: Colors.white,
-                            )),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Column(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                playerDetail != null && scoreUpdate == null
-                                    ? playerDetail!.bowlerName.toString()
-                                    : playerDetail != null &&
-                                            scoreUpdate != null
-                                        ? "USER_ID ${scoreUpdate!.bowler.id.toString()}"
-                                        : "-",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: "Lato_Bold",
-                                    fontSize: 16),
+                              const SizedBox(
+                                width: 10,
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                              CircleAvatar(
+                                radius: 12,
+                                backgroundColor: AppColor.brown2,
+                                child: ClipOval(
+                                    child: Image.asset(
+                                  "assets/ball.png",
+                                  fit: BoxFit.cover,
+                                  color: Colors.white,
+                                )),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    scoreUpdate != null
-                                        ? "Balls: ${bowlerBallsCount}"
-                                        : "0",
+                                    playerDetail != null && scoreUpdate == null
+                                        ?"USER_ID ${bowlerId}"
+                                        : playerDetail != null &&
+                                                scoreUpdate != null
+                                            ? "USER_ID ${bowlerId}"
+                                            : "-",
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontFamily: "Lato_Bold",
                                         fontSize: 16),
                                   ),
-
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        scoreUpdate != null
+                                            ? "Balls: ${bowlerBallsCount}"
+                                            : "0",
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: "Lato_Bold",
+                                            fontSize: 16),
+                                      ),
+                                      const SizedBox(
+                                        width: 20,
+                                      ),
+                                      Text(
+                                        scoreUpdate != null
+                                            ? "Wickets: ${scoreUpdate!.bowler.wicket}"
+                                            : "Wickets: []",
+                                        style: const TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: "Lato_Bold",
+                                            fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(
                                     width: 20,
                                   ),
                                   Text(
                                     scoreUpdate != null
-                                        ? "Wickets: ${scoreUpdate!.bowler.wicket}"
-                                        : "Wickets: []",
+                                        ? "Runs: ${bowlerRuns.toString()}"
+                                        : "Runs: []",
                                     style: const TextStyle(
                                         color: Colors.white,
                                         fontFamily: "Lato_Bold",
-                                        fontSize: 16),
+                                        fontSize: 12),
                                   ),
                                 ],
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Text(
-                                scoreUpdate != null
-                                    ? "Runs: ${bowlerRuns.toString()}"
-                                    : "Runs: []",
-                                style: const TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: "Lato_Bold",
-                                    fontSize: 16),
-                              ),
+                              )
                             ],
-                          )
+                          ),
+                          Text(
+                            playerDetail != null && scoreUpdate != null
+                                ? "${scoreUpdate!.bowler.balls}-${scoreUpdate!.bowler.maidensOver}-${scoreUpdate!.bowler.runs}-${scoreUpdate!.bowler.wicket}"
+                                : "-",
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontFamily: "Lato_Bold",
+                                fontSize: 16),
+                          ),
                         ],
                       ),
                     ],
@@ -850,8 +865,19 @@ class _ScorerScreenState extends State<ScorerScreen>
                                     : Navigator.push(
                                         getContext,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const OutScreen()));
+                                            builder: (context) => OutScreen(
+                                                  bowlingTeamId: bowlingTeamId,
+                                                  battingTeamId: battingTeamId,
+                                                  matchData: widget.matchData,
+                                                  bowlerId: bowlerId,
+                                                  batterId: strikerId,
+                                                ))).then((value) {
+                                        if (value != "add_teams") {
+                                          setState(() {
+                                            debugPrint("BAT_ID $value");
+                                          });
+                                        }
+                                      });
                           },
                           child: Container(
                               height: 50,
@@ -1204,7 +1230,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                   margin:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   child: const Text(
-                    "Inform the player about the outcome of the current ball.",
+                    "Do you want to change the next striker! Tap yes to change.",
                     style: TextStyle(
                       fontSize: 14,
                       fontFamily: "Lato_Semibold",
@@ -1494,11 +1520,12 @@ class _ScorerScreenState extends State<ScorerScreen>
     await nextBowler(request).then((res) async {
       if (res.success == 1) {
         setState(() {
-          toast(res.message);
           debugPrint("NEXT_BOWLER____${res.body.toString()}");
           bowlerBallsCount = 0;
           bowlerRuns.clear();
           setValue(bowlerRunsPerOver, bowlerRuns);
+          _showStrikerBottomSheet(context, nonStrikerId.toString(),
+              strikerId.toString(), battingTeamId.toString());
         });
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
@@ -1526,7 +1553,6 @@ class _ScorerScreenState extends State<ScorerScreen>
       if (res.success == 1) {
         setState(() {
           debugPrint("Maiden Over${res.body.toString()}");
-          toast(res.message);
           setState(() {
             toast(res.message);
             debugPrint("NEXT_BOWLER____${res.body.toString()}");
@@ -1576,7 +1602,6 @@ class _ScorerScreenState extends State<ScorerScreen>
     };
     await changeStriker(request).then((res) async {
       if (res.success == 1) {
-        toast(res.message);
         setState(() {
           strikerId = playerId.toInt();
           nonStrikerId = player2Id.toInt();

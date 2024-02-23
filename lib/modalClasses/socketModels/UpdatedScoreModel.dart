@@ -54,8 +54,9 @@ class Bowler {
   dynamic balls;
   int runs;
   int wicket;
+  int maidensOver;
 
-  Bowler({required this.id, required this.balls, required this.runs, required this.wicket});
+  Bowler({required this.id, required this.balls, required this.runs, required this.wicket, required this.maidensOver});
 
   factory Bowler.fromJson(Map<String, dynamic> json) {
     return Bowler(
@@ -63,6 +64,7 @@ class Bowler {
       balls: json['balls'],
       runs: json['runs'],
       wicket: json['wicket'],
+      maidensOver: json['mainders_over'],
     );
   }
 }
