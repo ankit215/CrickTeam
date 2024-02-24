@@ -1,9 +1,14 @@
 import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../apiRelatedFiles/rest_apis.dart';
+import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
 import '../startMatchRelatedScreens/SelectPlayerForMatch.dart';
+import '../utils/CommonFunctions.dart';
+import '../utils/common.dart';
 
 class OutModel {
   String? outTitle;
@@ -19,30 +24,37 @@ class OutScreen extends StatefulWidget {
   final int bowlerId;
   final int batterId;
   final GetMatchData matchData;
-  const OutScreen({super.key, required this.bowlingTeamId, required this.battingTeamId, required this.matchData, required this.bowlerId, required this.batterId});
+
+  const OutScreen({super.key,
+    required this.bowlingTeamId,
+    required this.battingTeamId,
+    required this.matchData,
+    required this.bowlerId,
+    required this.batterId});
 
   @override
   State<OutScreen> createState() => _OutScreenState();
 }
 
 class _OutScreenState extends State<OutScreen> {
-  List<OutModel> outList = [OutModel("Bowled", "assets/bowled.png","1"),
-    OutModel("Caught", "assets/caught.png","2"),
-    OutModel("Caught Behind", "assets/caught_behind.png","2"),
-    OutModel("Caught & Bowled", "assets/caught_bowled.png","2"),
-    OutModel("Stumped", "assets/stumped.png","5"),
-    OutModel("Run Out", "assets/run_out.png","6"),
-    OutModel("LBW", "assets/lbw.png","7"),
+  List<OutModel> outList = [
+    OutModel("Bowled", "assets/bowled.png", "1"),
+    OutModel("Caught", "assets/caught.png", "2"),
+    OutModel("Caught Behind", "assets/caught_behind.png", "2"),
+    OutModel("Caught & Bowled", "assets/caught_bowled.png", "2"),
+    OutModel("Stumped", "assets/stumped.png", "5"),
+    OutModel("Run Out", "assets/run_out.png", "6"),
+    OutModel("LBW", "assets/lbw.png", "7"),
     // OutModel("Hit Wicket", "assets/hit_wicket.png"),
-    OutModel("Retired Hurt", "assets/retired_hurt.png","8"),
+    OutModel("Retired Hurt", "assets/retired_hurt.png", "8"),
     // OutModel("Retired Out", "assets/retired_out.png"),
     // OutModel("Run Out", "assets/run_out.png"),
     // OutModel("Absent", "assets/absent.png"),
     // OutModel("Obstr the field", "assets/obstr_the_field.png"),
     // OutModel("Timed Out", "assets/timed_out.png"),
     // OutModel("Retired", "assets/retired.png"),
-
   ];
+  var dismissalType = "";
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +92,20 @@ class _OutScreenState extends State<OutScreen> {
         scrollDirection: Axis.vertical,
         children: List.generate(outList.length, (index) {
           return GestureDetector(
-            onTap: (){
+            onTap: () {
+              dismissalType = outList[index].type!;
               Navigator.push(
                   getContext,
                   MaterialPageRoute(
-                      builder: (context) => SelectPlayerForMatch(
-                        teamId: widget.battingTeamId.toString(),
-                        teamName: widget.matchData.team2Name.toString(),
-                        bowlerId: widget.bowlerId.toString(),
-                      ))).then((value) {
+                      builder: (context) =>
+                          SelectPlayerForMatch(
+                            teamId: widget.bowlingTeamId.toString(),
+                            teamName: widget.matchData.team2Name.toString(),
+                            bowlerId: "",
+                          ))).then((value) {
                 if (value != "add_teams") {
-                  setState(() {
-                    debugPrint("BOWLER_ID $value");
-                    Navigator.pop(context,value);
-                  });
+                  debugPrint("selected_fielder $value");
+                  outPlayerApi(value.toString());
                 }
               });
             },
@@ -103,10 +115,10 @@ class _OutScreenState extends State<OutScreen> {
                 children: [
                   Image.asset(
                     outList[index].outImage.toString(),
-                                    fit: BoxFit.cover,
-                                    height: 60,
-                                    width: 60,
-                                  ),
+                    fit: BoxFit.cover,
+                    height: 60,
+                    width: 60,
+                  ),
                   const SizedBox(
                     height: 10,
                   ),
@@ -126,5 +138,50 @@ class _OutScreenState extends State<OutScreen> {
         }),
       ),
     );
+  }
+
+  outPlayerApi(String fielderID) async {
+    var request = {
+      'match_id': widget.matchData.id.toString(),
+      'team_id': widget.battingTeamId.toString(),
+      'player_id': widget.batterId.toString(),
+      'dismissal_type': dismissalType,
+      'fielder_id':fielderID,
+      'bowler_id': widget.bowlerId.toString(),
+      'team2_id': widget.bowlingTeamId.toString(),
+    };
+    await outPlayer(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          debugPrint("OUT_Player___${res.body.toString()}");
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SelectPlayerForMatch(
+                        teamId: widget.battingTeamId.toString(),
+                        teamName: widget.matchData.team1Name.toString(),
+                        bowlerId: "",
+                      ))).then((value) {
+            if (value != "add_teams") {
+              debugPrint("selected_new_BATTER $value");
+             Navigator.pop(context,value);
+            }
+          });
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
   }
 }

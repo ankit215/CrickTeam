@@ -1,6 +1,6 @@
 class ScoreUpdate {
   Batsman batsman;
-  Batsman batsman2;
+  Batsman2 batsman2;
   Bowler bowler;
   Striker striker;
   Scores scores;
@@ -10,7 +10,7 @@ class ScoreUpdate {
   factory ScoreUpdate.fromJson(Map<String, dynamic> json) {
     return ScoreUpdate(
       batsman: Batsman.fromJson(json['batsman']),
-      batsman2: Batsman.fromJson(json['batsman_2']),
+      batsman2: Batsman2.fromJson(json['batsman_2']),
       bowler: Bowler.fromJson(json['bowler']),
       striker: Striker.fromJson(json['striker']),
       scores: Scores.fromJson(json['scores']),

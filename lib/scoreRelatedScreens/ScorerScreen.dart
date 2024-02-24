@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/scoreRelatedScreens/OutScreen.dart';
+import 'package:crick_team/scoreRelatedScreens/ScoreBoardscreen.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:crick_team/utils/data_type_extension.dart';
 import 'package:crick_team/utils/shared_pref.dart';
@@ -105,8 +106,8 @@ class _ScorerScreenState extends State<ScorerScreen>
     scoreUpdateListener();
   }
 
-  void createConnectionSocket() {
-    socket.emit('create_connection', widget.map);
+  void createConnectionSocket(var map) {
+    socket.emit('create_connection', map);
   }
 
   void connectListener() {
@@ -168,13 +169,12 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 teamName: widget.matchData.team2Name.toString(),
                                 bowlerId: bowlerId.toString(),
                               ))).then((value) {
-                    if (value != "add_teams") {
+                    if (value != null && value != "add_teams") {
                       setState(() {
                         debugPrint("BOWLER_ID $value");
                         bowlerId = value.toInt();
                         nextBowlerApi(
                             bowlingTeamId.toString(), bowlerId.toString());
-
                       });
                     }
                   });
@@ -206,7 +206,7 @@ class _ScorerScreenState extends State<ScorerScreen>
       setState(() {
         debugPrint('Connected to the socket server');
         isSocketConnected = true;
-        createConnectionSocket();
+        createConnectionSocket(widget.map);
       });
     });
     socket.onDisconnect((_) {
@@ -228,7 +228,7 @@ class _ScorerScreenState extends State<ScorerScreen>
     };
     debugPrint("SCORE_UPDATE_FIELDS$map");
     socket.emit('score_update', map);
-    if (/*type == 5 || type == 7 || */type >= 8) {
+    if (/*type == 5 || type == 7 || */ type >= 8) {
       _showStrikerBottomSheet(context, nonStrikerId.toString(),
           strikerId.toString(), battingTeamId.toString());
     }
@@ -279,6 +279,24 @@ class _ScorerScreenState extends State<ScorerScreen>
             ),
             textAlign: TextAlign.center,
           ),
+          actions: [
+            GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => ScoreBoardScreen(
+                                getMatchData: widget.matchData,
+                              )));
+                },
+                child: Icon(
+                  Icons.info_outlined,
+                  size: 30,
+                  color: Colors.white,
+                )),
+            SizedBox(width: 20,)
+
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -567,7 +585,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 teamName: widget.matchData.team2Name.toString(),
                                 bowlerId: bowlerId.toString(),
                               ))).then((value) {
-                    if (value != "add_teams") {
+                    if (value != null && value != "add_teams") {
                       setState(() {
                         debugPrint("BOWLER_ID $value");
                         bowlerId = value.toInt();
@@ -614,7 +632,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 children: [
                                   Text(
                                     playerDetail != null && scoreUpdate == null
-                                        ?"USER_ID ${bowlerId}"
+                                        ? "USER_ID ${bowlerId}"
                                         : playerDetail != null &&
                                                 scoreUpdate != null
                                             ? "USER_ID ${bowlerId}"
@@ -862,22 +880,11 @@ class _ScorerScreenState extends State<ScorerScreen>
                                     ? CommonFunctions().showToastMessage(
                                         context,
                                         "Over is finished please select next bowler.")
-                                    : Navigator.push(
-                                        getContext,
-                                        MaterialPageRoute(
-                                            builder: (context) => OutScreen(
-                                                  bowlingTeamId: bowlingTeamId,
-                                                  battingTeamId: battingTeamId,
-                                                  matchData: widget.matchData,
-                                                  bowlerId: bowlerId,
-                                                  batterId: strikerId,
-                                                ))).then((value) {
-                                        if (value != "add_teams") {
-                                          setState(() {
-                                            debugPrint("BAT_ID $value");
-                                          });
-                                        }
-                                      });
+                                    : playerWhoOutBottomSheet(
+                                        context,
+                                        scoreUpdate!.batsman,
+                                        scoreUpdate!.batsman2,
+                                        scoreUpdate!.bowler);
                           },
                           child: Container(
                               height: 50,
@@ -1511,6 +1518,247 @@ class _ScorerScreenState extends State<ScorerScreen>
     );
   }
 
+  void playerWhoOutBottomSheet(
+      BuildContext context, Batsman batsman, Batsman2 batsman2, Bowler bowler) {
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          var selectedPlayerId = "";
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "Select the player who is out?",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Lato_Semibold",
+                    color: AppColor.text_grey,
+                  ),
+                ),
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: const Text(
+                    "Tap on the player to proceed.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Lato_Semibold",
+                      color: AppColor.text_grey,
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPlayerId = batsman.id.toString();
+                            debugPrint("Selected Player Id: $selectedPlayerId");
+                            Navigator.push(
+                                getContext,
+                                MaterialPageRoute(
+                                    builder: (context) => OutScreen(
+                                          bowlingTeamId: bowlingTeamId,
+                                          battingTeamId: battingTeamId,
+                                          matchData: widget.matchData,
+                                          bowlerId: bowlerId,
+                                          batterId: batsman2.id,
+                                        ))).then((value) {
+                              if (value != null && value != "add_teams") {
+                                setState(() {
+                                  debugPrint("BAT_IDs $selectedPlayerId");
+                                  debugPrint("BOWLER_IDs $value");
+                                  Map<String, int> map = {
+                                    "player1_id": value.toString().toInt(),
+                                    "player2_id": nonStrikerId.toInt(),
+                                    "bowler_id": bowlerId.toInt(),
+                                    "match_id": widget.matchData.id!,
+                                    "team_id": battingTeamId.toInt(),
+                                    "team2_id": bowlingTeamId.toInt(),
+                                  };
+
+                                  // createConnectionSocket(map);
+                                });
+                                bowlerRuns.add("W");
+                              }
+                            });
+                            // Navigator.pop(context);
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: selectedPlayerId == batsman.id.toString()
+                                ? AppColor.brown2.withOpacity(0.1)
+                                : AppColor.grey.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/player.png",
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "USER_ID ${batsman.id}",
+                                style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Semibold"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPlayerId = batsman.id.toString();
+                            debugPrint("Selected Player Id: $selectedPlayerId");
+                            Navigator.push(
+                                getContext,
+                                MaterialPageRoute(
+                                    builder: (context) => OutScreen(
+                                          bowlingTeamId: bowlingTeamId,
+                                          battingTeamId: battingTeamId,
+                                          matchData: widget.matchData,
+                                          bowlerId: bowlerId,
+                                          batterId: batsman2.id,
+                                        ))).then((value) {
+                              if (value != null && value != "add_teams") {
+                                setState(() {
+                                  debugPrint("BAT_IDs $selectedPlayerId");
+                                  debugPrint("BOWLER_IDs $value");
+                                  Map<String, int> map = {
+                                    "player1_id": value.toString().toInt(),
+                                    "player2_id": nonStrikerId.toInt(),
+                                    "bowler_id": bowlerId.toInt(),
+                                    "match_id": widget.matchData.id!,
+                                    "team_id": battingTeamId.toInt(),
+                                    "team2_id": bowlingTeamId.toInt(),
+                                  };
+
+                                  // createConnectionSocket(map);
+                                });
+                                bowlerRuns.add("W");
+                              }
+                            });
+                            // Navigator.pop(context);
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: selectedPlayerId == batsman2.id.toString()
+                                ? AppColor.brown2.withOpacity(0.1)
+                                : AppColor.grey.withOpacity(0.1),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/player.png",
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "USER_ID ${batsman2.id}",
+                                style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Semibold"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                /*    Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.red.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "Not Now",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          // changeStrikerApi(battingTeamId, playerId, player2Id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.green_neon.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(
+                                  color: AppColor.green2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )*/
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
   nextBowlerApi(String bowlingTeamId, String bowlerId) async {
     var request = {
       'match_id': matchId.toString(),
@@ -1568,7 +1816,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                         teamName: widget.matchData.team2Name.toString(),
                         bowlerId: bowlerId.toString(),
                       ))).then((value) {
-            if (value != "add_teams") {
+            if (value != null && value != "add_teams") {
               setState(() {
                 debugPrint("BOWLER_ID $value");
                 bowlerId = value.toString();

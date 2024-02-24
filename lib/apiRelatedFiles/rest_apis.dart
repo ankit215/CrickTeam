@@ -10,6 +10,7 @@ import '../modalClasses/GetPlayerSearchModel.dart';
 import '../modalClasses/GetTeamDetailModel.dart';
 import '../modalClasses/GetTeamModel.dart';
 import '../modalClasses/LoginModel.dart';
+import '../modalClasses/ScoreboardModel.dart';
 import '../modalClasses/UpdateProfileModel.dart';
 import '../modalClasses/api_response_model.dart';
 import '../utils/common.dart';
@@ -150,6 +151,16 @@ Future<SimpleApiModel> nextBowler(Map request) async {
   hideLoader();
   return createPlayer;
 }
+Future<SimpleApiModel> outPlayer(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'out_player',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
 Future<SimpleApiModel> maidenOver(Map request) async {
   showLoader();
   var createPlayer = SimpleApiModel.fromJson(
@@ -219,6 +230,11 @@ Future<GetTeamDetailModel> getTeamDetail(String teamId) async {
   showLoader();
   return GetTeamDetailModel.fromJson(await (handleResponse(
       await buildHttpResponse("team_detail/$teamId",method: HttpMethod.get))));
+}
+Future<ScoreboardModel> getScoreboard(String matchId,String teamId,String team2Id) async {
+  showLoader();
+  return ScoreboardModel.fromJson(await (handleResponse(
+      await buildHttpResponse("score_board?match_id=$matchId&team_id=$teamId&team2_id=$team2Id",method: HttpMethod.get))));
 }
 
 // Future<CompanyModel> getCompany(String search, String userId) async {

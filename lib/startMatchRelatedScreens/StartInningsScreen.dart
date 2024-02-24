@@ -454,7 +454,6 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
       if (res.success == 1) {
         toast(res.message);
       } else if (res.success != 1 && res.code == 401) {
-        toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
             MaterialPageRoute(
