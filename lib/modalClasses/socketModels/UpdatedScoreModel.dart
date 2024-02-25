@@ -22,14 +22,16 @@ class Batsman {
   int id;
   int run;
   dynamic balls;
+  dynamic name;
 
-  Batsman({required this.id, required this.run, required this.balls});
+  Batsman({required this.id, required this.run, required this.balls, required this.name});
 
   factory Batsman.fromJson(Map<String, dynamic> json) {
     return Batsman(
       id: json['id'],
       run: json['run'],
       balls: json['balls'],
+      name: json['name'],
     );
   }
 }
@@ -37,14 +39,16 @@ class Batsman2 {
   int id;
   int run;
   dynamic balls;
+  dynamic name;
 
-  Batsman2({required this.id, required this.run, required this.balls});
+  Batsman2({required this.id, required this.run, required this.balls, required this.name});
 
   factory Batsman2.fromJson(Map<String, dynamic> json) {
     return Batsman2(
       id: json['id'],
       run: json['run'],
       balls: json['balls'],
+      name: json['name'],
     );
   }
 }
@@ -52,11 +56,12 @@ class Batsman2 {
 class Bowler {
   int id;
   dynamic balls;
+  dynamic name;
   int runs;
   int wicket;
   int maidensOver;
 
-  Bowler({required this.id, required this.balls, required this.runs, required this.wicket, required this.maidensOver});
+  Bowler({required this.id, required this.balls, required this.runs, required this.wicket, required this.maidensOver, required this.name});
 
   factory Bowler.fromJson(Map<String, dynamic> json) {
     return Bowler(
@@ -65,6 +70,7 @@ class Bowler {
       runs: json['runs'],
       wicket: json['wicket'],
       maidensOver: json['mainders_over'],
+      name: json['name'],
     );
   }
 }

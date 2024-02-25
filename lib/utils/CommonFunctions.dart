@@ -83,7 +83,8 @@ class CommonFunctions {
   static Future<String> selectDate() async {
     final config = CalendarDatePicker2WithActionButtonsConfig(
       calendarType: CalendarDatePicker2Type.single,
-      firstDate: DateTime.now().subtract(Duration(days: 1)),
+      firstDate: DateTime.now(),
+
       weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       weekdayLabelTextStyle: const TextStyle(
         color: AppColor.brown2,

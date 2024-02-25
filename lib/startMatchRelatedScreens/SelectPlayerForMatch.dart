@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../apiRelatedFiles/rest_apis.dart';
 import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../main.dart';
+import '../modalClasses/OutPlayerModel.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/common.dart';
 
@@ -18,13 +19,19 @@ class SelectPlayerForMatch extends StatefulWidget {
   final String? strikerId;
   final String? nonStrikerId;
   final String? bowlerId;
+  final String? from;
+  final String? matchId;
+  final String? batterNotOutId;
 
   const SelectPlayerForMatch(
       {super.key,
       required this.teamId,
       required this.teamName,
       this.strikerId,
-      this.nonStrikerId, this.bowlerId});
+      this.nonStrikerId,
+      this.bowlerId,
+      this.from,
+      this.matchId, this.batterNotOutId});
 
   @override
   State<SelectPlayerForMatch> createState() => _SelectPlayerForMatchState();
@@ -37,14 +44,21 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
   var searchStr = "";
   List<GetPlayerSearchData> teamPlayerSearchedList = [];
   List<GetTeamDetailData> teamPlayerList = [];
+  List<OutPlayerData> outPlayerList = [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration.zero, () {
-      getTeamDetailApi();
-    });
+    if (widget.from == "scorer") {
+      Future.delayed(Duration.zero, () {
+        getOutPlayerApi();
+      });
+    } else {
+      Future.delayed(Duration.zero, () {
+        getTeamDetailApi();
+      });
+    }
   }
 
   @override
@@ -68,7 +82,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
         ),
         title: Text(
           widget.teamName,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 20,
             fontFamily: "Lato_Semibold",
             color: AppColor.white,
@@ -154,16 +168,31 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                     itemBuilder: (BuildContext context, int index) {
                       return GestureDetector(
                         onTap: () {
-                          if(teamPlayerList[index].userId.toString()==widget.strikerId){
-                            CommonFunctions().showToastMessage(context, "Player already selected as Striker");
-                          }else if(teamPlayerList[index].userId.toString()==widget.nonStrikerId){
-                            CommonFunctions().showToastMessage(context, "Player already selected as Non-Striker");
-                          }else{
-                            Navigator.pop(context, teamPlayerList[index].userId);
+                          if (teamPlayerList[index].userId.toString() ==
+                              widget.strikerId) {
+                            CommonFunctions().showToastMessage(
+                                context, "Player already selected as Striker");
+                          } else if (teamPlayerList[index].userId.toString() ==
+                              widget.nonStrikerId) {
+                            CommonFunctions().showToastMessage(context,
+                                "Player already selected as Non-Striker");
+                          } else if (teamPlayerList[index].playerOut) {
+                            CommonFunctions()
+                                .showToastMessage(context, "Player is out.");
+                          } else if (widget.from == "scorer"&&widget.batterNotOutId==teamPlayerList[index].userId.toString()) {
+                            CommonFunctions()
+                                .showToastMessage(context, "Player is not out.");
+                          } else if (widget.from == "scorer") {
+                            Navigator.pop(context, teamPlayerList[index]);
+                          } else {
+                            Navigator.pop(
+                                context, teamPlayerList[index].userId);
                           }
                         },
                         child: Card(
-                            color: AppColor.transparent,
+                            color: teamPlayerList[index].playerOut
+                                ? AppColor.brown3.withOpacity(0.3)
+                                : AppColor.transparent,
                             margin: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 5),
                             elevation: 0.0,
@@ -228,7 +257,10 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                     fontSize: 20,
                                                     fontFamily: "Lato_Semibold",
                                                     color: teamPlayerList[index]
-                                                            .playerSelected
+                                                                .playerSelected ||
+                                                            teamPlayerList[
+                                                                    index]
+                                                                .playerOut
                                                         ? Colors.white
                                                         : AppColor.medGrey,
                                                   ),
@@ -239,13 +271,16 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                     Icon(
                                                       Icons.call,
                                                       color: teamPlayerList[
-                                                                  index]
-                                                              .playerSelected!
+                                                                      index]
+                                                                  .playerSelected ||
+                                                              teamPlayerList[
+                                                                      index]
+                                                                  .playerOut
                                                           ? Colors.white
                                                           : AppColor.medGrey,
                                                       size: 20,
                                                     ),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       width: 5,
                                                     ),
                                                     Text(
@@ -257,8 +292,11 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                         fontFamily:
                                                             "Lato_Semibold",
                                                         color: teamPlayerList[
-                                                                    index]
-                                                                .playerSelected!
+                                                                        index]
+                                                                    .playerSelected ||
+                                                                teamPlayerList[
+                                                                        index]
+                                                                    .playerOut
                                                             ? Colors.white
                                                             : AppColor.medGrey,
                                                       ),
@@ -290,17 +328,39 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                   width: 60,
                                                   color: AppColor.black,
                                                 )
-                                              :teamPlayerList[index]
-                                                      .userId
-                                                      .toString() ==
-                                                  widget.bowlerId
-                                              ? Image.asset(
-                                                  "assets/bowler.png",
-                                                  height: 60,
-                                                  width: 60,
-                                                  color: AppColor.black,
-                                                )
-                                              : const SizedBox(),
+                                              : teamPlayerList[index]
+                                                          .userId
+                                                          .toString() ==
+                                                      widget.bowlerId
+                                                  ? Image.asset(
+                                                      "assets/bowler.png",
+                                                      height: 60,
+                                                      width: 60,
+                                                      color: AppColor.black,
+                                                    )
+                                                  : teamPlayerList[index]
+                                                          .playerOut
+                                                      ? const Text(
+                                                          "Out",
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontFamily:
+                                                                "Lato_Semibold",
+                                                            color:
+                                                                AppColor.white,
+                                                          ),
+                                                        ):widget.from == "scorer"&&widget.batterNotOutId==teamPlayerList[index].userId.toString()
+                                                      ? const Text(
+                                                          "Not Out",
+                                                          style: TextStyle(
+                                                            fontSize: 16,
+                                                            fontFamily:
+                                                                "Lato_Semibold",
+                                                            color:
+                                                                AppColor.green,
+                                                          ),
+                                                        )
+                                                      : SizedBox(),
                                       const SizedBox(
                                         width: 10,
                                       )
@@ -422,6 +482,35 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
     );
   }
 
+  Future getOutPlayerApi() async {
+    await getOutPlayerList(widget.teamId.toString(), widget.matchId.toString())
+        .then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          outPlayerList.clear();
+          outPlayerList.addAll(res.body!);
+          Future.delayed(Duration.zero, () {
+            getTeamDetailApi();
+          });
+          debugPrint("wfewfewf" + teamPlayerList.length.toString());
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
   Future getTeamDetailApi() async {
     await getTeamDetail(widget.teamId.toString()).then((res) async {
       hideLoader();
@@ -429,6 +518,15 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
         setState(() {
           teamPlayerList.clear();
           teamPlayerList.addAll(res.body!);
+          if (widget.from == "scorer") {
+            for (int i = 0; i < teamPlayerList.length; i++) {
+              for (int j = 0; j < outPlayerList.length; j++) {
+                if (teamPlayerList[i].userId == outPlayerList[j].playerId) {
+                  teamPlayerList[i].playerOut = true;
+                }
+              }
+            }
+          }
           debugPrint("wfewfewf" + teamPlayerList.length.toString());
         });
       } else if (res.success != 1 && res.code == 401) {
@@ -454,6 +552,15 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
         setState(() {
           teamPlayerSearchedList.clear();
           teamPlayerSearchedList.addAll(res.body!);
+          if (widget.from == "scorer") {
+            for (int i = 0; i < teamPlayerSearchedList.length; i++) {
+              for (int j = 0; j < outPlayerList.length; j++) {
+                if (teamPlayerSearchedList[i].id == outPlayerList[j].playerId) {
+                  teamPlayerSearchedList.remove(teamPlayerSearchedList[i]);
+                }
+              }
+            }
+          }
         });
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);

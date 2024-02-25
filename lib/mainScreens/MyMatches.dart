@@ -1,5 +1,14 @@
+import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
+import 'package:crick_team/main.dart';
+import 'package:crick_team/modalClasses/GetMatchModel.dart';
+import 'package:crick_team/utils/CommonFunctions.dart';
+import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../apiRelatedFiles/rest_apis.dart';
+import '../scoreRelatedScreens/ScoreBoardscreen.dart';
 import '../utils/AppColor.dart';
 import 'HomeScreen.dart';
 
@@ -12,18 +21,9 @@ class MyMatches extends StatefulWidget {
 
 class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
   late TabController tabController;
-  List<MatchModel> matchList = [
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-    MatchModel("South Africa", "SA", "Sri Lanka", "SL", "37m 56s",
-        "10:00 AM (05 Dec)", "assets/sl.png", "assets/sa.png"),
-    MatchModel("Sri Lanka", "SL", "West Indies", "WI", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/sl.png", "assets/india.png"),
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-    MatchModel("India", "Ind", "Australia", "Aus", "37m 56s",
-        "07:00 PM (03 Dec)", "assets/india.png", "assets/aus.png"),
-  ];
+  List<UpcomingListArr> currentMatchList = [];
+  List<UpcomingListArr> upcomingMatchList = [];
+  List<UpcomingListArr> completedMatchList = [];
 
   @override
   void initState() {
@@ -34,12 +34,42 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
+    Future.delayed(Duration.zero,(){
+      getMatchListApi();
+    });
+
   }
 
   void _handleTabSelection() {
     setState(() {});
   }
-
+  Future getMatchListApi() async {
+    await getMatchList().then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          currentMatchList = [];
+          upcomingMatchList = [];
+          completedMatchList = [];
+          currentMatchList.addAll(res.body!.currentListArr!);
+          upcomingMatchList.addAll(res.body!.upcomingListArr!);
+          completedMatchList.addAll(res.body!.completedListArr!);
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,186 +207,194 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: ListView.builder(
-        itemCount: matchList.length,
+        itemCount: currentMatchList.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Container(
-              width: MediaQuery.sizeOf(context).width * 0.9,
-
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  // AppColor.yellow.withOpacity(0.5),
-                  AppColor.red.withOpacity(0.3),
-                  AppColor.brown2.withOpacity(0.2),
-                  // AppColor.yellowMed.withOpacity(0.5),
-                ]),
-                borderRadius: BorderRadius.circular(10),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  getContext,
+                  MaterialPageRoute(
+                      builder: (context) =>  ScoreBoardScreen(getMatchData:currentMatchList[index])));
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Stack(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).width * 0.35,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/bats.png",
-                        fit: BoxFit.cover,
-                        height: 90,
-                        width: 90,
-                        opacity: const AlwaysStoppedAnimation(.09),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.9,
+
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    // AppColor.yellow.withOpacity(0.5),
+                    AppColor.red.withOpacity(0.3),
+                    AppColor.brown2.withOpacity(0.2),
+                    // AppColor.yellowMed.withOpacity(0.5),
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).width * 0.35,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          "assets/bats.png",
+                          fit: BoxFit.cover,
+                          height: 90,
+                          width: 90,
+                          opacity: const AlwaysStoppedAnimation(.09),
+                        ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Stack(
-                        children: [
-
-                          Center(
-                            child: Text(
-                              "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
-                              style: const TextStyle(
-                                  fontFamily: "Lato_Semibold",
-                                  color: AppColor.brown2,
-                                  fontSize: 16),
-                            ),
-                          ),
-
-                          Align(
-                              alignment: Alignment.centerRight,
-                              child: Image.asset("assets/live.gif",height: 20,width: 60,)),
-                        ],
-                      ),
-                      Container(
-                        height: 1,
-                        color: AppColor.yellowV2,
-                        margin: const EdgeInsets.only(top: 4),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Stack(
                           children: [
-                            Stack(
-                              children: [
-                                Center(
-                                  child: Container(
+
+                            Center(
+                              child: Text(
+                                "${currentMatchList[index].team1Name} vs ${currentMatchList[index].team2Name}",
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Semibold",
+                                    color: AppColor.brown2,
+                                    fontSize: 16),
+                              ),
+                            ),
+
+                            Align(
+                                alignment: Alignment.centerRight,
+                                child: Image.asset("assets/live.gif",height: 20,width: 60,)),
+                          ],
+                        ),
+                        Container(
+                          height: 1,
+                          color: AppColor.yellowV2,
+                          margin: const EdgeInsets.only(top: 4),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 47,
+                                      width:
+                                      MediaQuery.sizeOf(context).width * 0.29,
+                                      padding: EdgeInsets.only(right: 22),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.yellowMed.withOpacity(0.4),
+                                      ),
+                                      child: const Text("140/6 (20)",style: TextStyle(fontFamily: "Lato_Semibold",color: AppColor.brown2),),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.2,
+                                      ),
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+
+                              Stack(
+                                alignment: Alignment.centerRight,
+                                children: [
+                                  Container(
                                     alignment: Alignment.center,
-                                    height: 47,
-                                    width:
-                                    MediaQuery.sizeOf(context).width * 0.29,
-                                    padding: EdgeInsets.only(right: 22),
+                                    height: 45,
+                                    padding: EdgeInsets.only(left: 20),
+                                    width: MediaQuery.sizeOf(context).width * 0.29,
                                     decoration: BoxDecoration(
                                       color: AppColor.yellowMed.withOpacity(0.4),
                                     ),
-                                    child: const Text("140/6 (20)",style: TextStyle(fontFamily: "Lato_Semibold",color: AppColor.brown2),),
+                                    child: Text("Yet To Bat",style: TextStyle(fontFamily: "Lato_Semibold"),),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.2,
-                                    ),
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamAFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-
-                            Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  height: 45,
-                                  padding: EdgeInsets.only(left: 20),
-                                  width: MediaQuery.sizeOf(context).width * 0.29,
-                                  decoration: BoxDecoration(
-                                    color: AppColor.yellowMed.withOpacity(0.4),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.2,
+                                      ),
+                                    ],
                                   ),
-                                  child: Text("Yet To Bat",style: TextStyle(fontFamily: "Lato_Semibold"),),
-                                ),
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamBFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.2,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: 110,
-                        decoration:  BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(10),
-                            topLeft: Radius.circular(10),
+                                ],
+                              )
+                            ],
                           ),
-                          color: AppColor.yellowMed.withOpacity(0.4),
                         ),
-                        padding: const EdgeInsets.all(5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.timer,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                            Text(
-                              matchList[index].matchTimeRemaining!,
-                              style: const TextStyle(
-                                  fontFamily: "Lato_Semibold",
-                                  color: Colors.red,
-                                  fontSize: 16),
-                            ),
-                          ],
+                        const SizedBox(
+                          height: 10,
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                        Container(
+                          width: 110,
+                          decoration:  BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                              topRight: Radius.circular(10),
+                              topLeft: Radius.circular(10),
+                            ),
+                            color: AppColor.yellowMed.withOpacity(0.4),
+                          ),
+                          padding: const EdgeInsets.all(5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.timer,
+                                color: Colors.red,
+                                size: 20,
+                              ),
+                              Text(
+                                DateFormat('h:mm a').format(DateFormat.Hm().parse(currentMatchList[index].matchTime.toString())),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Semibold",
+                                    color: Colors.red,
+                                    fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           );
@@ -369,170 +407,178 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: ListView.builder(
-        itemCount: matchList.length,
+        itemCount: upcomingMatchList.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Container(
-              width: MediaQuery.sizeOf(context).width * 0.9,
-              height: MediaQuery.sizeOf(context).width * 0.35,
-
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  // AppColor.yellow.withOpacity(0.5),
-                  AppColor.yellowV2.withOpacity(0.3),
-                  AppColor.brown2.withOpacity(0.2),
-                  // AppColor.yellowMed.withOpacity(0.5),
-                ]),
-                borderRadius: BorderRadius.circular(10),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  getContext,
+                  MaterialPageRoute(
+                      builder: (context) =>  ScoreBoardScreen(getMatchData:upcomingMatchList[index])));
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Stack(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).width * 0.35,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/bats.png",
-                        fit: BoxFit.cover,
-                        height: 90,
-                        width: 90,
-                        opacity: const AlwaysStoppedAnimation(.09),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.9,
+                height: MediaQuery.sizeOf(context).width * 0.35,
+
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    // AppColor.yellow.withOpacity(0.5),
+                    AppColor.yellowV2.withOpacity(0.3),
+                    AppColor.brown2.withOpacity(0.2),
+                    // AppColor.yellowMed.withOpacity(0.5),
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).width * 0.35,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          "assets/bats.png",
+                          fit: BoxFit.cover,
+                          height: 90,
+                          width: 90,
+                          opacity: const AlwaysStoppedAnimation(.09),
+                        ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Center(
-                          child: Text(
-                            "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.brown2,
-                                fontSize: 16),
-                          )),
-                      Container(
-                        height: 1,
-                        color: AppColor.yellowV2,
-                        margin: const EdgeInsets.only(top: 4),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Stack(
-                              children: [
-                                Center(
-                                  child: Container(
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                            child: Text(
+                              "${upcomingMatchList[index].team1Name} vs ${upcomingMatchList[index].team2Name}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.brown2,
+                                  fontSize: 16),
+                            )),
+                        Container(
+                          height: 1,
+                          color: AppColor.yellowV2,
+                          margin: const EdgeInsets.only(top: 4),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 47,
+                                      width:
+                                      MediaQuery.sizeOf(context).width * 0.19,
+                                      decoration: BoxDecoration(
+                                        color: AppColor.yellowMed.withOpacity(0.4),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.1,
+                                      ),
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                children: [
+                                  const Icon(
+                                    Icons.timer,
+                                    color: Colors.red,
+                                    size: 20,
+                                  ),
+                                  Text(
+                                    DateFormat('h:mm a').format(DateFormat.Hm().parse(upcomingMatchList[index].matchTime.toString())),
+                                    style: const TextStyle(
+                                        fontFamily: "Lato_Semibold",
+                                        color: Colors.red,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              Stack(
+                                alignment: Alignment.centerRight,
+                                children: [
+                                  Container(
                                     alignment: Alignment.center,
-                                    height: 47,
-                                    width:
-                                    MediaQuery.sizeOf(context).width * 0.19,
+                                    height: 45,
+                                    width: MediaQuery.sizeOf(context).width * 0.2,
                                     decoration: BoxDecoration(
                                       color: AppColor.yellowMed.withOpacity(0.4),
                                     ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.1,
-                                    ),
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamAFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                const Icon(
-                                  Icons.timer,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                                Text(
-                                  matchList[index].matchTimeRemaining!,
-                                  style: const TextStyle(
-                                      fontFamily: "Lato_Semibold",
-                                      color: Colors.red,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  height: 45,
-                                  width: MediaQuery.sizeOf(context).width * 0.2,
-                                  decoration: BoxDecoration(
-                                    color: AppColor.yellowMed.withOpacity(0.4),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.1,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamBFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.1,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
+                                ],
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        matchList[index].matchDateTime!,
-                        style: const TextStyle(
-                            fontFamily: "Lato_Semibold",
-                            color: AppColor.brown2,
-                            fontSize: 16),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  )
-                ],
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          DateFormat('h:mm a').format(DateFormat.Hm().parse(upcomingMatchList[index].matchTime.toString())),
+                          style: const TextStyle(
+                              fontFamily: "Lato_Semibold",
+                              color: AppColor.brown2,
+                              fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           );
@@ -545,170 +591,162 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: ListView.builder(
-        itemCount: matchList.length,
+        itemCount: completedMatchList.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-            elevation: 1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Container(
-              width: MediaQuery.sizeOf(context).width * 0.9,
-              height: MediaQuery.sizeOf(context).width * 0.35,
-
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [
-                  // AppColor.yellow.withOpacity(0.5),
-                  AppColor.green_neon.withOpacity(0.1),
-                  AppColor.green_neon.withOpacity(0.1),
-                  // AppColor.yellowMed.withOpacity(0.5),
-                ]),
-                borderRadius: BorderRadius.circular(10),
+          return GestureDetector(
+            onTap: (){
+              Navigator.push(
+                  getContext,
+                  MaterialPageRoute(
+                      builder: (context) =>  ScoreBoardScreen(getMatchData:completedMatchList[index])));
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
               ),
-              child: Stack(
-                children: [
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).width * 0.35,
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Image.asset(
-                        "assets/bats.png",
-                        fit: BoxFit.cover,
-                        height: 90,
-                        width: 90,
-                        opacity: const AlwaysStoppedAnimation(.09),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.9,
+                height: MediaQuery.sizeOf(context).width * 0.35,
+
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    // AppColor.yellow.withOpacity(0.5),
+                    AppColor.green_neon.withOpacity(0.1),
+                    AppColor.green_neon.withOpacity(0.1),
+                    // AppColor.yellowMed.withOpacity(0.5),
+                  ]),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.sizeOf(context).width * 0.35,
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Image.asset(
+                          "assets/bats.png",
+                          fit: BoxFit.cover,
+                          height: 90,
+                          width: 90,
+                          opacity: const AlwaysStoppedAnimation(.09),
+                        ),
                       ),
                     ),
-                  ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Center(
-                          child: Text(
-                            "${matchList[index].teamAName} vs ${matchList[index].teamBName} T20",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.brown2,
-                                fontSize: 16),
-                          )),
-                      Container(
-                        height: 1,
-                        color: AppColor.yellowV2,
-                        margin: const EdgeInsets.only(top: 4),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 50,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Stack(
-                              children: [
-                                Center(
-                                  child: Container(
+                    Column(
+                      children: [
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Center(
+                            child: Text(
+                              "${completedMatchList[index].team1Name} vs ${completedMatchList[index].team2Name}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.brown2,
+                                  fontSize: 16),
+                            )),
+                        Container(
+                          height: 1,
+                          color: AppColor.yellowV2,
+                          margin: const EdgeInsets.only(top: 4),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 50,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Stack(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      height: 47,
+                                      width:
+                                      MediaQuery.sizeOf(context).width * 0.19,
+                                      decoration: BoxDecoration(
+                                        color: AppColor.yellowMed.withOpacity(0.4),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.1,
+                                      ),
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Stack(
+                                alignment: Alignment.centerRight,
+                                children: [
+                                  Container(
                                     alignment: Alignment.center,
-                                    height: 47,
-                                    width:
-                                    MediaQuery.sizeOf(context).width * 0.19,
+                                    height: 45,
+                                    width: MediaQuery.sizeOf(context).width * 0.2,
                                     decoration: BoxDecoration(
                                       color: AppColor.yellowMed.withOpacity(0.4),
                                     ),
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.1,
-                                    ),
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamAFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            Column(
-                              children: [
-                                const Icon(
-                                  Icons.timer,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                                Text(
-                                  matchList[index].matchTimeRemaining!,
-                                  style: const TextStyle(
-                                      fontFamily: "Lato_Semibold",
-                                      color: Colors.red,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            ),
-                            Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                Container(
-                                  alignment: Alignment.center,
-                                  height: 45,
-                                  width: MediaQuery.sizeOf(context).width * 0.2,
-                                  decoration: BoxDecoration(
-                                    color: AppColor.yellowMed.withOpacity(0.4),
+                                  Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        radius: 30,
+                                        child: ClipOval(
+                                            child: Image.asset(
+                                              "assets/team_placeholder.png",
+                                              fit: BoxFit.contain,
+                                              height: 45,
+                                              width: 45,
+                                            )),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                        MediaQuery.sizeOf(context).width * 0.1,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 30,
-                                      child: ClipOval(
-                                          child: Image.asset(
-                                            matchList[index].teamBFlag!,
-                                            fit: BoxFit.contain,
-                                            height: 45,
-                                            width: 45,
-                                          )),
-                                    ),
-                                    SizedBox(
-                                      width:
-                                      MediaQuery.sizeOf(context).width * 0.1,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          ],
+                                ],
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      Text(
-                        matchList[index].matchDateTime!,
-                        style: const TextStyle(
-                            fontFamily: "Lato_Semibold",
-                            color: AppColor.brown2,
-                            fontSize: 16),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  )
-                ],
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          completedMatchList[index].matchDate!,
+                          style: const TextStyle(
+                              fontFamily: "Lato_Semibold",
+                              color: AppColor.brown2,
+                              fontSize: 16),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           );

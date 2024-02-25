@@ -84,6 +84,8 @@ Future handleResponse(Response response) async {
             (route) => false);
     var body = jsonDecode(response.body);
     // toast(body['message']);
+  }else if(response.statusCode==400){
+    return jsonDecode(response.body);
   } else {
     hideLoader();
     try {

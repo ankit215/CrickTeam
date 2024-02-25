@@ -14,7 +14,7 @@ import '../utils/common.dart';
 import 'StartInningsScreen.dart';
 
 class TossScreen extends StatefulWidget {
-  final GetMatchData matchData;
+  final UpcomingListArr matchData;
 
   const TossScreen({super.key, required this.matchData});
 

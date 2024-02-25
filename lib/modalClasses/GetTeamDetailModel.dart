@@ -39,16 +39,20 @@ class GetTeamDetailData {
   String? userName;
   String? mobileNumber;
   String? playerCategory;
+  String? dismissalType;
   bool playerSelected = false;
+  bool playerOut = false;
+  bool playerNotOut = false;
 
   GetTeamDetailData(
       {this.id,
-        this.teamId,
-        this.userId,
-        this.createdAt,
-        this.updatedAt,
-        this.userName,
-        this.mobileNumber});
+      this.teamId,
+      this.userId,
+      this.createdAt,
+      this.updatedAt,
+      this.userName,
+      this.mobileNumber,
+      this.dismissalType});
 
   GetTeamDetailData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -58,6 +62,7 @@ class GetTeamDetailData {
     updatedAt = json['updatedAt'];
     userName = json['user_name'];
     mobileNumber = json['mobile_number'];
+    dismissalType = json['dismissal_type'];
   }
 
   Map<String, dynamic> toJson() {
@@ -69,6 +74,7 @@ class GetTeamDetailData {
     data['updatedAt'] = updatedAt;
     data['user_name'] = userName;
     data['mobile_number'] = mobileNumber;
+    data['dismissal_type'] = dismissalType;
     return data;
   }
 }

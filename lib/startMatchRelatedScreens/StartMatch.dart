@@ -92,114 +92,188 @@ class _StartMatchState extends State<StartMatch> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.white,
-      appBar: AppBar(
-        scrolledUnderElevation: 0.0,
-        backgroundColor: AppColor.brown2,
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Image.asset(
-              "assets/back_arrow.png",
-              color: Colors.white,
+    return GestureDetector(
+      onTap: (){
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: AppColor.white,
+        appBar: AppBar(
+          scrolledUnderElevation: 0.0,
+          backgroundColor: AppColor.brown2,
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Image.asset(
+                "assets/back_arrow.png",
+                color: Colors.white,
+              ),
             ),
           ),
-        ),
-        title: const Text(
-          "START A MATCH",
-          style: TextStyle(
-            fontSize: 20,
-            fontFamily: "Lato_Semibold",
-            color: AppColor.white,
+          title: const Text(
+            "START A MATCH",
+            style: TextStyle(
+              fontSize: 20,
+              fontFamily: "Lato_Semibold",
+              color: AppColor.white,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                child: Container(
-                  width: MediaQuery.sizeOf(context).width * 0.9,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [
-                      // AppColor.yellow.withOpacity(0.5),
-                      AppColor.brown2,
-                      AppColor.brown2,
-                      // AppColor.yellowMed.withOpacity(0.5),
-                    ]),
-                    borderRadius: BorderRadius.circular(10),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Card(
+                  margin: const EdgeInsets.symmetric(vertical: 20),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Image.asset(
-                          "assets/crick_layout_background.png",
-                          fit: BoxFit.contain,
-                          height: 140,
-                          width: 120,
-                          color: Colors.white,
-                          opacity: const AlwaysStoppedAnimation(.2),
+                  child: Container(
+                    width: MediaQuery.sizeOf(context).width * 0.9,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [
+                        // AppColor.yellow.withOpacity(0.5),
+                        AppColor.brown2,
+                        AppColor.brown2,
+                        // AppColor.yellowMed.withOpacity(0.5),
+                      ]),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Stack(
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            "assets/crick_layout_background.png",
+                            fit: BoxFit.contain,
+                            height: 140,
+                            width: 120,
+                            color: Colors.white,
+                            opacity: const AlwaysStoppedAnimation(.2),
+                          ),
                         ),
-                      ),
-                      Column(
-                        children: [
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Center(
-                              child: Text(
-                            "${widget.teamASelected.getTeamData!.name} vs ${widget.teamBSelected.getTeamData!.name}",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.white,
-                                fontSize: 16),
-                          )),
-                          Container(
-                            height: 1,
-                            color: AppColor.lightBrown,
-                            margin: const EdgeInsets.only(top: 4),
-                          ),
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          Container(
-                            height: 50,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Stack(
-                                  children: [
-                                    Center(
-                                      child: Container(
+                        Column(
+                          children: [
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Center(
+                                child: Text(
+                              "${widget.teamASelected.getTeamData!.name} vs ${widget.teamBSelected.getTeamData!.name}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 16),
+                            )),
+                            Container(
+                              height: 1,
+                              color: AppColor.lightBrown,
+                              margin: const EdgeInsets.only(top: 4),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 50,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Stack(
+                                    children: [
+                                      Center(
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 47,
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                                  0.29,
+                                          decoration: BoxDecoration(
+                                            color: AppColor.yellowMed
+                                                .withOpacity(0.4),
+                                          ),
+                                          child: Container(
+                                            alignment: Alignment.centerLeft,
+                                            margin:
+                                                const EdgeInsets.only(left: 20),
+                                            child: Text(
+                                              getFirstLetters(widget
+                                                  .teamASelected.getTeamData!.name
+                                                  .toString()),
+                                              style: const TextStyle(
+                                                  fontFamily: "Lato_Semibold",
+                                                  color: AppColor.white,
+                                                  fontSize: 16),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+                                        children: [
+                                          SizedBox(
+                                            width:
+                                                MediaQuery.sizeOf(context).width *
+                                                    0.2,
+                                          ),
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 30,
+                                            child: ClipOval(
+                                                child: widget
+                                                            .teamASelected
+                                                            .getTeamData!
+                                                            .teamPhoto ==
+                                                        null
+                                                    ? Image.asset(
+                                                        "assets/team_placeholder.png",
+                                                        fit: BoxFit.cover,
+                                                        height: 45,
+                                                        width: 45,
+                                                      )
+                                                    : Image.network(
+                                                        mediaUrl +
+                                                            widget
+                                                                .teamASelected
+                                                                .getTeamData!
+                                                                .teamPhoto
+                                                                .toString(),
+                                                        fit: BoxFit.contain,
+                                                        height: 45,
+                                                        width: 45,
+                                                      )),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Image.asset(
+                                    "assets/vs.png",
+                                    color: AppColor.white,
+                                  ),
+                                  Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: [
+                                      Container(
                                         alignment: Alignment.center,
-                                        height: 47,
-                                        width:
-                                            MediaQuery.sizeOf(context).width *
-                                                0.29,
+                                        height: 45,
+                                        width: MediaQuery.sizeOf(context).width *
+                                            0.3,
                                         decoration: BoxDecoration(
-                                          color: AppColor.yellowMed
-                                              .withOpacity(0.4),
+                                          color:
+                                              AppColor.yellowMed.withOpacity(0.4),
                                         ),
                                         child: Container(
-                                          alignment: Alignment.centerLeft,
+                                          alignment: Alignment.centerRight,
                                           margin:
-                                              const EdgeInsets.only(left: 20),
+                                              const EdgeInsets.only(right: 20),
                                           child: Text(
                                             getFirstLetters(widget
-                                                .teamASelected.getTeamData!.name
+                                                .teamBSelected.getTeamData!.name
                                                 .toString()),
                                             style: const TextStyle(
                                                 fontFamily: "Lato_Semibold",
@@ -208,517 +282,447 @@ class _StartMatchState extends State<StartMatch> {
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          width:
-                                              MediaQuery.sizeOf(context).width *
-                                                  0.2,
-                                        ),
-                                        CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 30,
-                                          child: ClipOval(
-                                              child: widget
-                                                          .teamASelected
-                                                          .getTeamData!
-                                                          .teamPhoto ==
-                                                      null
-                                                  ? Image.asset(
-                                                      "assets/team_placeholder.png",
-                                                      fit: BoxFit.cover,
-                                                      height: 45,
-                                                      width: 45,
-                                                    )
-                                                  : Image.network(
-                                                      mediaUrl +
-                                                          widget
-                                                              .teamASelected
-                                                              .getTeamData!
-                                                              .teamPhoto
-                                                              .toString(),
-                                                      fit: BoxFit.contain,
-                                                      height: 45,
-                                                      width: 45,
-                                                    )),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Image.asset(
-                                  "assets/vs.png",
-                                  color: AppColor.white,
-                                ),
-                                Stack(
-                                  alignment: Alignment.centerRight,
-                                  children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: 45,
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.3,
-                                      decoration: BoxDecoration(
-                                        color:
-                                            AppColor.yellowMed.withOpacity(0.4),
+                                      Row(
+                                        children: [
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 30,
+                                            child: ClipOval(
+                                                child: widget
+                                                            .teamBSelected
+                                                            .getTeamData!
+                                                            .teamPhoto ==
+                                                        null
+                                                    ? Image.asset(
+                                                        "assets/team_placeholder.png",
+                                                        fit: BoxFit.cover,
+                                                        height: 45,
+                                                        width: 45,
+                                                      )
+                                                    : Image.network(
+                                                        mediaUrl +
+                                                            widget
+                                                                .teamBSelected
+                                                                .getTeamData!
+                                                                .teamPhoto
+                                                                .toString(),
+                                                        fit: BoxFit.cover,
+                                                        height: 45,
+                                                        width: 45,
+                                                      )),
+                                          ),
+                                          SizedBox(
+                                            width:
+                                                MediaQuery.sizeOf(context).width *
+                                                    0.2,
+                                          ),
+                                        ],
                                       ),
-                                      child: Container(
-                                        alignment: Alignment.centerRight,
-                                        margin:
-                                            const EdgeInsets.only(right: 20),
-                                        child: Text(
-                                          getFirstLetters(widget
-                                              .teamBSelected.getTeamData!.name
-                                              .toString()),
-                                          style: const TextStyle(
-                                              fontFamily: "Lato_Semibold",
-                                              color: AppColor.white,
-                                              fontSize: 16),
-                                        ),
-                                      ),
-                                    ),
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 30,
-                                          child: ClipOval(
-                                              child: widget
-                                                          .teamBSelected
-                                                          .getTeamData!
-                                                          .teamPhoto ==
-                                                      null
-                                                  ? Image.asset(
-                                                      "assets/team_placeholder.png",
-                                                      fit: BoxFit.cover,
-                                                      height: 45,
-                                                      width: 45,
-                                                    )
-                                                  : Image.network(
-                                                      mediaUrl +
-                                                          widget
-                                                              .teamBSelected
-                                                              .getTeamData!
-                                                              .teamPhoto
-                                                              .toString(),
-                                                      fit: BoxFit.cover,
-                                                      height: 45,
-                                                      width: 45,
-                                                    )),
-                                        ),
-                                        SizedBox(
-                                          width:
-                                              MediaQuery.sizeOf(context).width *
-                                                  0.2,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              ],
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            /*  Text(
+                              "15:00",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 16),
+                            ),*/
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "No. of Overs *",
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                color: AppColor.brown2,
+                                fontFamily: "Lato_Semibold"),
                           ),
                           const SizedBox(
-                            height: 5,
+                            height: 10,
                           ),
-                          /*  Text(
-                            "15:00",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
+                          Container(
+                            height: 50,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
                                 color: AppColor.white,
-                                fontSize: 16),
-                          ),*/
+                                border: Border.all(color: AppColor.border)),
+                            child: Center(
+                              child: TextField(
+                                controller: noOfOvers,
+                                keyboardType: TextInputType.number,
+                                decoration: const InputDecoration.collapsed(
+                                    hintText: 'Enter no. of overs',
+                                    hintStyle: TextStyle(color: AppColor.grey)),
+                              ),
+                            ),
+                          ),
                         ],
-                      )
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    /* Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Overs per Bowler",
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                color: AppColor.brown2,
+                                fontFamily: "Lato_Semibold"),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            height: 50,
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(18),
+                                color: AppColor.white,
+                                border: Border.all(color: AppColor.border)),
+                            child: Center(
+                              child: TextField(
+                                controller: overPerBowler,
+                                decoration: const InputDecoration.collapsed(
+                                    hintText: 'Enter overs per bowler',
+                                    hintStyle: TextStyle(color: AppColor.grey)),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )*/
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "City/Town *",
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 50,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      color: AppColor.white,
+                      border: Border.all(color: AppColor.border)),
+                  child: Center(
+                    child: TextField(
+                      controller: cityController,
+                      decoration: const InputDecoration.collapsed(
+                          hintText: 'Enter city/town name',
+                          hintStyle: TextStyle(color: AppColor.grey)),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "Ground *",
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  height: 50,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      color: AppColor.white,
+                      border: Border.all(color: AppColor.border)),
+                  child: Center(
+                    child: TextField(
+                      controller: groundController,
+                      decoration: const InputDecoration.collapsed(
+                          hintText: 'Enter ground name',
+                          hintStyle: TextStyle(color: AppColor.grey)),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "Date",
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
+                ),
+                Container(
+                  // color: Colors.red,
+                  margin: const EdgeInsets.only(top: 10, bottom: 20),
+                  height: 55,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      color: AppColor.lightGrey,
+                      border: Border.all(color: AppColor.grey)),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            Future.delayed(Duration.zero, () {
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            });
+                            var date = await CommonFunctions.selectDate();
+                            dateController.text = date;
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.width * 0.07,
+                            child: TextField(
+                              enabled: false,
+                              controller: dateController,
+                              readOnly: true,
+                              decoration: const InputDecoration.collapsed(
+                                hintText: 'Choose Date',
+                                hintStyle: TextStyle(
+                                    color: AppColor.textColor,
+                                    fontFamily: "Ubuntu_Regular"),
+                              ),
+                              style: const TextStyle(
+                                  fontFamily: "Ubuntu_Regular",
+                                  color: AppColor.brown2),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.01,
+                      ),
+                      const Icon(Icons.calendar_month)
                     ],
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "No. of Overs *",
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              color: AppColor.brown2,
-                              fontFamily: "Lato_Semibold"),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              color: AppColor.white,
-                              border: Border.all(color: AppColor.border)),
-                          child: Center(
-                            child: TextField(
-                              controller: noOfOvers,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration.collapsed(
-                                  hintText: 'Enter no. of overs',
-                                  hintStyle: TextStyle(color: AppColor.grey)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 10,
-                  ),
-                  /* Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Overs per Bowler",
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              color: AppColor.brown2,
-                              fontFamily: "Lato_Semibold"),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 50,
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18),
-                              color: AppColor.white,
-                              border: Border.all(color: AppColor.border)),
-                          child: Center(
-                            child: TextField(
-                              controller: overPerBowler,
-                              decoration: const InputDecoration.collapsed(
-                                  hintText: 'Enter overs per bowler',
-                                  hintStyle: TextStyle(color: AppColor.grey)),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )*/
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "City/Town *",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 50,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: AppColor.white,
-                    border: Border.all(color: AppColor.border)),
-                child: Center(
-                  child: TextField(
-                    controller: cityController,
-                    decoration: const InputDecoration.collapsed(
-                        hintText: 'Enter city/town name',
-                        hintStyle: TextStyle(color: AppColor.grey)),
-                  ),
+                const Text(
+                  "Time",
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
                 ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Ground *",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                height: 50,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: AppColor.white,
-                    border: Border.all(color: AppColor.border)),
-                child: Center(
-                  child: TextField(
-                    controller: groundController,
-                    decoration: const InputDecoration.collapsed(
-                        hintText: 'Enter ground name',
-                        hintStyle: TextStyle(color: AppColor.grey)),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                "Date",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              Container(
-                // color: Colors.red,
-                margin: const EdgeInsets.only(top: 10, bottom: 20),
-                height: 55,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: AppColor.lightGrey,
-                    border: Border.all(color: AppColor.grey)),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          Future.delayed(Duration.zero, () {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                          });
-                          var date = await CommonFunctions.selectDate();
-                          dateController.text = date;
-                        },
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: MediaQuery.of(context).size.width * 0.07,
-                          child: TextField(
-                            enabled: false,
-                            controller: dateController,
-                            readOnly: true,
-                            decoration: const InputDecoration.collapsed(
-                              hintText: 'Choose Date',
-                              hintStyle: TextStyle(
-                                  color: AppColor.textColor,
-                                  fontFamily: "Ubuntu_Regular"),
-                            ),
-                            style: const TextStyle(
-                                fontFamily: "Ubuntu_Regular",
-                                color: AppColor.brown2),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.01,
-                    ),
-                    const Icon(Icons.calendar_month)
-                  ],
-                ),
-              ),
-              const Text(
-                "Time",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              Container(
-                // color: Colors.red,
-                margin: const EdgeInsets.only(top: 10, bottom: 20),
-                height: 55,
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
-                    color: AppColor.lightGrey,
-                    border: Border.all(color: AppColor.grey)),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () async {
-                          debugPrint("TIMEssss");
-                          DateTime currentTime = DateTime.now();
-                          int currentHour = currentTime.hour;
-                          int currentMinute = currentTime.minute;
-                          Time time =
-                              Time(hour: currentHour, minute: currentMinute);
-                          Navigator.of(context).push(showPicker(
-                            context: context,
-                            value: time,
-                            sunrise: const TimeOfDay(hour: 6, minute: 0),
-                            // optional
-                            sunset: const TimeOfDay(hour: 18, minute: 0),
-                            // optional
-                            duskSpanInMinutes: 120,
-                            // optional
-                            onChange: (value) {
-                              timeValue =
-                                  "${value.hour.toString()}:${value.minute.toString()}";
-                              debugPrint("TIME $timeValue");
-                              timeController.text = timeValue;
-                            },
-                          ));
-                        },
-                        child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          height: MediaQuery.of(context).size.width * 0.07,
-                          child: TextField(
-                            enabled: false,
-                            controller: timeController,
-                            readOnly: true,
-                            decoration: const InputDecoration.collapsed(
-                              hintText: 'Choose Time',
-                              hintStyle: TextStyle(
-                                  color: AppColor.textColor,
-                                  fontFamily: "Ubuntu_Regular"),
-                            ),
-                            style: const TextStyle(
-                                fontFamily: "Ubuntu_Regular",
-                                color: AppColor.brown2),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.01,
-                    ),
-                    const Icon(Icons.access_time)
-                  ],
-                ),
-              ),
-              const Text(
-                "Match Official",
-                style: TextStyle(
-                    fontSize: 16.0,
-                    color: AppColor.brown2,
-                    fontFamily: "Lato_Semibold"),
-              ),
-              Container(
-                height: 100,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: matchOfficials.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (BuildContext context, int index) {
-                    return GestureDetector(
-                      onTap: () {
-                        /* matchOfficials[index].title.toLowerCase() == "scorer"
-                            ?*/
-                        showScorerDialog();
-                        /*: showChooseUmpireDialog();*/
-                        /*   setState(() {
-                          for (int i = 0; i < matchOfficials.length; i++) {
-                            matchOfficials[i].isSelected = false;
-                          }
-                          matchOfficials[index].isSelected = true;
-                        });*/
-                      },
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.only(left: 5, right: 20),
-                              height: 60,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                gradient: /* (matchOfficials[index].isSelected == true)
-                                    ? const LinearGradient(
-                                        colors: [
-                                          AppColor.yellowV2,
-                                          AppColor.red
-                                        ],
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                      )
-                                    :*/
-                                    const LinearGradient(
-                                  colors: [
-                                    AppColor.white,
-                                    AppColor.white,
-                                    AppColor.white
-                                  ],
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                ),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    width: 1,
-                                    color:
-                                        /* (matchOfficials[index].isSelected == true)
-                                            ? AppColor.white
-                                            :*/
-                                        AppColor.brown2),
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  matchOfficials[index].title.toLowerCase() ==
-                                          "scorer"
-                                      ? "assets/scorer.png"
-                                      : "assets/umpire.png",
-                                  height: 30,
-                                  width: 30,
-                                ),
-                              )),
-                          Container(
-                            margin: const EdgeInsets.only(left: 5, right: 20),
-                            child: Text(
-                              matchOfficials[index].title,
-                              style: const TextStyle(
-                                  fontSize: 16.0,
-                                  color: AppColor.brown2,
-                                  fontFamily: "Lato_Semibold"),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (checkValidation()) {
-                    createPlayerApi();
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  height: 50,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+                Container(
+                  // color: Colors.red,
+                  margin: const EdgeInsets.only(top: 10, bottom: 20),
+                  height: 55,
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [
-                      AppColor.red,
-                      AppColor.brown2,
-                    ]),
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: const Center(
-                    child: Text(
-                      "Continue",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: "Lato_Sembold",
-                        color: AppColor.white,
+                      borderRadius: BorderRadius.circular(18),
+                      color: AppColor.lightGrey,
+                      border: Border.all(color: AppColor.grey)),
+                  child: Row(
+                    children: <Widget>[
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () async {
+                            debugPrint("TIMEssss");
+                            DateTime currentTime = DateTime.now();
+                            int currentHour = currentTime.hour;
+                            int currentMinute = currentTime.minute;
+                            Time time = Time(hour: currentHour, minute: currentMinute);
+                            Navigator.of(context).push(showPicker(
+                              context: context,
+                              value: time,
+                              sunrise:  TimeOfDay(hour: currentHour, minute: currentMinute),
+                              // optional
+                              sunset: const TimeOfDay(hour: 18, minute: 0),
+                              // optional
+                              duskSpanInMinutes: 120,
+                              // optional
+                              onChange: (value) {
+                                timeValue =
+                                    "${value.hour.toString()}:${value.minute.toString()}";
+                                debugPrint("TIME $timeValue");
+                                timeController.text = timeValue;
+                              },
+                            ));
+                          },
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.7,
+                            height: MediaQuery.of(context).size.width * 0.07,
+                            child: TextField(
+                              enabled: false,
+                              controller: timeController,
+                              readOnly: true,
+                              decoration: const InputDecoration.collapsed(
+                                hintText: 'Choose Time',
+                                hintStyle: TextStyle(
+                                    color: AppColor.textColor,
+                                    fontFamily: "Ubuntu_Regular"),
+                              ),
+                              style: const TextStyle(
+                                  fontFamily: "Ubuntu_Regular",
+                                  color: AppColor.brown2),
+                            ),
+                          ),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.01,
+                      ),
+                      const Icon(Icons.access_time)
+                    ],
                   ),
                 ),
-              )
-            ],
+                const Text(
+                  "Match Official",
+                  style: TextStyle(
+                      fontSize: 16.0,
+                      color: AppColor.brown2,
+                      fontFamily: "Lato_Semibold"),
+                ),
+                Container(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: matchOfficials.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          /* matchOfficials[index].title.toLowerCase() == "scorer"
+                              ?*/
+                          showScorerDialog();
+                          /*: showChooseUmpireDialog();*/
+                          /*   setState(() {
+                            for (int i = 0; i < matchOfficials.length; i++) {
+                              matchOfficials[i].isSelected = false;
+                            }
+                            matchOfficials[index].isSelected = true;
+                          });*/
+                        },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                                margin: const EdgeInsets.only(left: 5, right: 20),
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                  gradient: /* (matchOfficials[index].isSelected == true)
+                                      ? const LinearGradient(
+                                          colors: [
+                                            AppColor.yellowV2,
+                                            AppColor.red
+                                          ],
+                                          begin: Alignment.centerLeft,
+                                          end: Alignment.centerRight,
+                                        )
+                                      :*/
+                                      const LinearGradient(
+                                    colors: [
+                                      AppColor.white,
+                                      AppColor.white,
+                                      AppColor.white
+                                    ],
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      width: 1,
+                                      color:
+                                          /* (matchOfficials[index].isSelected == true)
+                                              ? AppColor.white
+                                              :*/
+                                          AppColor.brown2),
+                                ),
+                                child: Center(
+                                  child: Image.asset(
+                                    matchOfficials[index].title.toLowerCase() ==
+                                            "scorer"
+                                        ? "assets/scorer.png"
+                                        : "assets/umpire.png",
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                )),
+                            Container(
+                              margin: const EdgeInsets.only(left: 5, right: 20),
+                              child: Text(
+                                matchOfficials[index].title,
+                                style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Semibold"),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (checkValidation()) {
+                      createPlayerApi();
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 50,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 50, vertical: 30),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [
+                        AppColor.red,
+                        AppColor.brown2,
+                      ]),
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "Continue",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontFamily: "Lato_Sembold",
+                          color: AppColor.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

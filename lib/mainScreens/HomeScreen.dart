@@ -2,6 +2,7 @@ import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/GetMatchModel.dart';
+import 'package:crick_team/scoreRelatedScreens/ScoreBoardscreen.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
@@ -41,7 +42,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<GetMatchData> matchList = [];
+  List<UpcomingListArr> matchList = [];
 @override
   void initState() {
     // TODO: implement initState
@@ -56,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       if (res.success == 1) {
         setState(() {
           matchList = [];
-          matchList.addAll(res.body!);
+          matchList.addAll(res.body!.upcomingListArr!);
         });
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);
@@ -173,11 +174,17 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: (){
-                        setValue(bowlerRunsPerOver, []);
-                        Navigator.push(
-                            getContext,
-                            MaterialPageRoute(
-                                builder: (context) =>  TossScreen(matchData:matchList[index])));
+                        if(getIntAsync(accountType)==3){
+                          verifyScorerApi(matchList[index]);
+                        }else{
+                          setValue(bowlerRunsPerOver, [""]);
+                          Navigator.push(
+                              getContext,
+                              MaterialPageRoute(
+                                  builder: (context) =>  ScoreBoardScreen(getMatchData:matchList[index])));
+                          // builder: (context) =>  TossScreen(matchData:matchList[index])));
+                        }
+
 
 
                       },
@@ -529,4 +536,39 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+  verifyScorerApi(UpcomingListArr getMatchData) async {
+    var request = {
+      'match_id':getMatchData.id .toString(),
+      'scorer_id': getStringAsync(userId),
+    };
+    await verifyScorer(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          setValue(bowlerRunsPerOver, [""]);
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) =>  TossScreen(matchData: getMatchData,)));
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        setValue(bowlerRunsPerOver, [""]);
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) =>  ScoreBoardScreen(getMatchData:getMatchData)));
+        // builder: (context) =>  TossScreen(matchData:matchList[index])));
+      }
+    });
+  }
+
 }

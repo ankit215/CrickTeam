@@ -9,10 +9,9 @@ import '../apiRelatedFiles/rest_apis.dart';
 import '../main.dart';
 import '../modalClasses/GetMatchModel.dart';
 import '../utils/CommonFunctions.dart';
-import '../utils/common.dart';
 
 class StartInningsScreen extends StatefulWidget {
-  final GetMatchData matchData;
+  final UpcomingListArr matchData;
   final String tossWinnerId;
   final String tossWinnerElected;
 
@@ -452,7 +451,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
           };
     await selectPlayers(request).then((res) async {
       if (res.success == 1) {
-        toast(res.message);
+        // toast(res.message);
       } else if (res.success != 1 && res.code == 401) {
         Navigator.pushAndRemoveUntil(
             getContext,

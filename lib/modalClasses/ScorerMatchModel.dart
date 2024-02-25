@@ -1,16 +1,16 @@
-class GetMatchModel {
+class ScorerMatchModel {
   int? success;
   int? code;
   String? message;
-  GetMatchData? body;
+  ScorerMatchData? body;
 
-  GetMatchModel({this.success, this.code, this.message, this.body});
+  ScorerMatchModel({this.success, this.code, this.message, this.body});
 
-  GetMatchModel.fromJson(Map<String, dynamic> json) {
+  ScorerMatchModel.fromJson(Map<String, dynamic> json) {
     success = json['success'];
     code = json['code'];
     message = json['message'];
-    body = json['body'] != null ? GetMatchData.fromJson(json['body']) : null;
+    body = json['body'] != null ? ScorerMatchData.fromJson(json['body']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -25,53 +25,7 @@ class GetMatchModel {
   }
 }
 
-class GetMatchData {
-  List<UpcomingListArr>? upcomingListArr;
-  List<UpcomingListArr>? currentListArr;
-  List<UpcomingListArr>? completedListArr;
-
-  GetMatchData({this.upcomingListArr, this.currentListArr, this.completedListArr});
-
-  GetMatchData.fromJson(Map<String, dynamic> json) {
-    if (json['upcomingListArr'] != null) {
-      upcomingListArr = <UpcomingListArr>[];
-      json['upcomingListArr'].forEach((v) {
-        upcomingListArr!.add(UpcomingListArr.fromJson(v));
-      });
-    }
-    if (json['currentListArr'] != null) {
-      currentListArr = <UpcomingListArr>[];
-      json['currentListArr'].forEach((v) {
-        currentListArr!.add(UpcomingListArr.fromJson(v));
-      });
-    }
-    if (json['completedListArr'] != null) {
-      completedListArr = <UpcomingListArr>[];
-      json['completedListArr'].forEach((v) {
-        completedListArr!.add(UpcomingListArr.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
-    if (upcomingListArr != null) {
-      data['upcomingListArr'] =
-          upcomingListArr!.map((v) => v.toJson()).toList();
-    }
-    if (currentListArr != null) {
-      data['currentListArr'] =
-          currentListArr!.map((v) => v.toJson()).toList();
-    }
-    if (completedListArr != null) {
-      data['completedListArr'] =
-          completedListArr!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class UpcomingListArr {
+class ScorerMatchData {
   int? id;
   int? team1Id;
   int? team2Id;
@@ -81,20 +35,18 @@ class UpcomingListArr {
   String? matchDate;
   String? matchTime;
   int? scorerId;
-  int? tossWinnerId;
-  int? tossDecision;
-  dynamic? matchResult;
+  dynamic tossWinnerId;
+  dynamic tossDecision;
+  dynamic matchResult;
   int? status;
-  int? inningStatus;
+  dynamic inningStatus;
   String? teamOneJson;
   String? teamTwoJson;
   String? playerList;
   String? createdAt;
   String? updatedAt;
-  String? team1Name;
-  String? team2Name;
 
-  UpcomingListArr(
+  ScorerMatchData(
       {this.id,
         this.team1Id,
         this.team2Id,
@@ -113,11 +65,9 @@ class UpcomingListArr {
         this.teamTwoJson,
         this.playerList,
         this.createdAt,
-        this.updatedAt,
-        this.team1Name,
-        this.team2Name});
+        this.updatedAt});
 
-  UpcomingListArr.fromJson(Map<String, dynamic> json) {
+  ScorerMatchData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     team1Id = json['team1_id'];
     team2Id = json['team2_id'];
@@ -137,8 +87,6 @@ class UpcomingListArr {
     playerList = json['player_list'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
-    team1Name = json['team1_name'];
-    team2Name = json['team2_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -162,8 +110,6 @@ class UpcomingListArr {
     data['player_list'] = playerList;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
-    data['team1_name'] = team1Name;
-    data['team2_name'] = team2Name;
     return data;
   }
 }

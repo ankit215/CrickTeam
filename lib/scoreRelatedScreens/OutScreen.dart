@@ -23,14 +23,15 @@ class OutScreen extends StatefulWidget {
   final int battingTeamId;
   final int bowlerId;
   final int batterId;
-  final GetMatchData matchData;
+  final int batterNotOutId;
+  final UpcomingListArr matchData;
 
   const OutScreen({super.key,
     required this.bowlingTeamId,
     required this.battingTeamId,
     required this.matchData,
     required this.bowlerId,
-    required this.batterId});
+    required this.batterId, required this.batterNotOutId});
 
   @override
   State<OutScreen> createState() => _OutScreenState();
@@ -100,7 +101,7 @@ class _OutScreenState extends State<OutScreen> {
                       builder: (context) =>
                           SelectPlayerForMatch(
                             teamId: widget.bowlingTeamId.toString(),
-                            teamName: widget.matchData.team2Name.toString(),
+                            teamName: "Select fielder",
                             bowlerId: "",
                           ))).then((value) {
                 if (value != "add_teams") {
@@ -160,8 +161,11 @@ class _OutScreenState extends State<OutScreen> {
                   builder: (context) =>
                       SelectPlayerForMatch(
                         teamId: widget.battingTeamId.toString(),
-                        teamName: widget.matchData.team1Name.toString(),
+                        teamName: "Select next batsmen",
                         bowlerId: "",
+                        from: "scorer",
+                        batterNotOutId: widget.batterNotOutId.toString(),
+                        matchId: widget.matchData.id.toString(),
                       ))).then((value) {
             if (value != "add_teams") {
               debugPrint("selected_new_BATTER $value");

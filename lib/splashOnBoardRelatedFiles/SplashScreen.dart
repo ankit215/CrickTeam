@@ -19,6 +19,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     // init();
     debugPrint("wdddddwded"+getStringAsync(userId).toString());
+    debugPrint("wdddddwded"+getStringAsync(userName).toString());
     Future.delayed(
         const Duration(seconds: 3),
         () => Navigator.pushReplacement(

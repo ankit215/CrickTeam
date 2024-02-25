@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crick_team/modalClasses/OutPlayerModel.dart';
 import 'package:crick_team/utils/data_type_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +12,7 @@ import '../modalClasses/GetTeamDetailModel.dart';
 import '../modalClasses/GetTeamModel.dart';
 import '../modalClasses/LoginModel.dart';
 import '../modalClasses/ScoreboardModel.dart';
+import '../modalClasses/ScorerMatchModel.dart';
 import '../modalClasses/UpdateProfileModel.dart';
 import '../modalClasses/api_response_model.dart';
 import '../utils/common.dart';
@@ -181,6 +183,16 @@ Future<SimpleApiModel> changeStriker(Map request) async {
   hideLoader();
   return createPlayer;
 }
+Future<ScorerMatchModel> verifyScorer(Map request) async {
+  showLoader();
+  var createPlayer = ScorerMatchModel.fromJson(
+      await (handleResponse(await buildHttpResponse(
+          'verify_scorer',
+          request: request,
+          method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
 Future<SimpleApiModel> createMatch(Map request) async {
   showLoader();
   var createPlayer = SimpleApiModel.fromJson(
@@ -230,6 +242,11 @@ Future<GetTeamDetailModel> getTeamDetail(String teamId) async {
   showLoader();
   return GetTeamDetailModel.fromJson(await (handleResponse(
       await buildHttpResponse("team_detail/$teamId",method: HttpMethod.get))));
+}
+Future<OutPlayerModel> getOutPlayerList(String teamId,String matchId) async {
+  showLoader();
+  return OutPlayerModel.fromJson(await (handleResponse(
+      await buildHttpResponse("out_player_list?match_id=$matchId&team_id=$teamId",method: HttpMethod.get))));
 }
 Future<ScoreboardModel> getScoreboard(String matchId,String teamId,String team2Id) async {
   showLoader();

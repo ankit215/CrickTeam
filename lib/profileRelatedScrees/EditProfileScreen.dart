@@ -814,6 +814,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     var res = await updateProfile(multiPartRequest);
     hideLoader();
     if (res.success == 1) {
+      setValue(userName,firstNameController.text.trim().toString() );
+      setValue(userEmail,emailController.text.trim().toString() );
       toast(res.message);
       if(widget.from=="profile_screen"){
         Navigator.pop(getContext, res.body);

@@ -143,7 +143,13 @@ class _OtpScreenState extends State<OtpScreen> {
                             MaterialStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () async {
-                        showLoader();
+                        Navigator.push(
+                            getContext,
+                            MaterialPageRoute(
+                                builder: (context) => MainScreen(
+                                  index: 0,
+                                )));
+                       /* showLoader();
                         FirebaseAuth auth = FirebaseAuth.instance;
                         try{
                           PhoneAuthCredential credential =
@@ -157,7 +163,7 @@ class _OtpScreenState extends State<OtpScreen> {
                         }catch(e){
                           hideLoader();
                           CommonFunctions().showToastMessage(getContext, "OTP is incorrect.");
-                        }
+                        }*/
 
 
 

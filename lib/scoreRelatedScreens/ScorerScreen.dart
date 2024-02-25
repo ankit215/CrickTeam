@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../main.dart';
 import '../modalClasses/GetMatchModel.dart';
+import '../modalClasses/GetTeamDetailModel.dart';
 import '../modalClasses/socketModels/PlayerDetail.dart';
 import '../modalClasses/socketModels/UpdatedScoreModel.dart';
 import '../startMatchRelatedScreens/SelectPlayerForMatch.dart';
@@ -21,7 +22,7 @@ import '../utils/CommonFunctions.dart';
 import '../utils/constant.dart';
 
 class ScorerScreen extends StatefulWidget {
-  final GetMatchData matchData;
+  final UpcomingListArr matchData;
   final String teamMatch;
   final Map<String, int> map;
 
@@ -83,6 +84,9 @@ class _ScorerScreenState extends State<ScorerScreen>
     debugPrint("MAPP__${widget.map}");
     if (getStringListAsync(bowlerRunsPerOver) != null) {
       bowlerRuns = getStringListAsync(bowlerRunsPerOver)!;
+      if(bowlerRuns[0].isEmpty){
+        bowlerRuns.clear();
+      }
       debugPrint("bowlerRuns++++${bowlerRuns}");
     }
     strikerId = widget.map["player1_id"]!;
@@ -117,6 +121,7 @@ class _ScorerScreenState extends State<ScorerScreen>
         setState(() {
           playerDetail = PlayerDetail.fromJson(data);
           bowlerId = playerDetail!.bowlerId;
+          strikerId = playerDetail!.player1Id;
         });
       } catch (e) {
         debugPrint('Error parsing data: $e');
@@ -166,7 +171,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       MaterialPageRoute(
                           builder: (context) => SelectPlayerForMatch(
                                 teamId: bowlingTeamId.toString(),
-                                teamName: widget.matchData.team2Name.toString(),
+                                teamName: "Select new bowler",
                                 bowlerId: bowlerId.toString(),
                               ))).then((value) {
                     if (value != null && value != "add_teams") {
@@ -235,13 +240,13 @@ class _ScorerScreenState extends State<ScorerScreen>
     if (bowlerBallsCount <= 6) {
       setState(() {
         if (type == 8) {
-          bowlerRuns.add("WD($run)");
+          bowlerRuns.add("wd");
         } else if (type == 9) {
-          bowlerRuns.add("NB($run)");
+          bowlerRuns.add("nb");
         } else if (type == 10) {
-          bowlerRuns.add("BYE($run)");
+          bowlerRuns.add("bye");
         } else if (type == 11) {
-          bowlerRuns.add("LB($run)");
+          bowlerRuns.add("lb");
         } else {
           bowlerRuns.add(run.toString());
         }
@@ -260,7 +265,103 @@ class _ScorerScreenState extends State<ScorerScreen>
           backgroundColor: AppColor.brown2,
           leading: GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    backgroundColor: Colors.white,
+                    insetPadding: const EdgeInsets.all(10),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    elevation: 16,
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          const SizedBox(height: 20),
+                          Container(
+                            color: AppColor.lightGrey,
+                            height: 60,
+                            child: const Padding(
+                              padding: EdgeInsets.only(right: 40.0, left: 40.0),
+                              child: Center(
+                                child: Text(
+                                  'ARE YOU SURE YOU WANT TO END THIS INNING?',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: "Lato_Regular",
+                                      letterSpacing: 1,
+                                      color: AppColor.brown2),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 100, left: 100),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColor.orange_0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.circular(80.0))),
+                              child: Container(
+                                height: 20,
+                                alignment: Alignment.center,
+                                child: const Text(
+                                  "Yes",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontFamily: "Lato_Semibold"),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(
+                                right: 30.0, left: 30.0, top: 20),
+                            child: Divider(
+                              height: 1,
+                              color: AppColor.medGrey,
+                              thickness: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(getContext);
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColor.white,
+                                  elevation: 0),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColor.brown2,
+                                  fontFamily: "Lato_Regular",
+                                ),
+                              )),
+                          const SizedBox(height: 10)
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
             },
             child: Padding(
               padding: const EdgeInsets.all(15.0),
@@ -289,13 +390,14 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 getMatchData: widget.matchData,
                               )));
                 },
-                child: Icon(
+                child: const Icon(
                   Icons.info_outlined,
                   size: 30,
                   color: Colors.white,
                 )),
-            SizedBox(width: 20,)
-
+            const SizedBox(
+              width: 20,
+            )
           ],
         ),
         body: SingleChildScrollView(
@@ -582,7 +684,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       MaterialPageRoute(
                           builder: (context) => SelectPlayerForMatch(
                                 teamId: bowlingTeamId.toString(),
-                                teamName: widget.matchData.team2Name.toString(),
+                                teamName: "Select new bowler",
                                 bowlerId: bowlerId.toString(),
                               ))).then((value) {
                     if (value != null && value != "add_teams") {
@@ -596,7 +698,6 @@ class _ScorerScreenState extends State<ScorerScreen>
                   });
                 },
                 child: Container(
-                  height: 80,
                   color: AppColor.text_grey,
                   child: Column(
                     children: [
@@ -667,33 +768,75 @@ class _ScorerScreenState extends State<ScorerScreen>
                                             fontFamily: "Lato_Bold",
                                             fontSize: 16),
                                       ),
+                                      const SizedBox(
+                                        width: 40,
+                                      ),
+                                      Padding(
+                                        padding:
+                                        const EdgeInsets.symmetric(horizontal: 15.0),
+                                        child: Text(
+                                          playerDetail != null && scoreUpdate != null
+                                              ? "${scoreUpdate!.bowler.balls}-${scoreUpdate!.bowler.maidensOver}-${scoreUpdate!.bowler.runs}-${scoreUpdate!.bowler.wicket}"
+                                              : "-",
+                                          style: const TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Lato_Bold",
+                                              fontSize: 16),
+                                        ),
+                                      ),
                                     ],
                                   ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Text(
-                                    scoreUpdate != null
-                                        ? "Runs: ${bowlerRuns.toString()}"
-                                        : "Runs: []",
-                                    style: const TextStyle(
+                                  scoreUpdate != null
+                                      ? Container(
+                                    width:MediaQuery.sizeOf(context).width*0.8,
+                                    height: 50,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: bowlerRuns.length, // number of elements in the list
+                                      itemBuilder: (BuildContext context, int index) {
+                                        String currentItem = bowlerRuns[index];
+
+                                        // Return a circular container with the current item as text
+                                        return Padding(
+                                          padding: EdgeInsets.all(5),
+                                          child: Container(
+
+                                            width: 30.0,
+                                            height: 30.0,
+                                            decoration: const BoxDecoration(
+                                              shape: BoxShape.circle,
+                                              color: AppColor.brown3, // Change color as needed
+                                            ),
+                                            child: Center(
+                                              child: Text(
+                                                currentItem,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14.0,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ):
+                                  const Text(
+                                    "Runs: []",
+                                    style: TextStyle(
                                         color: Colors.white,
                                         fontFamily: "Lato_Bold",
                                         fontSize: 12),
                                   ),
+
                                 ],
-                              )
+                              ),
+
                             ],
                           ),
-                          Text(
-                            playerDetail != null && scoreUpdate != null
-                                ? "${scoreUpdate!.bowler.balls}-${scoreUpdate!.bowler.maidensOver}-${scoreUpdate!.bowler.runs}-${scoreUpdate!.bowler.wicket}"
-                                : "-",
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontFamily: "Lato_Bold",
-                                fontSize: 16),
-                          ),
+
+
                         ],
                       ),
                     ],
@@ -1575,28 +1718,42 @@ class _ScorerScreenState extends State<ScorerScreen>
                                           battingTeamId: battingTeamId,
                                           matchData: widget.matchData,
                                           bowlerId: bowlerId,
-                                          batterId: batsman2.id,
+                                          batterId: batsman.id,
+                                          batterNotOutId: batsman2.id,
                                         ))).then((value) {
                               if (value != null && value != "add_teams") {
                                 setState(() {
-                                  debugPrint("BAT_IDs $selectedPlayerId");
-                                  debugPrint("BOWLER_IDs $value");
-                                  Map<String, int> map = {
-                                    "player1_id": value.toString().toInt(),
-                                    "player2_id": nonStrikerId.toInt(),
-                                    "bowler_id": bowlerId.toInt(),
-                                    "match_id": widget.matchData.id!,
-                                    "team_id": battingTeamId.toInt(),
-                                    "team2_id": bowlingTeamId.toInt(),
-                                  };
+                                  GetTeamDetailData nextBatsmanData = value;
+                                  debugPrint(
+                                      "BATS_IDs ${nextBatsmanData.userId}");
+                                  Batsman? batsman;
+                                  Batsman2? batsman2;
+                                  batsman = Batsman(
+                                      id: nextBatsmanData.userId!,
+                                      run: 0,
+                                      balls: 0,name: nextBatsmanData.userName);
+                                  batsman2 = scoreUpdate!.batsman2;
+                                  /*  if (strikerId.toString() ==
+                                      selectedPlayerId) {
 
-                                  // createConnectionSocket(map);
+                                  } else if (nonStrikerId.toString() ==
+                                      selectedPlayerId) {
+                                    batsman = scoreUpdate!.batsman;
+                                    batsman2 = Batsman2(
+                                        id: nextBatsmanData.userId!,
+                                        run: 0,
+                                        balls: 0);
+                                  }*/
+
+                                  selectStrikerBottomSheet(context, batsman!,
+                                      batsman2!, scoreUpdate!.bowler);
                                 });
                                 bowlerRuns.add("W");
                               }
                             });
                             // Navigator.pop(context);
                           });
+                          // Navigator.pop(context);
                         },
                         child: Container(
                           decoration: BoxDecoration(
@@ -1633,7 +1790,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
-                            selectedPlayerId = batsman.id.toString();
+                            selectedPlayerId = batsman2.id.toString();
                             debugPrint("Selected Player Id: $selectedPlayerId");
                             Navigator.push(
                                 getContext,
@@ -1644,27 +1801,233 @@ class _ScorerScreenState extends State<ScorerScreen>
                                           matchData: widget.matchData,
                                           bowlerId: bowlerId,
                                           batterId: batsman2.id,
+                                          batterNotOutId: batsman.id,
                                         ))).then((value) {
                               if (value != null && value != "add_teams") {
                                 setState(() {
-                                  debugPrint("BAT_IDs $selectedPlayerId");
-                                  debugPrint("BOWLER_IDs $value");
-                                  Map<String, int> map = {
-                                    "player1_id": value.toString().toInt(),
-                                    "player2_id": nonStrikerId.toInt(),
-                                    "bowler_id": bowlerId.toInt(),
-                                    "match_id": widget.matchData.id!,
-                                    "team_id": battingTeamId.toInt(),
-                                    "team2_id": bowlingTeamId.toInt(),
-                                  };
+                                  GetTeamDetailData nextBatsmanData = value;
+                                  debugPrint(
+                                      "BATS_IDs ${nextBatsmanData.userId}");
+                                  Batsman? batsman;
+                                  Batsman2? batsman2;
+                                  batsman = scoreUpdate!.batsman;
+                                  batsman2 = Batsman2(
+                                      id: nextBatsmanData.userId!,
+                                      run: 0,
+                                      balls: 0,name: nextBatsmanData.userName);
 
-                                  // createConnectionSocket(map);
+                                  selectStrikerBottomSheet(context, batsman!,
+                                      batsman2!, scoreUpdate!.bowler);
                                 });
                                 bowlerRuns.add("W");
                               }
                             });
                             // Navigator.pop(context);
                           });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: selectedPlayerId == batsman2.id.toString()
+                                ? AppColor.brown2.withOpacity(0.1)
+                                : AppColor.grey.withOpacity(0.1),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/player.png",
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "USER_ID ${batsman2.id}",
+                                style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Semibold"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                /*    Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColor.red.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: const Center(
+                            child: Text(
+                              "Not Now",
+                              style: TextStyle(
+                                  color: Colors.red,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          // changeStrikerApi(battingTeamId, playerId, player2Id);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: AppColor.green_neon.withOpacity(0.1),
+                          ),
+                          child: const Center(
+                            child: Text(
+                              "Yes",
+                              style: TextStyle(
+                                  color: AppColor.green2,
+                                  fontFamily: "Lato_Bold",
+                                  fontSize: 18),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                )*/
+              ],
+            ),
+          );
+        });
+      },
+    );
+  }
+
+  void selectStrikerBottomSheet(
+      BuildContext context, Batsman batsman, Batsman2 batsman2, Bowler bowler) {
+    Navigator.pop(context);
+    showModalBottomSheet<void>(
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context, StateSetter setState) {
+          var selectedPlayerId = "";
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  "Select the player who is on strike.",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: "Lato_Semibold",
+                    color: AppColor.text_grey,
+                  ),
+                ),
+                Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: const Text(
+                    "Tap on the player to proceed.",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "Lato_Semibold",
+                      color: AppColor.text_grey,
+                    ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            strikerId = batsman.id;
+                            nonStrikerId = batsman2.id;
+                            Map<String, int> map = {
+                              "player1_id": strikerId,
+                              "player2_id": nonStrikerId.toInt(),
+                              "bowler_id": bowlerId.toInt(),
+                              "match_id": widget.matchData.id!,
+                              "team_id": battingTeamId.toInt(),
+                              "team2_id": bowlingTeamId.toInt(),
+                            };
+                            createConnectionSocket(map);
+                          });
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: selectedPlayerId == batsman.id.toString()
+                                ? AppColor.brown2.withOpacity(0.1)
+                                : AppColor.grey.withOpacity(0.1),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/player.png",
+                                width: 80,
+                                height: 80,
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                "USER_ID ${batsman.id}",
+                                style: const TextStyle(
+                                    fontSize: 16.0,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Semibold"),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            strikerId = batsman2.id;
+                            nonStrikerId = batsman.id;
+                            Map<String, int> map = {
+                              "player1_id": strikerId,
+                              "player2_id": nonStrikerId.toInt(),
+                              "bowler_id": bowlerId.toInt(),
+                              "match_id": widget.matchData.id!,
+                              "team_id": battingTeamId.toInt(),
+                              "team2_id": bowlingTeamId.toInt(),
+                            };
+                            createConnectionSocket(map);
+                          });
+                          Navigator.pop(context);
                         },
                         child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -1813,7 +2176,7 @@ class _ScorerScreenState extends State<ScorerScreen>
               MaterialPageRoute(
                   builder: (context) => SelectPlayerForMatch(
                         teamId: bowlingTeamId.toString(),
-                        teamName: widget.matchData.team2Name.toString(),
+                        teamName: "Select new bowler",
                         bowlerId: bowlerId.toString(),
                       ))).then((value) {
             if (value != null && value != "add_teams") {
