@@ -12,6 +12,7 @@ import 'package:socket_io_client/socket_io_client.dart' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../main.dart';
+import '../mainScreens/MainScreen.dart';
 import '../modalClasses/GetMatchModel.dart';
 import '../modalClasses/GetTeamDetailModel.dart';
 import '../modalClasses/socketModels/PlayerDetail.dart';
@@ -84,7 +85,7 @@ class _ScorerScreenState extends State<ScorerScreen>
     debugPrint("MAPP__${widget.map}");
     if (getStringListAsync(bowlerRunsPerOver) != null) {
       bowlerRuns = getStringListAsync(bowlerRunsPerOver)!;
-      if(bowlerRuns[0].isEmpty){
+      if (bowlerRuns[0].isEmpty) {
         bowlerRuns.clear();
       }
       debugPrint("bowlerRuns++++${bowlerRuns}");
@@ -130,68 +131,172 @@ class _ScorerScreenState extends State<ScorerScreen>
   }
 
   void scoreUpdateListener() {
-    debugPrint("Score_update_listener__1");
-    socket.on('score_update_listener', (data) {
-      if (data != null) {
-        debugPrint('score_update_listener11111: $data');
-        String jsonString = json.encode(data);
-        // Parse the JSON string into a Dart map
-        Map<String, dynamic> jsonData = json.decode(jsonString);
-        debugPrint('JSON___: $jsonData');
-        try {
-          setState(() {
-            scoreUpdate = ScoreUpdate.fromJson(jsonData['update_score']);
-            debugPrint(
-                'score_update_listener2222: ${scoreUpdate!.striker.isStriker}');
-            if (scoreUpdate!.batsman.id == scoreUpdate!.striker.isStriker) {
-              strikerId = scoreUpdate!.batsman.id;
-              nonStrikerId = scoreUpdate!.batsman2.id;
-            } else {
-              strikerId = scoreUpdate!.batsman2.id;
-              nonStrikerId = scoreUpdate!.batsman.id;
-            }
-            if (hasDecimal(scoreUpdate!.bowler.balls)) {
-              int digitAfterDecimal =
-                  ((scoreUpdate!.bowler.balls * 10) % 10).toInt();
-              bowlerBallsCount = digitAfterDecimal;
-              debugPrint('BALLS: $digitAfterDecimal');
-            } else {
-              bowlerBallsCount = bowlerBallsCount + 1;
-              debugPrint('BALLS ELSE: ${scoreUpdate!.bowler.balls}');
-
-              debugPrint('CHANGE OVER');
-              bool isMaidenOver = bowlerRuns.every((element) => element == "0");
-              debugPrint("IS_MAIDEN___$isMaidenOver");
-              if (isMaidenOver) {
-                maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
-              } else {
-                Future.delayed(const Duration(seconds: 1), () {
-                  Navigator.push(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) => SelectPlayerForMatch(
-                                teamId: bowlingTeamId.toString(),
-                                teamName: "Select new bowler",
-                                bowlerId: bowlerId.toString(),
-                              ))).then((value) {
-                    if (value != null && value != "add_teams") {
-                      setState(() {
-                        debugPrint("BOWLER_ID $value");
-                        bowlerId = value.toInt();
-                        nextBowlerApi(
-                            bowlingTeamId.toString(), bowlerId.toString());
-                      });
-                    }
-                  });
-                });
+      debugPrint("Score_update_listener__1");
+      socket.on('score_update_listener', (data) {
+        if (data != null) {
+          debugPrint('score_update_listener11111: $data');
+          String jsonString = json.encode(data);
+          // Parse the JSON string into a Dart map
+          Map<String, dynamic> jsonData = json.decode(jsonString);
+          debugPrint('JSON___: $jsonData');
+          try {
+            setState(() {
+              scoreUpdate = ScoreUpdate.fromJson(jsonData['update_score']);
+              debugPrint(
+                  'score_update_listener2222: ${scoreUpdate!.striker.isStriker}');
+              if (scoreUpdate!.scores.totalOver == widget.matchData.totalOver ||
+                  scoreUpdate!.scores.totalOver > widget.matchData.totalOver ||
+                  scoreUpdate!.scores.totalWicket == 10) {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Dialog(
+                      backgroundColor: Colors.white,
+                      insetPadding: const EdgeInsets.all(10),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                      elevation: 16,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: <Widget>[
+                            const SizedBox(height: 20),
+                            Container(
+                              color: AppColor.lightGrey,
+                              height: 60,
+                              child: const Padding(
+                                padding:
+                                    EdgeInsets.only(right: 40.0, left: 40.0),
+                                child: Center(
+                                  child: Text(
+                                    'Innings Complete',
+                                    style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: "Lato_Regular",
+                                        letterSpacing: 1,
+                                        color: AppColor.brown2),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 100, left: 100),
+                              child: ElevatedButton(
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  inningUpdateApi(matchId.toString());
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColor.orange_0,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(80.0))),
+                                child: Container(
+                                  height: 20,
+                                  alignment: Alignment.center,
+                                  child: const Text(
+                                    "Start next innings.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontFamily: "Lato_Semibold"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(
+                                  right: 30.0, left: 30.0, top: 20),
+                              child: Divider(
+                                height: 1,
+                                color: AppColor.medGrey,
+                                thickness: 1,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton(
+                                onPressed: () {
+                                  Navigator.pop(getContext);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColor.white,
+                                    elevation: 0),
+                                child: const Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColor.brown2,
+                                    fontFamily: "Lato_Regular",
+                                  ),
+                                )),
+                            const SizedBox(height: 10)
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
               }
-            }
-          });
-        } catch (e) {
-          debugPrint('Error parsing data: $e');
+              if (scoreUpdate!.batsman.id == scoreUpdate!.striker.isStriker) {
+                strikerId = scoreUpdate!.batsman.id;
+                nonStrikerId = scoreUpdate!.batsman2.id;
+              } else {
+                strikerId = scoreUpdate!.batsman2.id;
+                nonStrikerId = scoreUpdate!.batsman.id;
+              }
+              if (hasDecimal(scoreUpdate!.bowler.balls)) {
+                int digitAfterDecimal =
+                    ((scoreUpdate!.bowler.balls * 10) % 10).toInt();
+                bowlerBallsCount = digitAfterDecimal;
+                debugPrint('BALLS: $digitAfterDecimal');
+              } else {
+                bowlerBallsCount = bowlerBallsCount + 1;
+                debugPrint('BALLS ELSE: ${scoreUpdate!.bowler.balls}');
+
+                debugPrint('CHANGE OVER');
+                bool isMaidenOver =
+                    bowlerRuns.every((element) => element == "0");
+                debugPrint("IS_MAIDEN___$isMaidenOver");
+                if (isMaidenOver) {
+                  maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
+                } else {
+                  Future.delayed(const Duration(seconds: 1), () {
+                    Navigator.push(
+                        getContext,
+                        MaterialPageRoute(
+                            builder: (context) => SelectPlayerForMatch(
+                                  teamId: bowlingTeamId.toString(),
+                                  teamName: "Select new bowler",
+                                  bowlerId: bowlerId.toString(),
+                                ))).then((value) {
+                      if (value != null && value != "add_teams") {
+                        setState(() {
+                          debugPrint("BOWLER_ID $value");
+                          bowlerId = value.toInt();
+                          nextBowlerApi(
+                              bowlingTeamId.toString(), bowlerId.toString());
+                        });
+                      }
+                    });
+                  });
+                }
+              }
+            });
+          } catch (e) {
+            debugPrint('Error parsing data: $e');
+          }
         }
-      }
-    });
+      });
+
   }
 
   bool hasDecimal(dynamic number) {
@@ -221,6 +326,102 @@ class _ScorerScreenState extends State<ScorerScreen>
 
   void scoreUpdateSocket(int strikerId, int nonStrikerId, int bowlerId,
       int matchId, int battingTeamId, int bowlingTeamId, int type, int run) {
+    if (scoreUpdate!=null&&scoreUpdate!.scores.totalOver == widget.matchData.totalOver ||
+        scoreUpdate!=null&&  scoreUpdate!.scores.totalOver > widget.matchData.totalOver ||
+        scoreUpdate!=null&& scoreUpdate!.scores.totalWicket == 10) {
+      showDialog(
+        context: context,
+        builder: (context) {
+          return Dialog(
+            backgroundColor: Colors.white,
+            insetPadding: const EdgeInsets.all(10),
+            shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            elevation: 16,
+            child: Container(
+              decoration: BoxDecoration(
+                  color: Colors.white, borderRadius: BorderRadius.circular(10)),
+              child: ListView(
+                shrinkWrap: true,
+                children: <Widget>[
+                  const SizedBox(height: 20),
+                  Container(
+                    color: AppColor.lightGrey,
+                    height: 60,
+                    child: const Padding(
+                      padding: EdgeInsets.only(right: 40.0, left: 40.0),
+                      child: Center(
+                        child: Text(
+                          'Innings Complete',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: "Lato_Regular",
+                              letterSpacing: 1,
+                              color: AppColor.brown2),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 100, left: 100),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        Navigator.pop(context);
+                        inningUpdateApi(matchId.toString());
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColor.orange_0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(80.0))),
+                      child: Container(
+                        height: 20,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          "Start next innings.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontFamily: "Lato_Semibold"),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(right: 30.0, left: 30.0, top: 20),
+                    child: Divider(
+                      height: 1,
+                      color: AppColor.medGrey,
+                      thickness: 1,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(getContext);
+                      },
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColor.white, elevation: 0),
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: AppColor.brown2,
+                          fontFamily: "Lato_Regular",
+                        ),
+                      )),
+                  const SizedBox(height: 10)
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
     var map = {
       "player1_id": strikerId,
       "player2_id": nonStrikerId,
@@ -253,7 +454,7 @@ class _ScorerScreenState extends State<ScorerScreen>
 
         setValue(bowlerRunsPerOver, bowlerRuns);
       });
-    }
+    }}
   }
 
   @override
@@ -309,7 +510,12 @@ class _ScorerScreenState extends State<ScorerScreen>
                             child: ElevatedButton(
                               onPressed: () async {
                                 Navigator.pop(context);
-                                Navigator.pop(context);
+                                Navigator.push(
+                                    getContext,
+                                    MaterialPageRoute(
+                                        builder: (context) => MainScreen(
+                                          index: 0,
+                                        )));
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColor.orange_0,
@@ -425,7 +631,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                           children: [
                             Text(
                               scoreUpdate != null
-                                  ? scoreUpdate!.scores.totalRun.toString()
+                                  ? "${scoreUpdate!.scores.totalRun}-${scoreUpdate!.scores.totalWicket}"
                                   : "0/0",
                               style: const TextStyle(
                                   fontSize: 30.0,
@@ -437,7 +643,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                             ),
                             Text(
                               scoreUpdate != null
-                                  ? "${scoreUpdate!.scores.totalOver}/${scoreUpdate!.scores.matchTotalOvers}"
+                                  ? "(${scoreUpdate!.scores.totalOver}/${scoreUpdate!.scores.matchTotalOvers})"
                                   : "-",
                               style: const TextStyle(
                                   fontSize: 14.0,
@@ -772,10 +978,11 @@ class _ScorerScreenState extends State<ScorerScreen>
                                         width: 40,
                                       ),
                                       Padding(
-                                        padding:
-                                        const EdgeInsets.symmetric(horizontal: 15.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15.0),
                                         child: Text(
-                                          playerDetail != null && scoreUpdate != null
+                                          playerDetail != null &&
+                                                  scoreUpdate != null
                                               ? "${scoreUpdate!.bowler.balls}-${scoreUpdate!.bowler.maidensOver}-${scoreUpdate!.bowler.runs}-${scoreUpdate!.bowler.wicket}"
                                               : "-",
                                           style: const TextStyle(
@@ -788,55 +995,58 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   ),
                                   scoreUpdate != null
                                       ? Container(
-                                    width:MediaQuery.sizeOf(context).width*0.8,
-                                    height: 50,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: bowlerRuns.length, // number of elements in the list
-                                      itemBuilder: (BuildContext context, int index) {
-                                        String currentItem = bowlerRuns[index];
+                                          width:
+                                              MediaQuery.sizeOf(context).width *
+                                                  0.8,
+                                          height: 50,
+                                          child: ListView.builder(
+                                            scrollDirection: Axis.horizontal,
+                                            itemCount: bowlerRuns.length,
+                                            // number of elements in the list
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              String currentItem =
+                                                  bowlerRuns[index];
 
-                                        // Return a circular container with the current item as text
-                                        return Padding(
-                                          padding: EdgeInsets.all(5),
-                                          child: Container(
-
-                                            width: 30.0,
-                                            height: 30.0,
-                                            decoration: const BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              color: AppColor.brown3, // Change color as needed
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                currentItem,
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14.0,
+                                              // Return a circular container with the current item as text
+                                              return Padding(
+                                                padding: EdgeInsets.all(5),
+                                                child: Container(
+                                                  width: 30.0,
+                                                  height: 30.0,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: AppColor
+                                                        .brown3, // Change color as needed
+                                                  ),
+                                                  child: Center(
+                                                    child: Text(
+                                                      currentItem,
+                                                      style: const TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 14.0,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
+                                              );
+                                            },
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ):
-                                  const Text(
-                                    "Runs: []",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: "Lato_Bold",
-                                        fontSize: 12),
-                                  ),
-
+                                        )
+                                      : const Text(
+                                          "Runs: []",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: "Lato_Bold",
+                                              fontSize: 12),
+                                        ),
                                 ],
                               ),
-
                             ],
                           ),
-
-
                         ],
                       ),
                     ],
@@ -1724,31 +1934,11 @@ class _ScorerScreenState extends State<ScorerScreen>
                               if (value != null && value != "add_teams") {
                                 setState(() {
                                   GetTeamDetailData nextBatsmanData = value;
-                                  debugPrint(
-                                      "BATS_IDs ${nextBatsmanData.userId}");
-                                  Batsman? batsman;
-                                  Batsman2? batsman2;
-                                  batsman = Batsman(
-                                      id: nextBatsmanData.userId!,
-                                      run: 0,
-                                      balls: 0,name: nextBatsmanData.userName);
-                                  batsman2 = scoreUpdate!.batsman2;
-                                  /*  if (strikerId.toString() ==
-                                      selectedPlayerId) {
-
-                                  } else if (nonStrikerId.toString() ==
-                                      selectedPlayerId) {
-                                    batsman = scoreUpdate!.batsman;
-                                    batsman2 = Batsman2(
-                                        id: nextBatsmanData.userId!,
-                                        run: 0,
-                                        balls: 0);
-                                  }*/
-
-                                  selectStrikerBottomSheet(context, batsman!,
-                                      batsman2!, scoreUpdate!.bowler);
+                                  nextBatsmanApi(
+                                      nextBatsmanData.teamId.toString(),
+                                      nextBatsmanData.userId.toString(),
+                                      nextBatsmanData);
                                 });
-                                bowlerRuns.add("W");
                               }
                             });
                             // Navigator.pop(context);
@@ -1814,7 +2004,8 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   batsman2 = Batsman2(
                                       id: nextBatsmanData.userId!,
                                       run: 0,
-                                      balls: 0,name: nextBatsmanData.userName);
+                                      balls: 0,
+                                      name: nextBatsmanData.userName);
 
                                   selectStrikerBottomSheet(context, batsman!,
                                       batsman2!, scoreUpdate!.bowler);
@@ -2137,6 +2328,76 @@ class _ScorerScreenState extends State<ScorerScreen>
           setValue(bowlerRunsPerOver, bowlerRuns);
           _showStrikerBottomSheet(context, nonStrikerId.toString(),
               strikerId.toString(), battingTeamId.toString());
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  nextBatsmanApi(String batsManTeamId, String batsManId,
+      GetTeamDetailData nextBatsmanData) async {
+    var request = {
+      'match_id': matchId.toString(),
+      'team_id': batsManTeamId,
+      'player_id': batsManId,
+    };
+    await nextBatsman(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          debugPrint("NEXT_Bats____${res.body.toString()}");
+
+          Batsman? batsman;
+          Batsman2? batsman2;
+          batsman = Batsman(
+              id: batsManId.toInt(),
+              run: 0,
+              balls: 0,
+              name: nextBatsmanData.userName);
+          batsman2 = scoreUpdate!.batsman2;
+          selectStrikerBottomSheet(
+              context, batsman!, batsman2, scoreUpdate!.bowler);
+          bowlerRuns.add("W");
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  inningUpdateApi(String matchId) async {
+    var request = {
+      'match_id': matchId.toString(),
+    };
+    await inningUpdate(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => MainScreen(
+                        index: 0,
+                      )));
         });
       } else if (res.success != 1 && res.code == 401) {
         toast(res.message);

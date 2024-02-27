@@ -8,8 +8,13 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../apiRelatedFiles/rest_apis.dart';
+import '../modalClasses/ScorerMatchModel.dart';
 import '../scoreRelatedScreens/ScoreBoardscreen.dart';
+import '../startMatchRelatedScreens/StartInningsScreen.dart';
+import '../startMatchRelatedScreens/TossScreen.dart';
 import '../utils/AppColor.dart';
+import '../utils/constant.dart';
+import '../utils/shared_pref.dart';
 import 'HomeScreen.dart';
 
 class MyMatches extends StatefulWidget {
@@ -194,9 +199,66 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
         child: TabBarView(
           controller: tabController,
           children: <Widget>[
-            currentScreen(),
-            upcomingScreen(),
-            completedScreen(),
+            currentMatchList.isEmpty?SizedBox(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/crick_layout_background.png",
+                    width: 90,
+                    height: 90,
+                  ),
+                  const Text(
+                    "No Data Found!!",
+                    style: TextStyle(
+                        fontFamily: "Ubuntu_Bold",
+                        color: AppColor.brown_0,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+            ):currentScreen(),
+            upcomingMatchList.isEmpty?SizedBox(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/crick_layout_background.png",
+                    width: 90,
+                    height: 90,
+                  ),
+                  const Text(
+                    "No Data Found!!",
+                    style: TextStyle(
+                        fontFamily: "Ubuntu_Bold",
+                        color: AppColor.brown_0,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+            ):upcomingScreen(),
+            completedMatchList.isEmpty?SizedBox(
+              height: 200,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    "assets/crick_layout_background.png",
+                    width: 90,
+                    height: 90,
+                  ),
+                  const Text(
+                    "No Data Found!!",
+                    style: TextStyle(
+                        fontFamily: "Ubuntu_Bold",
+                        color: AppColor.brown_0,
+                        fontSize: 16),
+                  )
+                ],
+              ),
+            ):completedScreen(),
           ],
         ),
       ),
@@ -212,10 +274,16 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: (){
-              Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) =>  ScoreBoardScreen(getMatchData:currentMatchList[index])));
+              if(getIntAsync(accountType)==3){
+                verifyScorerApi(currentMatchList[index]);
+              }else{
+                setValue(bowlerRunsPerOver, [""]);
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) =>  ScoreBoardScreen(getMatchData:currentMatchList[index])));
+                // builder: (context) =>  TossScreen(matchData:matchList[index])));
+              }
             },
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -298,7 +366,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       decoration: BoxDecoration(
                                         color: AppColor.yellowMed.withOpacity(0.4),
                                       ),
-                                      child: const Text("140/6 (20)",style: TextStyle(fontFamily: "Lato_Semibold",color: AppColor.brown2),),
+                                      child:  Text(currentMatchList[index].team1Name.toString(),style: TextStyle(fontFamily: "Lato_Semibold",color: AppColor.brown2),),
                                     ),
                                   ),
                                   Row(
@@ -334,7 +402,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                     decoration: BoxDecoration(
                                       color: AppColor.yellowMed.withOpacity(0.4),
                                     ),
-                                    child: Text("Yet To Bat",style: TextStyle(fontFamily: "Lato_Semibold"),),
+                                    child: Text(currentMatchList[index].team2Name.toString(),style: TextStyle(fontFamily: "Lato_Semibold"),),
                                   ),
                                   Row(
                                     children: [
@@ -586,7 +654,49 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
       ),
     );
   }
+  verifyScorerApi(UpcomingListArr getMatchData) async {
+    var request = {
+      'match_id':getMatchData.id .toString(),
+      'scorer_id': getStringAsync(userId),
+    };
+    await verifyScorer(request).then((res) async {
+      if (res.success == 1) {
+        setState(() {
+          setValue(bowlerRunsPerOver, [""]);
+          ScorerMatchData scorerMatchData = res.body!;
+          if(scorerMatchData.tossDecision>0){
+            Navigator.push(
+                getContext,
+                MaterialPageRoute(
+                    builder: (context) =>  StartInningsScreen(matchData:getMatchData,tossWinnerId:scorerMatchData.tossWinnerId.toString(),tossWinnerElected: scorerMatchData.tossDecision.toString(),inningStatus: scorerMatchData.inningStatus.toString(),)));
+          }else{
+            Navigator.push(
+                getContext,
+                MaterialPageRoute(
+                    builder: (context) =>  TossScreen(matchData: getMatchData,)));
+          }
 
+        });
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        setValue(bowlerRunsPerOver, [""]);
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) =>  ScoreBoardScreen(getMatchData:getMatchData)));
+        // builder: (context) =>  TossScreen(matchData:matchList[index])));
+      }
+    });
+  }
   completedScreen() {
     return Container(
       margin: const EdgeInsets.only(top: 10),

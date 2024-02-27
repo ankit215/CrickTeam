@@ -90,14 +90,16 @@ class Striker {
 class Scores {
   int totalRun;
   dynamic totalOver;
+  dynamic totalWicket;
   dynamic matchTotalOvers;
 
-  Scores({required this.totalRun, required this.totalOver, required this.matchTotalOvers});
+  Scores({required this.totalRun, required this.totalOver, required this.totalWicket, required this.matchTotalOvers});
 
   factory Scores.fromJson(Map<String, dynamic> json) {
     return Scores(
       totalRun: json['total_run'],
       totalOver: json['total_over'],
+      totalWicket: json['total_wicket'],
       matchTotalOvers: json['match_total_overs'],
     );
   }

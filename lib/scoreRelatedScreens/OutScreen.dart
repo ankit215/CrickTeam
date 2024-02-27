@@ -95,20 +95,24 @@ class _OutScreenState extends State<OutScreen> {
           return GestureDetector(
             onTap: () {
               dismissalType = outList[index].type!;
-              Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SelectPlayerForMatch(
-                            teamId: widget.bowlingTeamId.toString(),
-                            teamName: "Select fielder",
-                            bowlerId: "",
-                          ))).then((value) {
-                if (value != "add_teams") {
-                  debugPrint("selected_fielder $value");
-                  outPlayerApi(value.toString());
-                }
-              });
+              if(dismissalType=="1"||dismissalType=="6"||dismissalType=="7"){
+                outPlayerApi("0");
+              }else{
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SelectPlayerForMatch(
+                              teamId: widget.bowlingTeamId.toString(),
+                              teamName: "Select fielder",
+                              bowlerId: "",
+                            ))).then((value) {
+                  if (value != "add_teams") {
+                    debugPrint("selected_fielder $value");
+                    outPlayerApi(value.toString());
+                  }
+                });
+              }
             },
             child: Padding(
               padding: const EdgeInsets.all(18.0),

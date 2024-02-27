@@ -83,7 +83,7 @@ class _Menu extends State<Menu> {
                   title: 'NOTIFICATIONS',
                 ),
               ),
-              ElevatedButton(
+              getIntAsync(accountType)==1?ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
@@ -97,7 +97,7 @@ class _Menu extends State<Menu> {
                   image: "assets/cricket.png",
                   title: 'START THE MATCH',
                 ),
-              ),
+              ):SizedBox(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),

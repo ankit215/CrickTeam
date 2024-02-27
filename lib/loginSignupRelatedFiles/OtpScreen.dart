@@ -288,7 +288,7 @@ class _OtpScreenState extends State<OtpScreen> {
       'mobile_number': widget.mobileNo,
       'type': widget.type,
     };
-    await login(request).then((res) async {
+    await login(request,1).then((res) async {
       debugPrint("res.body!.name: ${res.body!.name.toString()}");
       if (res.success == 1) {
         hideLoader();

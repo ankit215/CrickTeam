@@ -14,12 +14,14 @@ class StartInningsScreen extends StatefulWidget {
   final UpcomingListArr matchData;
   final String tossWinnerId;
   final String tossWinnerElected;
+  final String? inningStatus;
 
   const StartInningsScreen(
       {super.key,
       required this.matchData,
       required this.tossWinnerId,
-      required this.tossWinnerElected});
+      required this.tossWinnerElected,
+      this.inningStatus});
 
   @override
   State<StartInningsScreen> createState() => _StartInningsScreenState();
@@ -160,7 +162,8 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                                     debugPrint("dadaddadaddsadasdad $value");
                                     strikerId = value.toString();
                                     isStriker = true;
-                                    selectPlayersApi("1", battingTeamId, strikerId, "1");
+                                    selectPlayersApi(
+                                        "1", battingTeamId, strikerId, "1");
                                   });
                                 }
                               });
@@ -231,9 +234,9 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                                     debugPrint("NON_STRIKER_ID $value");
                                     nonStrikerId = value.toString();
                                     isNonStriker = true;
-                                    selectPlayersApi("1", battingTeamId, nonStrikerId, "2");
+                                    selectPlayersApi(
+                                        "1", battingTeamId, nonStrikerId, "2");
                                   });
-
                                 }
                               });
                             });
@@ -323,9 +326,9 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                                     debugPrint("BOWLER_ID $value");
                                     bowlerId = value.toString();
                                     isBowlerSelected = true;
-                                    selectPlayersApi("2", bowlingTeamId, bowlerId, "");
+                                    selectPlayersApi(
+                                        "2", bowlingTeamId, bowlerId, "");
                                   });
-
                                 }
                               });
                             });
@@ -386,17 +389,22 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
             GestureDetector(
               onTap: () {
                 Map<String, int> map = {
-                  "player1_id":strikerId.toInt(),
-                  "player2_id":nonStrikerId.toInt(),
-                  "bowler_id":bowlerId.toInt(),
-                  "match_id":widget.matchData.id!,
-                  "team_id":battingTeamId.toInt(),
-                  "team2_id":bowlingTeamId.toInt(),
+                  "player1_id": strikerId.toInt(),
+                  "player2_id": nonStrikerId.toInt(),
+                  "bowler_id": bowlerId.toInt(),
+                  "match_id": widget.matchData.id!,
+                  "team_id": battingTeamId.toInt(),
+                  "team2_id": bowlingTeamId.toInt(),
                 };
                 Navigator.push(
                     getContext,
                     MaterialPageRoute(
-                        builder: (context) =>  ScorerScreen(teamMatch: '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',map: map,matchData: widget.matchData,)));
+                        builder: (context) => ScorerScreen(
+                              teamMatch:
+                                  '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',
+                              map: map,
+                              matchData: widget.matchData,
+                            )));
               },
               child: Container(
                 width: double.infinity,
@@ -441,7 +449,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
             'team_id': teamId,
             'player_id': playerId,
             'position': position,
-            'is_stricker': position=="1"?"1":"0",
+            'is_stricker': position == "1" ? "1" : "0",
           }
         : {
             'type': type,

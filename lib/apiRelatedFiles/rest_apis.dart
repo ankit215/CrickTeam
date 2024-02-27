@@ -21,7 +21,6 @@ import '../utils/shared_pref.dart';
 import 'api_utils.dart';
 import 'network_available.dart';
 
-
 Future<Response> buildMultiPartRequest(
     MultipartRequest multiPartRequest) async {
   debugPrint(
@@ -109,17 +108,19 @@ Future<Response> buildHttpResponse(String endPoint,
   }
 }
 
-Future<LoginModel> login(Map request) async {
+Future<LoginModel> login(Map request, int from) async {
   showLoader();
   var login = LoginModel.fromJson(await (handleResponse(await buildHttpResponse(
       'login',
       request: request,
       method: HttpMethod.post))));
-
-  await saveUserData(login.body!);
+  if (from == 1) {
+    await saveUserData(login.body!);
+  }
   hideLoader();
   return login;
 }
+
 Future<UpdateProfileModel> updateProfile(
     MultipartRequest multiPartRequest) async {
   var updateProfileModel = UpdateProfileModel.fromJson(
@@ -127,131 +128,151 @@ Future<UpdateProfileModel> updateProfile(
   await saveUpdateUserData(updateProfileModel.body!);
   return updateProfileModel;
 }
-Future<AddTeamModel> createTeam(
-    MultipartRequest multiPartRequest) async {
+
+Future<AddTeamModel> createTeam(MultipartRequest multiPartRequest) async {
   var createTeamModel = AddTeamModel.fromJson(
       await (handleResponse(await buildMultiPartRequest(multiPartRequest))));
   return createTeamModel;
 }
+
 Future<SimpleApiModel> createPlayer(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'create_player',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('create_player',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<SimpleApiModel> nextBowler(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'next_bowler',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('next_bowler',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
+Future<SimpleApiModel> nextBatsman(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('next_batsman',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+
+Future<SimpleApiModel> inningUpdate(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('inning_update',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+
 Future<SimpleApiModel> outPlayer(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'out_player',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('out_player',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<SimpleApiModel> maidenOver(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'maiden_over',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('maiden_over',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<SimpleApiModel> changeStriker(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'change_stricker',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('change_stricker',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<ScorerMatchModel> verifyScorer(Map request) async {
   showLoader();
-  var createPlayer = ScorerMatchModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'verify_scorer',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = ScorerMatchModel.fromJson(await (handleResponse(
+      await buildHttpResponse('verify_scorer',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<SimpleApiModel> createMatch(Map request) async {
   showLoader();
-  var createPlayer = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'create_match',
-          request: request,
-          method: HttpMethod.post))));
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('create_match',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return createPlayer;
 }
+
 Future<SimpleApiModel> tossResult(Map request) async {
   showLoader();
-  var tossResult = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'toss_result',
-          request: request,
-          method: HttpMethod.post))));
+  var tossResult = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('toss_result',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return tossResult;
 }
+
 Future<SimpleApiModel> selectPlayers(Map request) async {
   showLoader();
-  var tossResult = SimpleApiModel.fromJson(
-      await (handleResponse(await buildHttpResponse(
-          'select_players',
-          request: request,
-          method: HttpMethod.post))));
+  var tossResult = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('select_players',
+          request: request, method: HttpMethod.post))));
   hideLoader();
   return tossResult;
 }
+
 Future<GetTeamModel> getTeamList(String search) async {
   showLoader();
-  return GetTeamModel.fromJson(await (handleResponse(
-      await buildHttpResponse("team_list?search_parameters=$search",method: HttpMethod.get))));
+  return GetTeamModel.fromJson(await (handleResponse(await buildHttpResponse(
+      "team_list?search_parameters=$search",
+      method: HttpMethod.get))));
 }
+
 Future<GetMatchModel> getMatchList() async {
   showLoader();
   return GetMatchModel.fromJson(await (handleResponse(
-      await buildHttpResponse("match_list",method: HttpMethod.get))));
+      await buildHttpResponse("match_list", method: HttpMethod.get))));
 }
+
 Future<GetPlayerSearchModel> getPlayerSearch(String mobileNo) async {
   showLoader();
   return GetPlayerSearchModel.fromJson(await (handleResponse(
-      await buildHttpResponse("player_search?mobile_number=$mobileNo",method: HttpMethod.get))));
+      await buildHttpResponse("player_search?mobile_number=$mobileNo",
+          method: HttpMethod.get))));
 }
+
 Future<GetTeamDetailModel> getTeamDetail(String teamId) async {
   showLoader();
   return GetTeamDetailModel.fromJson(await (handleResponse(
-      await buildHttpResponse("team_detail/$teamId",method: HttpMethod.get))));
+      await buildHttpResponse("team_detail/$teamId", method: HttpMethod.get))));
 }
-Future<OutPlayerModel> getOutPlayerList(String teamId,String matchId) async {
+
+Future<OutPlayerModel> getOutPlayerList(String teamId, String matchId) async {
   showLoader();
-  return OutPlayerModel.fromJson(await (handleResponse(
-      await buildHttpResponse("out_player_list?match_id=$matchId&team_id=$teamId",method: HttpMethod.get))));
+  return OutPlayerModel.fromJson(await (handleResponse(await buildHttpResponse(
+      "out_player_list?match_id=$matchId&team_id=$teamId",
+      method: HttpMethod.get))));
 }
-Future<ScoreboardModel> getScoreboard(String matchId,String teamId,String team2Id) async {
+
+Future<ScoreboardModel> getScoreboard(
+    String matchId, String teamId, String team2Id) async {
   showLoader();
-  return ScoreboardModel.fromJson(await (handleResponse(
-      await buildHttpResponse("score_board?match_id=$matchId&team_id=$teamId&team2_id=$team2Id",method: HttpMethod.get))));
+  return ScoreboardModel.fromJson(await (handleResponse(await buildHttpResponse(
+      "score_board?match_id=$matchId&team_id=$teamId&team2_id=$team2Id",
+      method: HttpMethod.get))));
 }
 
 // Future<CompanyModel> getCompany(String search, String userId) async {
@@ -260,9 +281,6 @@ Future<ScoreboardModel> getScoreboard(String matchId,String teamId,String team2I
 //   return CompanyModel.fromJson(await (handleResponse(
 //       await buildHttpResponse("get_company?search=$search&user_id=$userId"))));
 // }
-
-
-
 
 Future<SimpleApiModel> logoutUser(Map request) async {
   showLoader();

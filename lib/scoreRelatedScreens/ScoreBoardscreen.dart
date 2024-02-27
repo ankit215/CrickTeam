@@ -62,6 +62,9 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
               widget.getMatchData.team2Id.toString());
         });
       } else {
+        getScoreData = null;
+        battingList = [];
+        yetToBatList = [];
         Future.delayed(Duration.zero, () {
           getMatchScoreBoard(widget.getMatchData.team2Id.toString(),
               widget.getMatchData.team1Id.toString());
@@ -149,20 +152,328 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
       ),
       body: Container(
         color: Colors.white,
-        child: getScoreData == null
-            ? const SizedBox()
-            : TabBarView(
+        child:  TabBarView(
                 controller: tabController,
                 children: <Widget>[
-                  battingTeamScreen(),
-                  bowlingTeamScreen(),
+                  getScoreData == null
+                      ? SizedBox(
+                    height: 200,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/crick_layout_background.png",
+                          width: 90,
+                          height: 90,
+                        ),
+                        const Text(
+                          "No Data Found!!",
+                          style: TextStyle(
+                              fontFamily: "Ubuntu_Bold",
+                              color: AppColor.brown_0,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                  )
+                      : team1(),
+                  getScoreData == null
+                      ? SizedBox(
+                    height: 200,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          "assets/crick_layout_background.png",
+                          width: 90,
+                          height: 90,
+                        ),
+                        const Text(
+                          "No Data Found!!",
+                          style: TextStyle(
+                              fontFamily: "Ubuntu_Bold",
+                              color: AppColor.brown_0,
+                              fontSize: 16),
+                        )
+                      ],
+                    ),
+                  )
+                      :team2(),
                 ],
               ),
       ),
     );
   }
 
-  Widget battingTeamScreen() {
+  Widget team1() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            color: Colors.orange.shade50,
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 5),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Batter",
+                  style: TextStyle(
+                      fontFamily: "Lato_Semibold",
+                      color: AppColor.brown2,
+                      fontSize: 16),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      "R ",
+                      style: TextStyle(
+                          fontFamily: "Lato_Semibold",
+                          color: AppColor.brown2,
+                          fontSize: 16),
+                    ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Text(
+                      "B ",
+                      style: TextStyle(
+                          fontFamily: "Lato_Semibold",
+                          color: AppColor.brown2,
+                          fontSize: 16),
+                    ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Text(
+                      "4s",
+                      style: TextStyle(
+                          fontFamily: "Lato_Semibold",
+                          color: AppColor.brown2,
+                          fontSize: 16),
+                    ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Text(
+                      "6s",
+                      style: TextStyle(
+                          fontFamily: "Lato_Semibold",
+                          color: AppColor.brown2,
+                          fontSize: 16),
+                    ),
+                    SizedBox(
+                      width: 25,
+                    ),
+                    Text(
+                      "SR",
+                      style: TextStyle(
+                          fontFamily: "Lato_Semibold",
+                          color: AppColor.brown2,
+                          fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+          ListView.builder(
+            itemCount: battingList.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index) {
+              return Card(
+                color: Colors.orange.withOpacity(0.05),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            battingList[index].playerName!,
+                            style: const TextStyle(
+                                fontFamily: "Lato_Regular",
+                                color: AppColor.orange_0,
+                                fontSize: 16),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                battingList[index].run!.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Regular",
+                                    color: AppColor.brown3,
+                                    fontSize: 16),
+                              ),
+                              const SizedBox(
+                                width: 25,
+                              ),
+                              Text(
+                                battingList[index].balls!.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Regular",
+                                    color: AppColor.brown3,
+                                    fontSize: 16),
+                              ),
+                              const SizedBox(
+                                width: 25,
+                              ),
+                              Text(
+                                battingList[index].fours!.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Regular",
+                                    color: AppColor.brown3,
+                                    fontSize: 16),
+                              ),
+                              const SizedBox(
+                                width: 25,
+                              ),
+                              Text(
+                                battingList[index].sixs!.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Regular",
+                                    color: AppColor.brown3,
+                                    fontSize: 16),
+                              ),
+                              const SizedBox(
+                                width: 25,
+                              ),
+                              Text(
+                                battingList[index].strikeRate!.toString(),
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Regular",
+                                    color: AppColor.brown3,
+                                    fontSize: 16),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                      Text(
+                        battingList[index].dismissalType!.toString() == "0" &&
+                                battingList[index].position! > 0
+                            ? "Not Out"
+                            : battingList[index].dismissalType!.toString() ==
+                                        "0" &&
+                                    battingList[index].position == 0
+                                ? "Yet to bat."
+                                : "${getDissmissalType(battingList[index].dismissalType, battingList[index].fielderName!)} ${battingList[index].bowlerName}",
+                        style: TextStyle(
+                            fontFamily: "Lato_Regular",
+                            color:
+                                battingList[index].dismissalType!.toString() ==
+                                            "0" &&
+                                        battingList[index].position! > 0
+                                    ? AppColor.green
+                                    : battingList[index]
+                                                    .dismissalType!
+                                                    .toString() ==
+                                                "0" &&
+                                            battingList[index].position == 0
+                                        ? AppColor.blackDark
+                                        : AppColor.red,
+                            fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          getScoreData!.extraruns!.isNotEmpty
+              ? Container(
+                  color: Colors.orange.withOpacity(0.4),
+                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Extras",
+                        style: TextStyle(
+                          color: Colors.brown,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      Text(
+                        "${getExtraTotalRuns(getScoreData!.extraruns!)} (${getExtraRuns(getScoreData!.extraruns!)})",
+                        style: const TextStyle(
+                          color: Colors.brown,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const Text(
+                  "",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Lato_Bold",
+                      fontSize: 12),
+                ),
+          yetToBatList.isNotEmpty
+              ? Container(
+                  color: Colors.orange.withOpacity(0.4),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Yet to bat",
+                        style: TextStyle(
+                          color: Colors.brown,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16.0,
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.sizeOf(context).width * 0.7,
+                        child: GridView.count(
+                          shrinkWrap: true,
+                          crossAxisCount: 3,
+                          childAspectRatio: 4,
+                          scrollDirection: Axis.vertical,
+                          children: List.generate(yetToBatList.length, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Text(
+                                yetToBatList[index].playerName! + ",",
+                                style: TextStyle(color: AppColor.brown2),
+                              ),
+                            );
+                          }),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const Text(
+                  "",
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: "Lato_Bold",
+                      fontSize: 12),
+                ),
+          bowlingTeamScreen()
+        ],
+      ),
+    );
+  }
+  Widget team2() {
     return SingleChildScrollView(
       child: Column(
         children: [

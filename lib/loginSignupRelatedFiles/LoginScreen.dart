@@ -278,7 +278,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ? "1"
                   : "",
     };
-    await login(request).then((res) async {
+    await login(request,1).then((res) async {
       debugPrint("res.body!.name: ${res.body!.name.toString()}");
       log("LoginScreen accountType: ${res.body!.type}");
       if (res.success == 1) {
