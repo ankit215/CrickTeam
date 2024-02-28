@@ -53,8 +53,68 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
     battingTeamId = "";
     bowlingTeamName = "";
     bowlingTeamId = "";
-    if (widget.tossWinnerElected == "1" &&
-        widget.tossWinnerId == widget.matchData.team1Id.toString()) {
+    if (widget.inningStatus == "1") {
+      if (widget.tossWinnerElected == "1" &&
+          widget.tossWinnerId == widget.matchData.team1Id.toString()) {
+        debugPrint("TEAM As is winner and elected to bat.");
+        battingTeamName = widget.matchData.team2Name.toString();
+        battingTeamId = widget.matchData.team2Id.toString();
+        bowlingTeamName = widget.matchData.team1Name.toString();
+        bowlingTeamId = widget.matchData.team1Id.toString();
+      } else if (widget.tossWinnerElected == "1" &&
+          widget.tossWinnerId == widget.matchData.team2Id.toString()) {
+        debugPrint("TEAM B is winner and elected to bat.");
+        bowlingTeamName = widget.matchData.team2Name.toString();
+        bowlingTeamId = widget.matchData.team2Id.toString();
+        battingTeamName = widget.matchData.team1Name.toString();
+        battingTeamId = widget.matchData.team1Id.toString();
+      } else if (widget.tossWinnerElected == "2" &&
+          widget.tossWinnerId == widget.matchData.team1Id.toString()) {
+        debugPrint("TEAM A is winner and elected to ball.");
+        bowlingTeamName = widget.matchData.team2Name.toString();
+        bowlingTeamId = widget.matchData.team2Id.toString();
+        battingTeamName = widget.matchData.team1Name.toString();
+        battingTeamId = widget.matchData.team1Id.toString();
+      } else if (widget.tossWinnerElected == "2" &&
+          widget.tossWinnerId == widget.matchData.team2Id.toString()) {
+        debugPrint("TEAM B is winner and elected to ball.");
+        bowlingTeamName = widget.matchData.team1Name.toString();
+        bowlingTeamId = widget.matchData.team1Id.toString();
+        battingTeamName = widget.matchData.team2Name.toString();
+        battingTeamId = widget.matchData.team2Id.toString();
+      }
+    } else {
+      if (widget.tossWinnerElected == "1" &&
+          widget.tossWinnerId == widget.matchData.team1Id.toString()) {
+        debugPrint("TEAM A is winner and elected to bat.");
+        battingTeamName = widget.matchData.team1Name.toString();
+        battingTeamId = widget.matchData.team1Id.toString();
+        bowlingTeamName = widget.matchData.team2Name.toString();
+        bowlingTeamId = widget.matchData.team2Id.toString();
+      } else if (widget.tossWinnerElected == "1" &&
+          widget.tossWinnerId == widget.matchData.team2Id.toString()) {
+        debugPrint("TEAM B is winner and elected to bat.");
+        battingTeamName = widget.matchData.team2Name.toString();
+        battingTeamId = widget.matchData.team2Id.toString();
+        bowlingTeamName = widget.matchData.team1Name.toString();
+        bowlingTeamId = widget.matchData.team1Id.toString();
+      } else if (widget.tossWinnerElected == "2" &&
+          widget.tossWinnerId == widget.matchData.team1Id.toString()) {
+        debugPrint("TEAM A is winner and elected to ball.");
+        battingTeamName = widget.matchData.team2Name.toString();
+        battingTeamId = widget.matchData.team2Id.toString();
+        bowlingTeamName = widget.matchData.team1Name.toString();
+        bowlingTeamId = widget.matchData.team1Id.toString();
+      } else if (widget.tossWinnerElected == "2" &&
+          widget.tossWinnerId == widget.matchData.team2Id.toString()) {
+        debugPrint("TEAM B is winner and elected to ball.");
+        battingTeamName = widget.matchData.team1Name.toString();
+        battingTeamId = widget.matchData.team1Id.toString();
+        bowlingTeamName = widget.matchData.team2Name.toString();
+        bowlingTeamId = widget.matchData.team2Id.toString();
+      }
+    }
+    /* if (widget.tossWinnerElected == "1" && widget.tossWinnerId == widget.matchData.team1Id.toString()) {
       debugPrint("TEAM A is winner and elected to bat.");
       battingTeamName = widget.matchData.team1Name.toString();
       battingTeamId = widget.matchData.team1Id.toString();
@@ -81,7 +141,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
       battingTeamId = widget.matchData.team1Id.toString();
       bowlingTeamName = widget.matchData.team2Name.toString();
       bowlingTeamId = widget.matchData.team2Id.toString();
-    }
+    }*/
   }
 
   @override
@@ -404,6 +464,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
                                   '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',
                               map: map,
                               matchData: widget.matchData,
+                          inningStatus: widget.inningStatus,
                             )));
               },
               child: Container(

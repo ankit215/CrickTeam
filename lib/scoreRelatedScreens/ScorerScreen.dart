@@ -26,12 +26,12 @@ class ScorerScreen extends StatefulWidget {
   final UpcomingListArr matchData;
   final String teamMatch;
   final Map<String, int> map;
-
+  final String? inningStatus;
   const ScorerScreen(
       {super.key,
       required this.teamMatch,
       required this.map,
-      required this.matchData});
+      required this.matchData, this.inningStatus});
 
   @override
   State<ScorerScreen> createState() => _ScorerScreenState();
@@ -112,6 +112,7 @@ class _ScorerScreenState extends State<ScorerScreen>
   }
 
   void createConnectionSocket(var map) {
+    debugPrint("sadadsad____$map");
     socket.emit('create_connection', map);
   }
 
@@ -192,7 +193,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                               child: ElevatedButton(
                                 onPressed: () async {
                                   Navigator.pop(context);
-                                  inningUpdateApi(matchId.toString());
+                                  inningUpdateApi(matchId.toString(),"");
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColor.orange_0,
@@ -202,10 +203,10 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 child: Container(
                                   height: 20,
                                   alignment: Alignment.center,
-                                  child: const Text(
-                                    "Start next innings.",
+                                  child:  Text(
+                                    widget.inningStatus=="1"?"Complete Match":"Start next innings.",
                                     textAlign: TextAlign.center,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
                                         fontFamily: "Lato_Semibold"),
@@ -245,17 +246,9 @@ class _ScorerScreenState extends State<ScorerScreen>
                     );
                   },
                 );
-              }
-              if (scoreUpdate!.batsman.id == scoreUpdate!.striker.isStriker) {
-                strikerId = scoreUpdate!.batsman.id;
-                nonStrikerId = scoreUpdate!.batsman2.id;
-              } else {
-                strikerId = scoreUpdate!.batsman2.id;
-                nonStrikerId = scoreUpdate!.batsman.id;
-              }
-              if (hasDecimal(scoreUpdate!.bowler.balls)) {
+              }else  if (hasDecimal(scoreUpdate!.bowler.balls)) {
                 int digitAfterDecimal =
-                    ((scoreUpdate!.bowler.balls * 10) % 10).toInt();
+                ((scoreUpdate!.bowler.balls * 10) % 10).toInt();
                 bowlerBallsCount = digitAfterDecimal;
                 debugPrint('BALLS: $digitAfterDecimal');
               } else {
@@ -264,7 +257,7 @@ class _ScorerScreenState extends State<ScorerScreen>
 
                 debugPrint('CHANGE OVER');
                 bool isMaidenOver =
-                    bowlerRuns.every((element) => element == "0");
+                bowlerRuns.every((element) => element == "0");
                 debugPrint("IS_MAIDEN___$isMaidenOver");
                 if (isMaidenOver) {
                   maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
@@ -274,10 +267,10 @@ class _ScorerScreenState extends State<ScorerScreen>
                         getContext,
                         MaterialPageRoute(
                             builder: (context) => SelectPlayerForMatch(
-                                  teamId: bowlingTeamId.toString(),
-                                  teamName: "Select new bowler",
-                                  bowlerId: bowlerId.toString(),
-                                ))).then((value) {
+                              teamId: bowlingTeamId.toString(),
+                              teamName: "Select new bowler",
+                              bowlerId: bowlerId.toString(),
+                            ))).then((value) {
                       if (value != null && value != "add_teams") {
                         setState(() {
                           debugPrint("BOWLER_ID $value");
@@ -290,6 +283,14 @@ class _ScorerScreenState extends State<ScorerScreen>
                   });
                 }
               }
+              if (scoreUpdate!.batsman.id == scoreUpdate!.striker.isStriker) {
+                strikerId = scoreUpdate!.batsman.id;
+                nonStrikerId = scoreUpdate!.batsman2.id;
+              } else {
+                strikerId = scoreUpdate!.batsman2.id;
+                nonStrikerId = scoreUpdate!.batsman.id;
+              }
+
             });
           } catch (e) {
             debugPrint('Error parsing data: $e');
@@ -371,7 +372,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                     child: ElevatedButton(
                       onPressed: () async {
                         Navigator.pop(context);
-                        inningUpdateApi(matchId.toString());
+                        inningUpdateApi(matchId.toString(),"");
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: AppColor.orange_0,
@@ -510,12 +511,13 @@ class _ScorerScreenState extends State<ScorerScreen>
                             child: ElevatedButton(
                               onPressed: () async {
                                 Navigator.pop(context);
-                                Navigator.push(
+                                Navigator.pop(context);
+                               /* Navigator.push(
                                     getContext,
                                     MaterialPageRoute(
                                         builder: (context) => MainScreen(
                                           index: 0,
-                                        )));
+                                        )));*/
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColor.orange_0,
@@ -1129,7 +1131,108 @@ class _ScorerScreenState extends State<ScorerScreen>
                                   bowlingTeamId,
                                   6,
                                   6);
-                            } else {
+                            } else  if (scoreUpdate!.scores.totalOver == widget.matchData.totalOver ||
+                                scoreUpdate!.scores.totalOver > widget.matchData.totalOver ||
+                                scoreUpdate!.scores.totalWicket == 10) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    backgroundColor: Colors.white,
+                                    insetPadding: const EdgeInsets.all(10),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10)),
+                                    elevation: 16,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.circular(10)),
+                                      child: ListView(
+                                        shrinkWrap: true,
+                                        children: <Widget>[
+                                          const SizedBox(height: 20),
+                                          Container(
+                                            color: AppColor.lightGrey,
+                                            height: 60,
+                                            child: const Padding(
+                                              padding:
+                                              EdgeInsets.only(right: 40.0, left: 40.0),
+                                              child: Center(
+                                                child: Text(
+                                                  'Innings Complete',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontFamily: "Lato_Regular",
+                                                      letterSpacing: 1,
+                                                      color: AppColor.brown2),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          Padding(
+                                            padding:
+                                            const EdgeInsets.only(right: 100, left: 100),
+                                            child: ElevatedButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                                inningUpdateApi(matchId.toString(),"");
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColor.orange_0,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                      BorderRadius.circular(80.0))),
+                                              child: Container(
+                                                height: 20,
+                                                alignment: Alignment.center,
+                                                child: const Text(
+                                                  "Start next innings.",
+                                                  textAlign: TextAlign.center,
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 16,
+                                                      fontFamily: "Lato_Semibold"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          const Padding(
+                                            padding: EdgeInsets.only(
+                                                right: 30.0, left: 30.0, top: 20),
+                                            child: Divider(
+                                              height: 1,
+                                              color: AppColor.medGrey,
+                                              thickness: 1,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 10),
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.pop(getContext);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColor.white,
+                                                  elevation: 0),
+                                              child: const Text(
+                                                "Cancel",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: AppColor.brown2,
+                                                  fontFamily: "Lato_Regular",
+                                                ),
+                                              )),
+                                          const SizedBox(height: 10)
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }else{
                               CommonFunctions().showToastMessage(context,
                                   "Over is finished please select next bowler.");
                             }
@@ -1221,6 +1324,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       children: List.generate(2, (index) {
                         return GestureDetector(
                           onTap: () {
+
                             index == 0 && bowlerBallsCount != 6
                                 /* ? debugPrint("Undo")
                                 : index == 1*/
@@ -1327,6 +1431,7 @@ class _ScorerScreenState extends State<ScorerScreen>
     totalRun = 1;
     scoreController.text = "";
     showModalBottomSheet<void>(
+      isDismissible:false,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       context: context,
@@ -1559,6 +1664,7 @@ class _ScorerScreenState extends State<ScorerScreen>
   void _showStrikerBottomSheet(BuildContext context, String playerId,
       String player2Id, String battingTeamId) {
     showModalBottomSheet<void>(
+      isDismissible: false,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       context: context,
@@ -1707,6 +1813,7 @@ class _ScorerScreenState extends State<ScorerScreen>
   void show5or7BottomSheet(BuildContext context, String playerId,
       String player2Id, String battingTeamId) {
     showModalBottomSheet<void>(
+      isDismissible: false,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       context: context,
@@ -1874,6 +1981,7 @@ class _ScorerScreenState extends State<ScorerScreen>
   void playerWhoOutBottomSheet(
       BuildContext context, Batsman batsman, Batsman2 batsman2, Bowler bowler) {
     showModalBottomSheet<void>(
+      isDismissible: false,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       context: context,
@@ -2113,6 +2221,7 @@ class _ScorerScreenState extends State<ScorerScreen>
       BuildContext context, Batsman batsman, Batsman2 batsman2, Bowler bowler) {
     Navigator.pop(context);
     showModalBottomSheet<void>(
+      isDismissible: false,
       backgroundColor: Colors.white,
       isScrollControlled: true,
       context: context,
@@ -2385,8 +2494,11 @@ class _ScorerScreenState extends State<ScorerScreen>
     });
   }
 
-  inningUpdateApi(String matchId) async {
-    var request = {
+  inningUpdateApi(String matchId,String winnerTeamResult) async {
+    var request =widget.inningStatus=="1"?{
+      'match_id': matchId.toString(),
+      'match_result': winnerTeamResult.toString(),
+    }: {
       'match_id': matchId.toString(),
     };
     await inningUpdate(request).then((res) async {
