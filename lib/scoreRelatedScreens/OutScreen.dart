@@ -95,7 +95,7 @@ class _OutScreenState extends State<OutScreen> {
           return GestureDetector(
             onTap: () {
               dismissalType = outList[index].type!;
-              if(dismissalType=="1"||dismissalType=="6"||dismissalType=="7"){
+              if(dismissalType=="1"||dismissalType=="7"){
                 outPlayerApi("0");
               }else{
                 Navigator.push(

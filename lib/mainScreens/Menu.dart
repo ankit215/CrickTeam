@@ -72,7 +72,7 @@ class _Menu extends State<Menu> {
                   title: 'PROFILE',
                 ),
               ),
-              ElevatedButton(
+          /*    ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
@@ -82,7 +82,7 @@ class _Menu extends State<Menu> {
                   image: "assets/bell.png",
                   title: 'NOTIFICATIONS',
                 ),
-              ),
+              ),*/
               getIntAsync(accountType)==1?ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),

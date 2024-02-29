@@ -724,8 +724,8 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
                     // AppColor.yellow.withOpacity(0.5),
-                    AppColor.green_neon.withOpacity(0.1),
-                    AppColor.green_neon.withOpacity(0.1),
+                    AppColor.yellowV2.withOpacity(0.1),
+                    AppColor.yellowV2.withOpacity(0.1),
                     // AppColor.yellowMed.withOpacity(0.5),
                   ]),
                   borderRadius: BorderRadius.circular(10),
@@ -805,6 +805,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                   ),
                                 ],
                               ),
+                              Text(
+                                completedMatchList[index].matchDate!,
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Semibold",
+                                    color: AppColor.brown2,
+                                    fontSize: 16),
+                              ),
+                              /*Expanded(
+                                child: Text(
+                                    completedMatchList[index].matchResult==completedMatchList[index].team1Id?"${completedMatchList[index].team1Name} won the match":completedMatchList[index].matchResult==completedMatchList[index].team2Id?"${completedMatchList[index].team2Name} won the match":"",
+                                  style: const TextStyle(
+                                      fontFamily: "Lato_Semibold",
+                                      color: AppColor.brown2,
+                                      fontSize: 16),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),*/
                               Stack(
                                 alignment: Alignment.centerRight,
                                 children: [
@@ -841,15 +858,27 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                           ),
                         ),
                         const SizedBox(
-                          height: 5,
+                          height: 10,
                         ),
-                        Text(
-                          completedMatchList[index].matchDate!,
-                          style: const TextStyle(
-                              fontFamily: "Lato_Semibold",
-                              color: AppColor.brown2,
-                              fontSize: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset("assets/winner.png",height: 25,width: 25,),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text(
+                                completedMatchList[index].matchResult==completedMatchList[index].team1Id?"${completedMatchList[index].team1Name} won the match":completedMatchList[index].matchResult==completedMatchList[index].team2Id?"${completedMatchList[index].team2Name} won the match":"",
+                                style: const TextStyle(
+                                    fontFamily: "Lato_Semibold",
+                                    color: AppColor.orange,
+                                    fontSize: 16),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Image.asset("assets/winner.png",height: 25,width: 25,),
+                          ],
                         ),
+
                         const SizedBox(
                           height: 10,
                         ),

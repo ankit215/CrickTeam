@@ -33,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
     MyMatches(),
-    ScoreScreen(),
+    // ScoreScreen(),
 
   ];
 
@@ -89,11 +89,11 @@ class _MainScreenState extends State<MainScreen> {
                       AssetImage("assets/trophy.png"),
                     ),
                     label: 'My Matches'),
-                BottomNavigationBarItem(
+               /* BottomNavigationBarItem(
                     icon: ImageIcon(
                       AssetImage("assets/scoreboard.png"),
                     ),
-                    label: 'Scoreboard'),
+                    label: 'Scoreboard'),*/
               ],
               currentIndex: _selectedIndex,
               selectedItemColor: AppColor.orange_light,

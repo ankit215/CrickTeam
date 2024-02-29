@@ -368,7 +368,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                                         "0" &&
                                     battingList[index].position == 0
                                 ? "Yet to bat."
-                                : "${getDissmissalType(battingList[index].dismissalType, battingList[index].fielderName!)} ${battingList[index].bowlerName}",
+                                : "${getDissmissalType(battingList[index].dismissalType, battingList[index].fielderName!=null?battingList[index].fielderName.toString():"N/A")} ${battingList[index].bowlerName}",
                         style: TextStyle(
                             fontFamily: "Lato_Regular",
                             color:
@@ -393,7 +393,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
           ),
           getScoreData!.extraruns!.isNotEmpty
               ? Container(
-                  color: Colors.orange.withOpacity(0.4),
+                  color: AppColor.orange_light.withOpacity(0.1),
                   padding: EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -426,7 +426,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                 ),
           yetToBatList.isNotEmpty
               ? Container(
-                  color: Colors.orange.withOpacity(0.4),
+                  color: AppColor.orange_light.withOpacity(0.1),
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -636,7 +636,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                                         "0" &&
                                     battingList[index].position == 0
                                 ? "Yet to bat."
-                                : "${getDissmissalType(battingList[index].dismissalType, battingList[index].fielderName!)} ${battingList[index].bowlerName}",
+                                : "${getDissmissalType(battingList[index].dismissalType,battingList[index].fielderName!=null?battingList[index].fielderName.toString():"N/A")} ${battingList[index].bowlerName}",
                         style: TextStyle(
                             fontFamily: "Lato_Regular",
                             color:
@@ -661,8 +661,8 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
           ),
           getScoreData!.extraruns!.isNotEmpty
               ? Container(
-                  color: Colors.orange.withOpacity(0.4),
-                  padding: EdgeInsets.symmetric(horizontal: 15),
+                  color: AppColor.orange_light.withOpacity(0.1),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -694,7 +694,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                 ),
           yetToBatList.isNotEmpty
               ? Container(
-                  color: Colors.orange.withOpacity(0.4),
+                  color: AppColor.orange_light.withOpacity(0.1),
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
