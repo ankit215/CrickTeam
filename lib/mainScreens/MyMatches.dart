@@ -82,6 +82,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
         preferredSize: const Size.fromHeight(120),
         child: AppBar(
           elevation: 0,
+          backgroundColor: Colors.white,
           scrolledUnderElevation: 0.0,
           leading: GestureDetector(
             onTap: () {

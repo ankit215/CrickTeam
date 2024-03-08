@@ -264,6 +264,7 @@ class CommonFunctions {
   showToastMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
+      duration:const Duration(seconds: 1) ,
       backgroundColor: AppColor.red,
       content: Text(
         message,

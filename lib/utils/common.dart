@@ -17,6 +17,17 @@ final navigatorKey = GlobalKey<NavigatorState>();
     toast('Invalid URL: $link');
   });
 }*/
+String getFirstLetters(String input) {
+  List<String> words = input.split(" ");
+  String result = "";
+
+  for (String word in words) {
+    if (word.isNotEmpty) {
+      result += word[0];
+    }
+  }
+  return result.toUpperCase(); // Convert to uppercase if needed
+}
 
 Widget emptyWidget(String message) {
   return Center(

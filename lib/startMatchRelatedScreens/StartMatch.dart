@@ -557,6 +557,7 @@ class _StartMatchState extends State<StartMatch> {
                             Time time = Time(hour: currentHour, minute: currentMinute);
                             Navigator.of(context).push(showPicker(
                               context: context,
+                              iosStylePicker: true,
                               value: time,
                               sunrise:  TimeOfDay(hour: currentHour, minute: currentMinute),
                               // optional
@@ -1637,7 +1638,7 @@ class _StartMatchState extends State<StartMatch> {
       return false;
     } else if (dateController.text.trim().toString() == '') {
       CommonFunctions()
-          .showToastMessage(getContext, "Ground Field Is Required.");
+          .showToastMessage(getContext, "Date Field Is Required.");
       return false;
     } else if (timeValue == '') {
       CommonFunctions().showToastMessage(getContext, "Time Field Is Required.");

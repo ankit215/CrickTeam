@@ -346,7 +346,28 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              Center(
+              matchList.isEmpty
+                  ? SizedBox(
+                height: 200,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/crick_layout_background.png",
+                      width: 90,
+                      height: 90,
+                    ),
+                    const Text(
+                      "No Data Found!!",
+                      style: TextStyle(
+                          fontFamily: "Ubuntu_Bold",
+                          color: AppColor.brown_0,
+                          fontSize: 16),
+                    )
+                  ],
+                ),
+              )
+                  : Center(
                 child: RichText(
                   text: const TextSpan(children: <TextSpan>[
                     TextSpan(
@@ -370,160 +391,174 @@ class _HomeScreenState extends State<HomeScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    margin:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                      width: MediaQuery.sizeOf(context).width * 0.9,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          // AppColor.yellow.withOpacity(0.5),
-                          AppColor.yellowV2.withOpacity(0.2),
-                          AppColor.yellowV2.withOpacity(0.2),
-                          // AppColor.yellowMed.withOpacity(0.5),
-                        ]),
-                        borderRadius: BorderRadius.circular(10),
+                  return GestureDetector(
+                      onTap: (){
+                        if(getIntAsync(accountType)==3){
+                          verifyScorerApi(matchList[index]);
+                        }else{
+                          setValue(bowlerRunsPerOver, [""]);
+                          Navigator.push(
+                              getContext,
+                              MaterialPageRoute(
+                                  builder: (context) =>  ScoreBoardScreen(getMatchData:matchList[index])));
+                          // builder: (context) =>  TossScreen(matchData:matchList[index])));
+                        }
+                      },
+                    child: Card(
+                      margin:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              "assets/crick_layout_background.png",
-                              fit: BoxFit.contain,
-                              height: 150,
-                              width: 150,
-                              opacity: const AlwaysStoppedAnimation(.09),
+                      child: Container(
+                        width: MediaQuery.sizeOf(context).width * 0.9,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            // AppColor.yellow.withOpacity(0.5),
+                            AppColor.yellowV2.withOpacity(0.2),
+                            AppColor.yellowV2.withOpacity(0.2),
+                            // AppColor.yellowMed.withOpacity(0.5),
+                          ]),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          children: [
+                            Center(
+                              child: Image.asset(
+                                "assets/crick_layout_background.png",
+                                fit: BoxFit.contain,
+                                height: 150,
+                                width: 150,
+                                opacity: const AlwaysStoppedAnimation(.09),
+                              ),
                             ),
-                          ),
-                          Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Center(
-                                  child: Text(
-                                    "${matchList[index].team1Name} vs ${matchList[index].team2Name}",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  )),
-                              Container(
-                                height: 1,
-                                color: AppColor.yellowV2,
-                                margin: const EdgeInsets.only(top: 4),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
+                            Column(
+                              children: [
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Center(
+                                    child: Text(
+                                      "${matchList[index].team1Name} vs ${matchList[index].team2Name}",
+                                      style: const TextStyle(
+                                          fontFamily: "Lato_Semibold",
+                                          color: AppColor.brown2,
+                                          fontSize: 16),
+                                      textAlign: TextAlign.center,
+                                    )),
+                                Container(
+                                  height: 1,
+                                  color: AppColor.yellowV2,
+                                  margin: const EdgeInsets.only(top: 4),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
 
-                              SizedBox(
-                                height: 50,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                  Stack(children: [
-                                    Center(
-                                      child: Container(
+                                SizedBox(
+                                  height: 50,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                    Stack(children: [
+                                      Center(
+                                        child: Container(
+                                          alignment: Alignment.center,
+                                          height: 47,
+                                          width:
+                                          MediaQuery.sizeOf(context).width *
+                                              0.19,
+                                          decoration:  BoxDecoration(
+                                            color:  AppColor.yellowMed.withOpacity(0.4),
+                                          ),
+                                        ),
+                                      ),
+                                      Row(
+
+                                        children: [
+                                          SizedBox(width: MediaQuery.sizeOf(context).width *
+                                              0.1,),
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 30,
+                                            child: ClipOval(
+                                                child: Image.asset(
+                                                  "assets/team_placeholder.png",
+                                                  fit: BoxFit.contain,
+                                                  height: 45,
+                                                  width: 45,
+                                                )),
+                                          ),
+                                        ],
+                                      ),
+                                    ],),
+                                    Column(children: [const Icon(
+                                      Icons.timer,
+                                      color:Colors.red,
+                                      size: 20,
+                                    ),
+
+                                      Text(
+                                        DateFormat('h:mm a').format(DateFormat.Hm().parse(matchList[index].matchTime.toString())),
+                                        style: const TextStyle(
+                                            fontFamily: "Lato_Semibold",
+                                            color: Colors.red,
+                                            fontSize: 16),
+                                      ),],),
+                                    Stack(
+                                      alignment: Alignment.centerRight,
+                                      children: [
+                                      Container(
                                         alignment: Alignment.center,
-                                        height: 47,
-                                        width:
-                                        MediaQuery.sizeOf(context).width *
-                                            0.19,
+                                        height: 45,
+                                        width: MediaQuery.sizeOf(context).width *
+                                            0.2,
                                         decoration:  BoxDecoration(
                                           color:  AppColor.yellowMed.withOpacity(0.4),
                                         ),
                                       ),
-                                    ),
-                                    Row(
 
-                                      children: [
-                                        SizedBox(width: MediaQuery.sizeOf(context).width *
-                                            0.1,),
-                                        CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 30,
-                                          child: ClipOval(
-                                              child: Image.asset(
-                                                "assets/team_placeholder.png",
-                                                fit: BoxFit.contain,
-                                                height: 45,
-                                                width: 45,
-                                              )),
-                                        ),
-                                      ],
-                                    ),
-                                  ],),
-                                  Column(children: [const Icon(
-                                    Icons.timer,
-                                    color:Colors.red,
-                                    size: 20,
-                                  ),
 
-                                    Text(
-                                      DateFormat('h:mm a').format(DateFormat.Hm().parse(matchList[index].matchTime.toString())),
-                                      style: const TextStyle(
-                                          fontFamily: "Lato_Semibold",
-                                          color: Colors.red,
-                                          fontSize: 16),
-                                    ),],),
-                                  Stack(
-                                    alignment: Alignment.centerRight,
-                                    children: [
-                                    Container(
-                                      alignment: Alignment.center,
-                                      height: 45,
-                                      width: MediaQuery.sizeOf(context).width *
-                                          0.2,
-                                      decoration:  BoxDecoration(
-                                        color:  AppColor.yellowMed.withOpacity(0.4),
+                                      Row(
+                                        children: [
+
+                                          CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 30,
+                                            child: ClipOval(
+                                                child: Image.asset(
+                                                  "assets/team_placeholder.png",
+                                                  fit: BoxFit.contain,
+                                                  height: 45,
+                                                  width: 45,
+                                                )),
+                                          ),
+                                          SizedBox(width: MediaQuery.sizeOf(context).width *
+                                              0.1,),
+                                        ],
                                       ),
-                                    ),
+                                    ],)
+                                  ],),
+                                ),
 
 
-                                    Row(
-                                      children: [
+                                const SizedBox(height: 5,),
+                                Text(
+                                  matchList[index].matchDate!,
+                                  style: const TextStyle(
+                                      fontFamily: "Lato_Semibold",
+                                      color: AppColor.brown2,
+                                      fontSize: 16),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
 
-                                        CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 30,
-                                          child: ClipOval(
-                                              child: Image.asset(
-                                                "assets/team_placeholder.png",
-                                                fit: BoxFit.contain,
-                                                height: 45,
-                                                width: 45,
-                                              )),
-                                        ),
-                                        SizedBox(width: MediaQuery.sizeOf(context).width *
-                                            0.1,),
-                                      ],
-                                    ),
-                                  ],)
-                                ],),
-                              ),
-
-
-                              const SizedBox(height: 5,),
-                              Text(
-                                matchList[index].matchDate!,
-                                style: const TextStyle(
-                                    fontFamily: "Lato_Semibold",
-                                    color: AppColor.brown2,
-                                    fontSize: 16),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-
-                            ],
-                          )
-                        ],
+                              ],
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );

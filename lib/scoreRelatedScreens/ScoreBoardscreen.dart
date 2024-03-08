@@ -1140,7 +1140,8 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("${res.message!}  401 MESSAGE");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }

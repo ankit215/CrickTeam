@@ -266,7 +266,7 @@ class _ScorerScreenState extends State<ScorerScreen>
               if (isMaidenOver) {
                 maidenOverApi(bowlingTeamId.toString(), bowlerId.toString());
               } else {
-                Future.delayed(const Duration(seconds: 1), () {
+                // Future.delayed(const Duration(seconds: 1), () {
                   Navigator.push(
                       getContext,
                       MaterialPageRoute(
@@ -284,7 +284,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                       });
                     }
                   });
-                });
+                // });
               }
             }
             totalWicket = scoreUpdate!.scores.totalWicket;

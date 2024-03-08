@@ -448,24 +448,27 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
             ),
             GestureDetector(
               onTap: () {
-                Map<String, int> map = {
-                  "player1_id": strikerId.toInt(),
-                  "player2_id": nonStrikerId.toInt(),
-                  "bowler_id": bowlerId.toInt(),
-                  "match_id": widget.matchData.id!,
-                  "team_id": battingTeamId.toInt(),
-                  "team2_id": bowlingTeamId.toInt(),
-                };
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => ScorerScreen(
-                              teamMatch:
-                                  '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',
-                              map: map,
-                              matchData: widget.matchData,
-                          inningStatus: widget.inningStatus,
-                            )));
+                if(checkValidations()){
+                  Map<String, int> map = {
+                    "player1_id": strikerId.toInt(),
+                    "player2_id": nonStrikerId.toInt(),
+                    "bowler_id": bowlerId.toInt(),
+                    "match_id": widget.matchData.id!,
+                    "team_id": battingTeamId.toInt(),
+                    "team2_id": bowlingTeamId.toInt(),
+                  };
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => ScorerScreen(
+                            teamMatch:
+                            '${widget.matchData.team1Name} vs ${widget.matchData.team2Name}',
+                            map: map,
+                            matchData: widget.matchData,
+                            inningStatus: widget.inningStatus,
+                          )));
+                }
+
               },
               child: Container(
                 width: double.infinity,
@@ -535,4 +538,23 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
       }
     });
   }
+
+  bool checkValidations() {
+    if (strikerId.isEmpty) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please select striker.");
+      return false;
+    } else if (nonStrikerId.isEmpty) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please select non-striker.");
+      return false;
+    } else if (bowlerId.isEmpty) {
+      CommonFunctions()
+          .showToastMessage(getContext, "Please select bowler.");
+      return false;
+    } else {
+      return true;
+    }
+  }
+
 }

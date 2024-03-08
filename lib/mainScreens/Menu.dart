@@ -1,3 +1,4 @@
+import 'package:crick_team/bettorScreens/MakeBettorTeam.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/TeamSelected.dart';
 import 'package:crick_team/profileRelatedScrees/MyInformationScreen.dart';
@@ -97,7 +98,22 @@ class _Menu extends State<Menu> {
                   image: "assets/cricket.png",
                   title: 'START THE MATCH',
                 ),
-              ):SizedBox(),
+              ):const SizedBox(),
+              getIntAsync(accountType)==2?ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.transparent, elevation: 0),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) =>  const MakeBettorTeam()));
+                },
+                child: const CustomListTile(
+                  image: "assets/cricket.png",
+                  title: 'CONTESTS',
+                ),
+              ):const SizedBox(),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),

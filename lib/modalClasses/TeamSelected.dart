@@ -28,7 +28,9 @@ class Players {
   int? teamId;
   int? playerId;
   String? playerType;
-
+  bool playerSelected = false;
+  bool isCaptain = false;
+  bool isViceCaptain = false;
   Players({this.teamId,this.playerId, this.playerType});
 
   Players.fromJson(Map<String, dynamic> json) {
