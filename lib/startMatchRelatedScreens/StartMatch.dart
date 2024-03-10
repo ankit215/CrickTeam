@@ -1494,6 +1494,29 @@ class _StartMatchState extends State<StartMatch> {
     };
     await createMatch(request).then((res) async {
       if (res.success == 1) {
+        debugPrint("MATCH_ID_${res.body!.id}");
+        createContestApi(res.body!.id.toString());
+      } else if (res.success != 1 && res.code == 401) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+  createContestApi(var matchId) async {
+    var request = {
+      'match_id': matchId.toString(),
+    };
+    await createContest(request).then((res) async {
+      if (res.success == 1) {
         showDialog(
           context: context,
           barrierDismissible: false,

@@ -1,4 +1,5 @@
 import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
+import 'package:crick_team/bettorScreens/ContestListScreen.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/GetMatchModel.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../bettorScreens/ContestScreen.dart';
 import '../startMatchRelatedScreens/TossScreen.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/constant.dart';
@@ -176,6 +178,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: (){
                         if(getIntAsync(accountType)==3){
                           verifyScorerApi(matchList[index]);
+                        }else if(getIntAsync(accountType)==2){
+                          Navigator.push(
+                              getContext,
+                              MaterialPageRoute(
+                                  builder: (context) =>  ContestScreen(matchData:matchList[index])));
                         }else{
                           setValue(bowlerRunsPerOver, [""]);
                           Navigator.push(

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crick_team/modalClasses/GetContestModel.dart';
 import 'package:crick_team/modalClasses/OutPlayerModel.dart';
 import 'package:crick_team/utils/data_type_extension.dart';
 import 'package:flutter/material.dart';
@@ -6,11 +7,15 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../modalClasses/AddTeamModel.dart';
+import '../modalClasses/ContestDetailModel.dart';
+import '../modalClasses/CreateMatchModel.dart';
 import '../modalClasses/GetMatchModel.dart';
 import '../modalClasses/GetPlayerSearchModel.dart';
 import '../modalClasses/GetTeamDetailModel.dart';
 import '../modalClasses/GetTeamModel.dart';
 import '../modalClasses/LoginModel.dart';
+import '../modalClasses/MatchDetailModel.dart';
+import '../modalClasses/MyContestModel.dart';
 import '../modalClasses/ScoreboardModel.dart';
 import '../modalClasses/ScorerMatchModel.dart';
 import '../modalClasses/UpdateProfileModel.dart';
@@ -215,6 +220,30 @@ Future<SimpleApiModel> createMatch(Map request) async {
   hideLoader();
   return createPlayer;
 }
+Future<SimpleApiModel> createContestTeam(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('create_contest_team',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+Future<CreateMatchModel> createContest(Map request) async {
+  showLoader();
+  var createPlayer = CreateMatchModel.fromJson(await (handleResponse(
+      await buildHttpResponse('create_contest',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
+Future<SimpleApiModel> replicateContest(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('replicate_contest',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
 
 Future<SimpleApiModel> tossResult(Map request) async {
   showLoader();
@@ -245,6 +274,27 @@ Future<GetMatchModel> getMatchList() async {
   showLoader();
   return GetMatchModel.fromJson(await (handleResponse(
       await buildHttpResponse("match_list", method: HttpMethod.get))));
+}
+Future<GetContestModel> getContestList(var matchId) async {
+  showLoader();
+  return GetContestModel.fromJson(await (handleResponse(
+      await buildHttpResponse("contest_list/$matchId", method: HttpMethod.get))));
+}
+Future<MyContestModel> getMyContestList(var matchId) async {
+  showLoader();
+  return MyContestModel.fromJson(await (handleResponse(
+      await buildHttpResponse("user_contest?match_id=$matchId&user_id=${getStringAsync(userId)}", method: HttpMethod.get))));
+}
+Future<MatchDetailModel> getMatchDetail(var matchId) async {
+  showLoader();
+  return MatchDetailModel.fromJson(await (handleResponse(
+      await buildHttpResponse("match_detail/$matchId", method: HttpMethod.get))));
+}
+
+Future<ContestDetailModel> getContestDetail(var contestId) async {
+  showLoader();
+  return ContestDetailModel.fromJson(await (handleResponse(
+      await buildHttpResponse("contest_detail/$contestId", method: HttpMethod.get))));
 }
 
 Future<GetPlayerSearchModel> getPlayerSearch(String mobileNo) async {

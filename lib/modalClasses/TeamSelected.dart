@@ -17,8 +17,8 @@ class TeamSelected {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.players != null) {
-      data['players'] = this.players!.map((v) => v.toJson()).toList();
+    if (players != null) {
+      data['players'] = players!.map((v) => v.toJson()).toList();
     }
     return data;
   }
@@ -29,8 +29,8 @@ class Players {
   int? playerId;
   String? playerType;
   bool playerSelected = false;
-  bool isCaptain = false;
-  bool isViceCaptain = false;
+  int isCaptain = 0;
+  int isViceCaptain = 0;
   Players({this.teamId,this.playerId, this.playerType});
 
   Players.fromJson(Map<String, dynamic> json) {
@@ -41,9 +41,36 @@ class Players {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['team_id'] = this.teamId;
-    data['player_id'] = this.playerId;
-    data['player_type'] = this.playerType;
+    data['team_id'] = teamId;
+    data['player_id'] = playerId;
+    data['player_type'] = playerType;
     return data;
   }
 }
+/*class PlayersBettor {
+  int? teamId;
+  int? playerId;
+  int? isCaptain;
+  int? isViceCaptain;
+  String? playerType;
+  bool playerSelected = false;
+  PlayersBettor({this.teamId,this.playerId, this.playerType, this.isCaptain, this.isViceCaptain});
+
+  PlayersBettor.fromJson(Map<String, dynamic> json) {
+    teamId = json['team_id'];
+    playerId = json['player_id'];
+    playerType = json['player_type'];
+    isCaptain = json['is_captain'];
+    isViceCaptain = json['is_vice_caption'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['team_id'] = teamId;
+    data['player_id'] = playerId;
+    data['player_type'] = playerType;
+    data['is_captain'] = isCaptain;
+    data['is_vice_caption'] = isViceCaptain;
+    return data;
+  }
+}*/

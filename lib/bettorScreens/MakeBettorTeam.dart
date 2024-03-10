@@ -3,13 +3,17 @@ import 'dart:convert';
 import 'package:crick_team/bettorScreens/SelectCaptainAndVice.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
+import 'package:crick_team/modalClasses/GetContestModel.dart';
 import 'package:crick_team/modalClasses/GetMatchModel.dart';
+import 'package:crick_team/modalClasses/MatchDetailModel.dart';
 import 'package:crick_team/modalClasses/TeamSelected.dart';
 import 'package:crick_team/utils/CommonFunctions.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../apiRelatedFiles/rest_apis.dart';
+import '../modalClasses/MyContestModel.dart';
 import '../modalClasses/ScorerMatchModel.dart';
 import '../scoreRelatedScreens/ScoreBoardscreen.dart';
 import '../startMatchRelatedScreens/StartInningsScreen.dart';
@@ -19,7 +23,11 @@ import '../utils/constant.dart';
 import '../utils/shared_pref.dart';
 
 class MakeBettorTeam extends StatefulWidget {
-  const MakeBettorTeam({super.key});
+  final MatchDetailData matchData;
+  final GetContestData contestData;
+
+  const MakeBettorTeam(
+      {super.key, required this.matchData, required this.contestData});
 
   @override
   State<MakeBettorTeam> createState() => _MakeBettorTeamState();
@@ -28,14 +36,11 @@ class MakeBettorTeam extends StatefulWidget {
 class _MakeBettorTeamState extends State<MakeBettorTeam>
     with TickerProviderStateMixin {
   late TabController tabController;
-  List<UpcomingListArr> currentMatchList = [];
-  List<UpcomingListArr> upcomingMatchList = [];
-  List<UpcomingListArr> completedMatchList = [];
-  List<Players> wicketKeeperList = [];
-  List<Players> batingPlayerList = [];
-  List<Players> allRounderList = [];
-  List<Players> bowlList = [];
-  List<Players> selectedPlayerList = [];
+  List<PlayerList> wicketKeeperList = [];
+  List<PlayerList> batingPlayerList = [];
+  List<PlayerList> allRounderList = [];
+  List<PlayerList> bowlList = [];
+  List<PlayerList> selectedPlayerList = [];
   int batCount = 0;
   int wkCount = 0;
   int arCount = 0;
@@ -62,56 +67,33 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
   }
 
   Future getMatchListApi() async {
-    await getMatchList().then((res) async {
-      hideLoader();
-      if (res.success == 1) {
-        setState(() {
-          currentMatchList = [];
-          upcomingMatchList = [];
-          completedMatchList = [];
-          currentMatchList.addAll(res.body!.currentListArr!);
-          upcomingMatchList.addAll(res.body!.upcomingListArr!);
-          completedMatchList.addAll(res.body!.completedListArr!);
-          allRounderList = [];
-          batingPlayerList = [];
-          bowlList = [];
-          wicketKeeperList = [];
-          // Parse JSON data
-          List<dynamic> parsedJson =
-              jsonDecode(res.body!.upcomingListArr![0].playerList.toString());
-          // Create a list to hold player objects
-          List<Players> players = [];
-          // Add player objects to the list
-          for (var json in parsedJson) {
-            players.add(Players.fromJson(json));
-          }
-          for (int i = 0; i < players.length; i++) {
-            if (players[i].playerType == "ALD") {
-              allRounderList.add(players[i]);
-            } else if (players[i].playerType == "BAT") {
-              batingPlayerList.add(players[i]);
-            } else if (players[i].playerType == "BOW") {
-              bowlList.add(players[i]);
-            } else if (players[i].playerType == "WK") {
-              wicketKeeperList.add(players[i]);
-            }
-          }
-
-          debugPrint("LENGTH__${wicketKeeperList.length}");
-        });
-      } else if (res.success != 1 && res.code == 401) {
-        toast(res.message);
-        Navigator.pushAndRemoveUntil(
-            getContext,
-            MaterialPageRoute(
-              builder: (getContext) => const LoginScreen(),
-            ),
-            (route) => false);
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.clear();
-      } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+    setState(() {
+      allRounderList = [];
+      batingPlayerList = [];
+      bowlList = [];
+      wicketKeeperList = [];
+      // Parse JSON data
+      List<dynamic> parsedJson =
+          jsonDecode(jsonEncode(widget.matchData.playerList));
+      // Create a list to hold player objects
+      List<PlayerList> players = [];
+      // Add player objects to the list
+      for (var json in parsedJson) {
+        players.add(PlayerList.fromJson(json));
       }
+      for (int i = 0; i < players.length; i++) {
+        if (players[i].playerType == "ALD") {
+          allRounderList.add(players[i]);
+        } else if (players[i].playerType == "BAT") {
+          batingPlayerList.add(players[i]);
+        } else if (players[i].playerType == "BOW") {
+          bowlList.add(players[i]);
+        } else if (players[i].playerType == "WK") {
+          wicketKeeperList.add(players[i]);
+        }
+      }
+
+      debugPrint("LENGTH__${wicketKeeperList.length}");
     });
   }
 
@@ -119,7 +101,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:  Size.fromHeight(MediaQuery.sizeOf(context).height*0.3),
+        preferredSize: Size.fromHeight(MediaQuery.sizeOf(context).height * 0.3),
         child: AppBar(
           elevation: 0,
           backgroundColor: AppColor.brown2,
@@ -160,11 +142,22 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
             ),*/
             GestureDetector(
               onTap: () {
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SelectCaptainAndVice(players: selectedPlayerList)));
+                if(selectedPlayerList.length<11){
+                  CommonFunctions().showToastMessage(context, "Please select 11 players.");
+                }else{
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              SelectCaptainAndVice(players: selectedPlayerList,matchData: widget.matchData,contestData: widget.contestData,))).then((value) {
+                    if (value != null && value == "create_contest") {
+                      Future.delayed(Duration.zero, () {
+                        Navigator.pop(context,"create_contest");
+                      });
+                    }
+                  });
+                }
+
               },
               child: const Center(
                 child: Text(
@@ -172,7 +165,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                   style: TextStyle(
                     fontSize: 18,
                     fontFamily: "Lato_Semibold",
-                    color: AppColor.brown2,
+                    color: AppColor.white,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -205,9 +198,8 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                 alignment: Alignment.centerLeft,
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
-                                  getFirstLetters(upcomingMatchList[0]
-                                      .team2Name
-                                      .toString()),
+                                  getFirstLetters(
+                                      widget.matchData.team1Name.toString()),
                                   style: const TextStyle(
                                       fontFamily: "Lato_Semibold",
                                       color: AppColor.white,
@@ -238,17 +230,49 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                       ),
                       SizedBox(
                         width: 120,
-                        child: Text(
-                          upcomingMatchList[0].tossDecision.toString() == "1" &&
-                                  upcomingMatchList[0]
-                                          .tossWinnerId
-                                          .toString() ==
-                                      upcomingMatchList[0].team1Id.toString()
-                              ? "${getFirstLetters(upcomingMatchList[0].team1Name!)} is winner and elected to bat."
-                              : "${getFirstLetters(upcomingMatchList[0].team2Name!)} is winner and elected to bat.",
+                        child: widget.matchData.tossWinnerId.toString() ==
+                            widget.matchData.team1Id.toString() ||
+                            widget.matchData.tossWinnerId.toString() ==
+                                widget.matchData.team2Id.toString()
+                            ? Text(
+                          widget.matchData.tossDecision.toString() ==
+                              "1" &&
+                              widget.matchData.tossWinnerId
+                                  .toString() ==
+                                  widget.matchData.team1Id.toString()
+                              ? "${getFirstLetters(widget.matchData.team1Name!.toString())} is winner and elected to bat."
+                              : widget.matchData.tossDecision
+                              .toString() ==
+                              "1" &&
+                              widget.matchData.tossWinnerId
+                                  .toString() ==
+                                  widget.matchData.team2Id
+                                      .toString()
+                              ? "${getFirstLetters(widget.matchData.team2Name!.toString())} is winner and elected to bat."
+                              : "-",
                           textAlign: TextAlign.center,
                           style: TextStyle(color: Colors.white),
-                        ),
+                        )
+                            : Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.timer,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                Text(
+                                  DateFormat('h:mm a').format(DateFormat.Hm()
+                                      .parse(widget.matchData.matchTime
+                                      .toString())),
+                                  style: const TextStyle(
+                                      fontFamily: "Lato_Semibold",
+                                      color: Colors.white,
+                                      fontSize: 16),
+                                ),
+                              ],
+                            )),
                       ),
                       Stack(
                         alignment: Alignment.centerRight,
@@ -265,7 +289,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                               margin: const EdgeInsets.only(right: 20),
                               child: Text(
                                 getFirstLetters(
-                                    upcomingMatchList[0].team1Name.toString()),
+                                    widget.matchData.team2Name.toString()),
                                 style: const TextStyle(
                                     fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
@@ -301,7 +325,10 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.white),
                 ),
-                Container(margin: EdgeInsets.symmetric(vertical: 20),width: 600, child: Center(child: progressBar())),
+                Container(
+                    margin: EdgeInsets.symmetric(vertical: 20),
+                    width: 600,
+                    child: Center(child: progressBar())),
                 TabBar(
                   controller: tabController,
                   labelColor: AppColor.yellowV2,
@@ -450,10 +477,10 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      wicketKeeperList[index].playerId == null
+                                      wicketKeeperList[index].playerName == null
                                           ? "Player"
                                           : wicketKeeperList[index]
-                                              .playerId
+                                              .playerName
                                               .toString(),
                                       style: TextStyle(
                                         fontSize: 20,
@@ -601,10 +628,10 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      batingPlayerList[index].playerId == null
+                                      batingPlayerList[index].playerName == null
                                           ? "Player"
                                           : batingPlayerList[index]
-                                              .playerId
+                                              .playerName
                                               .toString(),
                                       style: TextStyle(
                                         fontSize: 20,
@@ -745,10 +772,10 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      allRounderList[index].playerId == null
+                                      allRounderList[index].playerName == null
                                           ? "Player"
                                           : allRounderList[index]
-                                              .playerId
+                                              .playerName
                                               .toString(),
                                       style: TextStyle(
                                         fontSize: 20,
@@ -889,9 +916,9 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      bowlList[index].playerId == null
+                                      bowlList[index].playerName == null
                                           ? "Player"
-                                          : bowlList[index].playerId.toString(),
+                                          : bowlList[index].playerName.toString(),
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontFamily: "Lato_Semibold",
@@ -951,57 +978,6 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
     );
   }
 
-  verifyScorerApi(UpcomingListArr getMatchData) async {
-    var request = {
-      'match_id': getMatchData.id.toString(),
-      'scorer_id': getStringAsync(userId),
-    };
-    await verifyScorer(request).then((res) async {
-      if (res.success == 1) {
-        setState(() {
-          setValue(bowlerRunsPerOver, [""]);
-          ScorerMatchData scorerMatchData = res.body!;
-          if (scorerMatchData.tossDecision > 0) {
-            Navigator.push(
-                getContext,
-                MaterialPageRoute(
-                    builder: (context) => StartInningsScreen(
-                          matchData: getMatchData,
-                          tossWinnerId: scorerMatchData.tossWinnerId.toString(),
-                          tossWinnerElected:
-                              scorerMatchData.tossDecision.toString(),
-                          inningStatus: scorerMatchData.inningStatus.toString(),
-                        )));
-          } else {
-            Navigator.push(
-                getContext,
-                MaterialPageRoute(
-                    builder: (context) => TossScreen(
-                          matchData: getMatchData,
-                        )));
-          }
-        });
-      } else if (res.success != 1 && res.code == 401) {
-        toast(res.message);
-        Navigator.pushAndRemoveUntil(
-            getContext,
-            MaterialPageRoute(
-              builder: (getContext) => const LoginScreen(),
-            ),
-            (route) => false);
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.clear();
-      } else {
-        setValue(bowlerRunsPerOver, [""]);
-        Navigator.push(
-            getContext,
-            MaterialPageRoute(
-                builder: (context) =>
-                    ScoreBoardScreen(getMatchData: getMatchData)));
-        // builder: (context) =>  TossScreen(matchData:matchList[index])));
-      }
-    });
-  }
 
   Widget progressBar() {
     List<Widget> list = [];
@@ -1033,17 +1009,26 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                   ),
                 ),
               ),
-              i==10?Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Text((i+1).toString(),style: TextStyle(color:i==10? Colors.white:Colors.black,fontSize: 10),),
-              ):SizedBox()
+              i == 10
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Text(
+                        (i + 1).toString(),
+                        style: TextStyle(
+                            color: i == 10 ? Colors.white : Colors.black,
+                            fontSize: 10),
+                      ),
+                    )
+                  : SizedBox()
             ],
           ),
         ),
       );
       margin = margin + 25.0;
     }
-    return Stack(children: list,);
+    return Stack(
+      children: list,
+    );
   }
 
   noDataFound() {

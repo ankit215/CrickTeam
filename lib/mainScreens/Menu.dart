@@ -104,10 +104,10 @@ class _Menu extends State<Menu> {
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
                   Navigator.pop(context);
-                  Navigator.push(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) =>  const MakeBettorTeam()));
+                  // Navigator.push(
+                  //     getContext,
+                  //     MaterialPageRoute(
+                  //         builder: (context) =>  const MakeBettorTeam()));
                 },
                 child: const CustomListTile(
                   image: "assets/cricket.png",
