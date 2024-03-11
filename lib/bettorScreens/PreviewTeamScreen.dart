@@ -5,25 +5,17 @@ import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/modalClasses/MatchDetailModel.dart';
 import 'package:crick_team/utils/search_delay_function.dart';
 import 'package:crick_team/utils/AppColor.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import '../modalClasses/MyContestModel.dart';
-import '../modalClasses/TeamSelected.dart';
-import '../utils/CommonFunctions.dart';
 
 class PreviewTeamScreen extends StatefulWidget {
   final List<PlayerList> players;
-  final MatchDetailData matchData;
-  final GetContestData contestData;
   final int captainId;
   final int viceCaptainId;
 
   const PreviewTeamScreen(
       {super.key,
       required this.players,
-      required this.matchData,
-      required this.contestData,
       required this.captainId,
       required this.viceCaptainId});
 
@@ -40,6 +32,8 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
   List<PlayerList> batingPlayerList = [];
   List<PlayerList> allRounderList = [];
   List<PlayerList> bowlList = [];
+  int? captainId;
+  int? viceCaptainId;
 
   @override
   void initState() {
@@ -47,6 +41,18 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
     super.initState();
     debugPrint("Captain_${widget.captainId}");
     debugPrint("VVVCaptain_${widget.viceCaptainId}");
+    if (widget.captainId == 0) {
+      for (int i = 0; i < widget.players.length; i++) {
+        if (widget.players[i].isCaptain == 1) {
+          captainId = widget.players[i].playerId!;
+        } else if (widget.players[i].isViceCaption == 1) {
+          viceCaptainId = widget.players[i].playerId!;
+        }
+      }
+    }else{
+      captainId = widget.captainId;
+      viceCaptainId = widget.viceCaptainId;
+    }
     Future.delayed(Duration.zero, () {
       getMatchListApi();
     });
@@ -180,9 +186,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                   )),
                                 ),
                                 wicketKeeperList[index].playerId ==
-                                            widget.captainId ||
+                                            captainId ||
                                         wicketKeeperList[index].playerId ==
-                                            widget.viceCaptainId
+                                            viceCaptainId
                                     ? Container(
                                         height: 25,
                                         width: 25,
@@ -190,12 +196,13 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                             left: 30, top: 25),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Center(
                                           child: Text(
                                             wicketKeeperList[index].playerId ==
-                                                    widget.captainId
+                                                captainId
                                                 ? "C"
                                                 : "VC",
                                             style: const TextStyle(
@@ -216,18 +223,14 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3),
+                                  horizontal: 10, vertical: 3),
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      3),
+                                  borderRadius: BorderRadius.circular(3),
                                   color: AppColor.brown3),
                               child: Text(
                                 "${wicketKeeperList[index].playerName}",
                                 style: const TextStyle(
-                                    fontFamily:
-                                    "Lato_Semibold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
                                     fontSize: 12),
                                 textAlign: TextAlign.center,
@@ -239,7 +242,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                     }),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 const Text(
                   "Batter",
                   style: TextStyle(
@@ -271,9 +276,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                   )),
                                 ),
                                 batingPlayerList[index].playerId ==
-                                            widget.captainId ||
+                                    captainId ||
                                         batingPlayerList[index].playerId ==
-                                            widget.viceCaptainId
+                                            viceCaptainId
                                     ? Container(
                                         height: 25,
                                         width: 25,
@@ -281,12 +286,13 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                             left: 30, top: 25),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Center(
                                           child: Text(
                                             batingPlayerList[index].playerId ==
-                                                    widget.captainId
+                                                    captainId
                                                 ? "C"
                                                 : "VC",
                                             style: const TextStyle(
@@ -307,18 +313,14 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3),
+                                  horizontal: 10, vertical: 3),
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      3),
+                                  borderRadius: BorderRadius.circular(3),
                                   color: AppColor.brown3),
                               child: Text(
                                 "${batingPlayerList[index].playerName}",
                                 style: const TextStyle(
-                                    fontFamily:
-                                    "Lato_Semibold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
                                     fontSize: 12),
                                 textAlign: TextAlign.center,
@@ -330,7 +332,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                     }),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 const Text(
                   "All-Rounder",
                   style: TextStyle(
@@ -362,9 +366,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                   )),
                                 ),
                                 allRounderList[index].playerId ==
-                                            widget.captainId ||
+                                            captainId ||
                                         allRounderList[index].playerId ==
-                                            widget.viceCaptainId
+                                            viceCaptainId
                                     ? Container(
                                         height: 25,
                                         width: 25,
@@ -372,12 +376,13 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                             left: 30, top: 25),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Center(
                                           child: Text(
                                             allRounderList[index].playerId ==
-                                                    widget.captainId
+                                                    captainId
                                                 ? "C"
                                                 : "VC",
                                             style: const TextStyle(
@@ -398,18 +403,14 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3),
+                                  horizontal: 10, vertical: 3),
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      3),
+                                  borderRadius: BorderRadius.circular(3),
                                   color: AppColor.brown3),
                               child: Text(
                                 "${allRounderList[index].playerName}",
                                 style: const TextStyle(
-                                    fontFamily:
-                                    "Lato_Semibold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
                                     fontSize: 12),
                                 textAlign: TextAlign.center,
@@ -421,7 +422,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                     }),
                   ),
                 ),
-                SizedBox(height: 20,),
+                SizedBox(
+                  height: 20,
+                ),
                 const Text(
                   "Bowler",
                   style: TextStyle(
@@ -452,9 +455,9 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                     width: 35,
                                   )),
                                 ),
-                                bowlList[index].playerId == widget.captainId ||
+                                bowlList[index].playerId == captainId ||
                                         bowlList[index].playerId ==
-                                            widget.viceCaptainId
+                                           viceCaptainId
                                     ? Container(
                                         height: 25,
                                         width: 25,
@@ -462,12 +465,13 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                             left: 30, top: 25),
                                         decoration: BoxDecoration(
                                           color: AppColor.orange_light,
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius:
+                                              BorderRadius.circular(30),
                                         ),
                                         child: Center(
                                           child: Text(
                                             bowlList[index].playerId ==
-                                                    widget.captainId
+                                                    captainId
                                                 ? "C"
                                                 : "VC",
                                             style: const TextStyle(
@@ -488,18 +492,14 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 3),
+                                  horizontal: 10, vertical: 3),
                               decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      3),
+                                  borderRadius: BorderRadius.circular(3),
                                   color: AppColor.brown3),
                               child: Text(
                                 "${bowlList[index].playerName}",
                                 style: const TextStyle(
-                                    fontFamily:
-                                    "Lato_Semibold",
+                                    fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
                                     fontSize: 12),
                                 textAlign: TextAlign.center,
@@ -511,7 +511,10 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                     }),
                   ),
                 ),
-                const SizedBox(height: 60,)],
+                const SizedBox(
+                  height: 60,
+                )
+              ],
             ),
           ),
         ),

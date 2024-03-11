@@ -95,8 +95,6 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                       MaterialPageRoute(
                           builder: (context) => PreviewTeamScreen(
                                 players: widget.players,
-                                matchData: widget.matchData,
-                                contestData: widget.contestData,
                                 captainId: captainId,
                                 viceCaptainId: viceCaptainId,
                               )));

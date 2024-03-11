@@ -374,7 +374,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                               builder: (context) =>   MakeBettorTeam(matchData: widget.matchData,contestData:widget.contestData,))).then((value) {
                         if (value != null && value == "create_contest") {
                           Future.delayed(Duration.zero, () {
-                            getContestListApi();
+                            Navigator.pop(context,"create_contest");
                           });
                         }
                       });

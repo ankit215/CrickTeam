@@ -13,6 +13,7 @@ import '../modalClasses/MatchDetailModel.dart';
 import '../utils/AppColor.dart';
 import 'ContestDetailScreen.dart';
 import 'MakeBettorTeam.dart';
+import 'PreviewTeamScreen.dart';
 
 class ContestScreen extends StatefulWidget {
   final UpcomingListArr matchData;
@@ -29,7 +30,8 @@ class _ContestScreenState extends State<ContestScreen>
 
   List<GetContestData> contestList = [];
   List<MyContestData> myContestList = [];
-  MatchDetailData ?getMatchDetailData;
+  MatchDetailData? getMatchDetailData;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +41,7 @@ class _ContestScreenState extends State<ContestScreen>
 
     tabController = TabController(
       initialIndex: 0,
-      length: 2,
+      length: 3,
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
@@ -52,8 +54,8 @@ class _ContestScreenState extends State<ContestScreen>
         setState(() {
           contestList = [];
           contestList.addAll(res.body!);
-          for(int i =0;i<contestList.length;i++){
-            if(contestList[i].count==contestList[i].totalParticipants){
+          for (int i = 0; i < contestList.length; i++) {
+            if (contestList[i].count == contestList[i].totalParticipants) {
               replicateContestApi(contestList[i].id.toString());
             }
           }
@@ -73,6 +75,7 @@ class _ContestScreenState extends State<ContestScreen>
       }
     });
   }
+
   Future getMatchDetailApi() async {
     await getMatchDetail(widget.matchData.id.toString()).then((res) async {
       hideLoader();
@@ -94,7 +97,7 @@ class _ContestScreenState extends State<ContestScreen>
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -230,7 +233,7 @@ class _ContestScreenState extends State<ContestScreen>
                                         ? "${getFirstLetters(widget.matchData.team2Name!)} is winner and elected to bat."
                                         : "-",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               )
                             : Center(
                                 child: Row(
@@ -309,7 +312,7 @@ class _ContestScreenState extends State<ContestScreen>
                       child: Text(
                         'Contests(${contestList.length})',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontFamily: tabController.index == 0
                               ? "Lato_Semibold"
                               : "Lato_Regular",
@@ -320,7 +323,18 @@ class _ContestScreenState extends State<ContestScreen>
                       child: Text(
                         'My Contests(${myContestList.length})',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
+                          fontFamily: tabController.index == 1
+                              ? "Lato_Semibold"
+                              : "Lato_Regular",
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'My Team(${myContestList.length})',
+                        style: TextStyle(
+                          fontSize: 14,
                           fontFamily: tabController.index == 1
                               ? "Lato_Semibold"
                               : "Lato_Regular",
@@ -341,6 +355,7 @@ class _ContestScreenState extends State<ContestScreen>
           children: <Widget>[
             contestList.isEmpty ? noDataFound() : contestScreen(),
             myContestList.isEmpty ? noDataFound() : myContestScreen(),
+            myContestList.isEmpty ? noDataFound() : myTeamScreen(),
           ],
         ),
       ),
@@ -448,7 +463,7 @@ class _ContestScreenState extends State<ContestScreen>
                                     textAlign: TextAlign.center,
                                   ),
                                   Container(
-                                    padding: EdgeInsets.symmetric(
+                                    padding: const EdgeInsets.symmetric(
                                         horizontal: 15, vertical: 5),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(5),
@@ -482,7 +497,10 @@ class _ContestScreenState extends State<ContestScreen>
                                       5.0), // Optional: border radius
                                 ),
                                 child: LinearProgressIndicator(
-                                  value: (contestList[index].count! / contestList[index].totalParticipants!).clamp(0.0, 1.0),                                  backgroundColor: AppColor.grey,
+                                  value: (contestList[index].count! /
+                                          contestList[index].totalParticipants!)
+                                      .clamp(0.0, 1.0),
+                                  backgroundColor: AppColor.grey,
                                   color: AppColor
                                       .orange_light, // Make background transparent
                                 ),
@@ -540,6 +558,7 @@ class _ContestScreenState extends State<ContestScreen>
       ),
     );
   }
+
   replicateContestApi(var contestId) async {
     var request = {
       'contest_id': contestId.toString(),
@@ -553,7 +572,7 @@ class _ContestScreenState extends State<ContestScreen>
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -574,7 +593,11 @@ class _ContestScreenState extends State<ContestScreen>
               Navigator.push(
                   getContext,
                   MaterialPageRoute(
-                      builder: (context) =>   ContestDetailScreen(matchData:getMatchDetailData!,contestData: contestList[index],from: "my_contest",))).then((value) {
+                      builder: (context) => ContestDetailScreen(
+                            matchData: getMatchDetailData!,
+                            contestData: contestList[index],
+                            from: "my_contest",
+                          ))).then((value) {
                 if (value != null && value == "create_contest") {
                   Future.delayed(Duration.zero, () {
                     getContestListApi();
@@ -715,6 +738,213 @@ class _ContestScreenState extends State<ContestScreen>
     );
   }
 
+  myTeamScreen() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: ListView.builder(
+        itemCount: myContestList.length,
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  getContext,
+                  MaterialPageRoute(
+                      builder: (context) => PreviewTeamScreen(
+                        players: myContestList[index].playerList!,
+                        captainId: 0,
+                        viceCaptainId: 0,
+                      )));
+            },
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+              elevation: 0.5,
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Container(
+                width: MediaQuery.sizeOf(context).width * 0.9,
+                decoration: BoxDecoration(
+                  image: const DecorationImage(
+                    image: AssetImage('assets/team_bg.png'),
+                    fit: BoxFit.fill,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Center(
+                            child: Text(
+                              "Team ${index + 1}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Bold",
+                                  color: AppColor.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 18),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.white,
+                                          child: ClipOval(
+                                              child: Image.asset(
+                                            "assets/player.png",
+                                            fit: BoxFit.contain,
+                                            height: 35,
+                                            width: 35,
+                                          )),
+                                        ),
+                                        Container(
+                                          height: 25,
+                                          width: 25,
+                                          margin: const EdgeInsets.only(
+                                              left: 30, top: 25),
+                                          decoration: BoxDecoration(
+                                            color: AppColor.orange_light,
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "C",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontFamily: "Lato_Bold",
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.white,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 3),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(3),
+                                          color: AppColor.brown3),
+                                      child: Text(
+                                        "${getCaptain(myContestList[index].playerList)}",
+                                        style: const TextStyle(
+                                            fontFamily: "Lato_Semibold",
+                                            color: AppColor.white,
+                                            fontSize: 12),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  children: [
+                                    Stack(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 25,
+                                          backgroundColor: Colors.white,
+                                          child: ClipOval(
+                                              child: Image.asset(
+                                            "assets/player.png",
+                                            fit: BoxFit.contain,
+                                            height: 35,
+                                            width: 35,
+                                          )),
+                                        ),
+                                        Container(
+                                          height: 25,
+                                          width: 25,
+                                          margin: const EdgeInsets.only(
+                                              left: 30, top: 25),
+                                          decoration: BoxDecoration(
+                                            color: AppColor.orange_light,
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "VC",
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                fontFamily: "Lato_Bold",
+                                                fontWeight: FontWeight.w900,
+                                                color: Colors.white,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 3),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                          BorderRadius.circular(3),
+                                          color: AppColor.brown3),
+                                      child: Text(
+                                        "${getViceCaptain(myContestList[index].playerList)}",
+                                        style: const TextStyle(
+                                            fontFamily: "Lato_Semibold",
+                                            color: AppColor.white,
+                                            fontSize: 12),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   noDataFound() {
     return SizedBox(
       height: 200,
@@ -737,6 +967,24 @@ class _ContestScreenState extends State<ContestScreen>
       ),
     );
   }
+
+  getViceCaptain(List<PlayerList>? playerList) {
+    for (int i = 0; i < playerList!.length; i++) {
+      if (playerList[i].isViceCaption == 1) {
+        return playerList[i].playerName.toString();
+      }
+    }
+    return "";
+  }
+}
+
+String getCaptain(List<PlayerList>? playerList) {
+  for (int i = 0; i < playerList!.length; i++) {
+    if (playerList[i].isCaptain == 1) {
+      return playerList[i].playerName.toString();
+    }
+  }
+  return "";
 }
 
 class MyParallelogram extends CustomPainter {
