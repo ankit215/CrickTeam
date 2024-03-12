@@ -24,12 +24,13 @@ class SelectCaptainAndVice extends StatefulWidget {
   final List<PlayerList> players;
   final MatchDetailData matchData;
   final GetContestData contestData;
+  final String? from;
 
   const SelectCaptainAndVice(
       {super.key,
       required this.players,
       required this.matchData,
-      required this.contestData});
+      required this.contestData, this.from});
 
   @override
   State<SelectCaptainAndVice> createState() => _AddTeamsState();
@@ -47,10 +48,21 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    for (int i = 0; i < widget.players.length; i++) {
-      widget.players[i].isCaptain = 0;
-      widget.players[i].isViceCaption = 0;
+    if(widget.from=="team_list"){
+      for (int i = 0; i < widget.players.length; i++) {
+        if (widget.players[i].isCaptain == 1) {
+          captainId = widget.players[i].playerId!;
+        } else if (widget.players[i].isViceCaption == 1) {
+          viceCaptainId = widget.players[i].playerId!;
+        }
+      }
+    }else{
+      for (int i = 0; i < widget.players.length; i++) {
+        widget.players[i].isCaptain = 0;
+        widget.players[i].isViceCaption = 0;
+      }
     }
+
   }
 
   @override
@@ -291,7 +303,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                               Row(
                                                 children: [
                                                   Icon(
-                                                    Icons.call,
+                                                    Icons.arrow_forward,
                                                     color: widget.players[index]
                                                             .playerSelected
                                                         ? AppColor.brown2
@@ -302,7 +314,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                     width: 5,
                                                   ),
                                                   Text(
-                                                    widget.players[index]
+                                                      widget.players[index]
+                                                          .playerType
+                                                          .toString()=="ALD"?"AR":widget.players[index]
                                                         .playerType
                                                         .toString(),
                                                     style: TextStyle(

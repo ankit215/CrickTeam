@@ -4,6 +4,8 @@ import 'package:crick_team/mainScreens/ScoreScreen.dart';
 import 'package:crick_team/utils/AppColor.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/constant.dart';
+import '../utils/shared_pref.dart';
 import 'Menu.dart';
 
 
@@ -78,17 +80,17 @@ class _MainScreenState extends State<MainScreen> {
       body:  _widgetOptions[_selectedIndex],
       bottomNavigationBar:  BottomNavigationBar(
         elevation: 10,
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
+              items:  <BottomNavigationBarItem>[
+                const BottomNavigationBarItem(
                     icon: ImageIcon(
                       AssetImage("assets/home.png"),
                     ),
                     label: 'Home'),
                 BottomNavigationBarItem(
-                    icon: ImageIcon(
+                    icon: const ImageIcon(
                       AssetImage("assets/trophy.png"),
                     ),
-                    label: 'My Matches'),
+                    label:getIntAsync(accountType)==2?'Scoreboard': 'My Matches'),
                /* BottomNavigationBarItem(
                     icon: ImageIcon(
                       AssetImage("assets/scoreboard.png"),

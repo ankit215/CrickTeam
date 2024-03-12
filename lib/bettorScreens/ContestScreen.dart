@@ -12,7 +12,6 @@ import '../modalClasses/GetContestModel.dart';
 import '../modalClasses/MatchDetailModel.dart';
 import '../utils/AppColor.dart';
 import 'ContestDetailScreen.dart';
-import 'MakeBettorTeam.dart';
 import 'PreviewTeamScreen.dart';
 
 class ContestScreen extends StatefulWidget {
@@ -87,7 +86,6 @@ class _ContestScreenState extends State<ContestScreen>
           });
           Future.delayed(Duration.zero, () {
             getMyContestListApi();
-            ();
           });
         });
       } else if (res.success != 1 && res.code == 401) {
@@ -805,22 +803,33 @@ class _ContestScreenState extends State<ContestScreen>
                                   children: [
                                     Stack(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: Colors.white,
-                                          child: ClipOval(
-                                              child: Image.asset(
-                                            "assets/player.png",
-                                            fit: BoxFit.contain,
-                                            height: 35,
-                                            width: 35,
-                                          )),
+                                        Card(
+                                          color: Colors.white,
+                                          elevation: 10,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(30.0),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(3.0),
+                                            child: CircleAvatar(
+                                              radius: 25,
+                                              backgroundColor: AppColor.greenDark,
+                                              child: ClipOval(
+                                                  child: Image.asset(
+                                                    "assets/player.png",
+                                                    fit: BoxFit.contain,
+                                                    height: 35,
+                                                    width: 35,
+                                                  )),
+                                            ),
+                                          ),
                                         ),
                                         Container(
                                           height: 25,
                                           width: 25,
                                           margin: const EdgeInsets.only(
-                                              left: 30, top: 25),
+                                              left: 35, top: 35),
                                           decoration: BoxDecoration(
                                             color: AppColor.orange_light,
                                             borderRadius:
@@ -869,22 +878,33 @@ class _ContestScreenState extends State<ContestScreen>
                                   children: [
                                     Stack(
                                       children: [
-                                        CircleAvatar(
-                                          radius: 25,
-                                          backgroundColor: Colors.white,
-                                          child: ClipOval(
-                                              child: Image.asset(
-                                            "assets/player.png",
-                                            fit: BoxFit.contain,
-                                            height: 35,
-                                            width: 35,
-                                          )),
+                                        Card(
+                                          color: Colors.white,
+                                          elevation: 10,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                            BorderRadius.circular(30.0),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(3.0),
+                                            child: CircleAvatar(
+                                              radius: 25,
+                                              backgroundColor: AppColor.greenDark,
+                                              child: ClipOval(
+                                                  child: Image.asset(
+                                                    "assets/player.png",
+                                                    fit: BoxFit.contain,
+                                                    height: 35,
+                                                    width: 35,
+                                                  )),
+                                            ),
+                                          ),
                                         ),
                                         Container(
                                           height: 25,
                                           width: 25,
                                           margin: const EdgeInsets.only(
-                                              left: 30, top: 25),
+                                              left: 35, top: 35),
                                           decoration: BoxDecoration(
                                             color: AppColor.orange_light,
                                             borderRadius:

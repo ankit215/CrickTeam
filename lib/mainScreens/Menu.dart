@@ -99,7 +99,7 @@ class _Menu extends State<Menu> {
                   title: 'START THE MATCH',
                 ),
               ):const SizedBox(),
-              getIntAsync(accountType)==2?ElevatedButton(
+              /*getIntAsync(accountType)==2?ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
@@ -113,7 +113,7 @@ class _Menu extends State<Menu> {
                   image: "assets/cricket.png",
                   title: 'CONTESTS',
                 ),
-              ):const SizedBox(),
+              ):const SizedBox(),*/
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),

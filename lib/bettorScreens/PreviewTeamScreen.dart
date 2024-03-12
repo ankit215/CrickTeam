@@ -174,16 +174,27 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                           children: [
                             Stack(
                               children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 35,
-                                    width: 35,
-                                  )),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(30.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: AppColor.greenDark,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/player.png",
+                                        fit: BoxFit.contain,
+                                        height: 35,
+                                        width: 35,
+                                      )),
+                                    ),
+                                  ),
                                 ),
                                 wicketKeeperList[index].playerId ==
                                             captainId ||
@@ -193,7 +204,7 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                         height: 25,
                                         width: 25,
                                         margin: const EdgeInsets.only(
-                                            left: 30, top: 25),
+                                            left: 30, top: 35),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
                                           borderRadius:
@@ -264,16 +275,27 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                           children: [
                             Stack(
                               children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 35,
-                                    width: 35,
-                                  )),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(30.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: AppColor.greenDark,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/player.png",
+                                        fit: BoxFit.contain,
+                                        height: 35,
+                                        width: 35,
+                                      )),
+                                    ),
+                                  ),
                                 ),
                                 batingPlayerList[index].playerId ==
                                     captainId ||
@@ -283,7 +305,7 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                         height: 25,
                                         width: 25,
                                         margin: const EdgeInsets.only(
-                                            left: 30, top: 25),
+                                            left: 30, top: 35),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
                                           borderRadius:
@@ -354,16 +376,27 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                           children: [
                             Stack(
                               children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 35,
-                                    width: 35,
-                                  )),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(30.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: AppColor.greenDark,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/player.png",
+                                        fit: BoxFit.contain,
+                                        height: 35,
+                                        width: 35,
+                                      )),
+                                    ),
+                                  ),
                                 ),
                                 allRounderList[index].playerId ==
                                             captainId ||
@@ -373,7 +406,7 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                         height: 25,
                                         width: 25,
                                         margin: const EdgeInsets.only(
-                                            left: 30, top: 25),
+                                            left: 30, top: 35),
                                         decoration: BoxDecoration(
                                           color: AppColor.red,
                                           borderRadius:
@@ -444,16 +477,27 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                           children: [
                             Stack(
                               children: [
-                                CircleAvatar(
-                                  radius: 25,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 35,
-                                    width: 35,
-                                  )),
+                                Card(
+                                  color: Colors.white,
+                                  elevation: 10,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                    BorderRadius.circular(30.0),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(3.0),
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundColor: AppColor.greenDark,
+                                      child: ClipOval(
+                                          child: Image.asset(
+                                        "assets/player.png",
+                                        fit: BoxFit.contain,
+                                        height: 35,
+                                        width: 35,
+                                      )),
+                                    ),
+                                  ),
                                 ),
                                 bowlList[index].playerId == captainId ||
                                         bowlList[index].playerId ==
@@ -462,7 +506,7 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
                                         height: 25,
                                         width: 25,
                                         margin: const EdgeInsets.only(
-                                            left: 30, top: 25),
+                                            left: 30, top: 35),
                                         decoration: BoxDecoration(
                                           color: AppColor.orange_light,
                                           borderRadius:

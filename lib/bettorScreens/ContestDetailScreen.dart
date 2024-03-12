@@ -1,3 +1,4 @@
+import 'package:crick_team/bettorScreens/TeamListScreen.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/ContestDetailModel.dart';
@@ -371,7 +372,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                       Navigator.push(
                           getContext,
                           MaterialPageRoute(
-                              builder: (context) =>   MakeBettorTeam(matchData: widget.matchData,contestData:widget.contestData,))).then((value) {
+                              builder: (context) =>   myContestList.isNotEmpty?TeamListScreen(matchData: widget.matchData,contestData:widget.contestData,):MakeBettorTeam(matchData: widget.matchData,contestData:widget.contestData,))).then((value) {
                         if (value != null && value == "create_contest") {
                           Future.delayed(Duration.zero, () {
                             Navigator.pop(context,"create_contest");

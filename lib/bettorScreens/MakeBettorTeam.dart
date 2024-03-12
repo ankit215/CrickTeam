@@ -101,7 +101,8 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(MediaQuery.sizeOf(context).height * 0.3),
+        preferredSize:
+            Size.fromHeight(MediaQuery.sizeOf(context).height * 0.36),
         child: AppBar(
           elevation: 0,
           backgroundColor: AppColor.brown2,
@@ -131,48 +132,9 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
               textAlign: TextAlign.center,
             ),
           ),
-          actions: <Widget>[
-            /* Image.asset(
-              "assets/wallet.png",
-              height: 25,
-              width: 25,
-            ),
-            const SizedBox(
-              width: 5,
-            ),*/
-            GestureDetector(
-              onTap: () {
-                if(selectedPlayerList.length<11){
-                  CommonFunctions().showToastMessage(context, "Please select 11 players.");
-                }else{
-                  Navigator.push(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              SelectCaptainAndVice(players: selectedPlayerList,matchData: widget.matchData,contestData: widget.contestData,))).then((value) {
-                    if (value != null && value == "create_contest") {
-                      Future.delayed(Duration.zero, () {
-                        Navigator.pop(context,"create_contest");
-                      });
-                    }
-                  });
-                }
-
-              },
-              child: const Center(
-                child: Text(
-                  "Proceed",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Lato_Semibold",
-                    color: AppColor.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 15,
+          actions: const <Widget>[
+            SizedBox(
+              width: 30,
             )
           ],
           bottom: PreferredSize(
@@ -231,48 +193,48 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                       SizedBox(
                         width: 120,
                         child: widget.matchData.tossWinnerId.toString() ==
-                            widget.matchData.team1Id.toString() ||
-                            widget.matchData.tossWinnerId.toString() ==
-                                widget.matchData.team2Id.toString()
+                                    widget.matchData.team1Id.toString() ||
+                                widget.matchData.tossWinnerId.toString() ==
+                                    widget.matchData.team2Id.toString()
                             ? Text(
-                          widget.matchData.tossDecision.toString() ==
-                              "1" &&
-                              widget.matchData.tossWinnerId
-                                  .toString() ==
-                                  widget.matchData.team1Id.toString()
-                              ? "${getFirstLetters(widget.matchData.team1Name!.toString())} is winner and elected to bat."
-                              : widget.matchData.tossDecision
-                              .toString() ==
-                              "1" &&
-                              widget.matchData.tossWinnerId
-                                  .toString() ==
-                                  widget.matchData.team2Id
-                                      .toString()
-                              ? "${getFirstLetters(widget.matchData.team2Name!.toString())} is winner and elected to bat."
-                              : "-",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white),
-                        )
+                                widget.matchData.tossDecision.toString() ==
+                                            "1" &&
+                                        widget.matchData.tossWinnerId
+                                                .toString() ==
+                                            widget.matchData.team1Id.toString()
+                                    ? "${getFirstLetters(widget.matchData.team1Name!.toString())} is winner and elected to bat."
+                                    : widget.matchData.tossDecision
+                                                    .toString() ==
+                                                "1" &&
+                                            widget.matchData.tossWinnerId
+                                                    .toString() ==
+                                                widget.matchData.team2Id
+                                                    .toString()
+                                        ? "${getFirstLetters(widget.matchData.team2Name!.toString())} is winner and elected to bat."
+                                        : "-",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: Colors.white),
+                              )
                             : Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(
-                                  Icons.timer,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                                Text(
-                                  DateFormat('h:mm a').format(DateFormat.Hm()
-                                      .parse(widget.matchData.matchTime
-                                      .toString())),
-                                  style: const TextStyle(
-                                      fontFamily: "Lato_Semibold",
-                                      color: Colors.white,
-                                      fontSize: 16),
-                                ),
-                              ],
-                            )),
+                                child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.timer,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  Text(
+                                    DateFormat('h:mm a').format(DateFormat.Hm()
+                                        .parse(widget.matchData.matchTime
+                                            .toString())),
+                                    style: const TextStyle(
+                                        fontFamily: "Lato_Semibold",
+                                        color: Colors.white,
+                                        fontSize: 16),
+                                  ),
+                                ],
+                              )),
                       ),
                       Stack(
                         alignment: Alignment.centerRight,
@@ -329,6 +291,50 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                     margin: EdgeInsets.symmetric(vertical: 20),
                     width: 600,
                     child: Center(child: progressBar())),
+                GestureDetector(
+                  onTap: () {
+                    if (selectedPlayerList.length < 11) {
+                      CommonFunctions().showToastMessage(
+                          context, "Please select 11 players.");
+                    } else {
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => SelectCaptainAndVice(
+                                    players: selectedPlayerList,
+                                    matchData: widget.matchData,
+                                    contestData: widget.contestData,
+                                  ))).then((value) {
+                        if (value != null && value == "create_contest") {
+                          Future.delayed(Duration.zero, () {
+                            Navigator.pop(context, "create_contest");
+                          });
+                        }
+                      });
+                    }
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 60),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(6),
+                        color: selectedPlayerList.length < 11
+                            ? AppColor.grey
+                            : Colors.green.shade700,
+                        border: Border.all(color: AppColor.brown2)),
+                    padding: const EdgeInsets.all(8.0),
+                    child: const Center(
+                      child: Text(
+                        "Proceed",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontFamily: "Lato_Bold",
+                          color: AppColor.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ),
                 TabBar(
                   controller: tabController,
                   labelColor: AppColor.yellowV2,
@@ -495,7 +501,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     Row(
                                       children: [
                                         Icon(
-                                          Icons.call,
+                                          Icons.arrow_forward,
                                           color: wicketKeeperList[index]
                                                   .playerSelected
                                               ? Colors.white
@@ -554,30 +560,35 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (batingPlayerList[index].playerSelected ||
-                  selectedPlayerList.length < 11) {
-                setState(() {
-                  batingPlayerList[index].playerSelected =
-                      batingPlayerList[index].playerSelected ? false : true;
-                  batCount = batingPlayerList[index].playerSelected
-                      ? batCount + 1
-                      : batCount - 1;
-                  if (batingPlayerList[index].playerSelected) {
-                    selectedPlayerList.add(batingPlayerList[index]);
-                  } else {
-                    selectedPlayerList.remove(batingPlayerList[index]);
-                  }
-                  /* for (int i = 0; i < batingPlayerList.length; i++) {
+              if (batingPlayerList[index].playerSelected || batCount < 6) {
+                if (batingPlayerList[index].playerSelected ||
+                    selectedPlayerList.length < 11) {
+                  setState(() {
+                    batingPlayerList[index].playerSelected =
+                        batingPlayerList[index].playerSelected ? false : true;
+                    batCount = batingPlayerList[index].playerSelected
+                        ? batCount + 1
+                        : batCount - 1;
+                    if (batingPlayerList[index].playerSelected) {
+                      selectedPlayerList.add(batingPlayerList[index]);
+                    } else {
+                      selectedPlayerList.remove(batingPlayerList[index]);
+                    }
+                    /* for (int i = 0; i < batingPlayerList.length; i++) {
                     if (batingPlayerList[i].playerSelected) {
                       batCount = i;
                     } else {
                       batCount = i;
                     }
                   }*/
-                });
+                  });
+                } else {
+                  CommonFunctions().showToastMessage(
+                      getContext, "Already 11 players selected.");
+                }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "Already 11 players selected.");
+                    getContext, "You can select only 6 batsman.");
               }
             },
             child: Card(
@@ -646,7 +657,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     Row(
                                       children: [
                                         Icon(
-                                          Icons.call,
+                                          Icons.arrow_forward,
                                           color: batingPlayerList[index]
                                                   .playerSelected
                                               ? Colors.white
@@ -705,23 +716,28 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (allRounderList[index].playerSelected ||
-                  selectedPlayerList.length < 11) {
-                setState(() {
-                  allRounderList[index].playerSelected =
-                      allRounderList[index].playerSelected ? false : true;
-                  arCount = allRounderList[index].playerSelected
-                      ? arCount + 1
-                      : arCount - 1;
-                  if (allRounderList[index].playerSelected) {
-                    selectedPlayerList.add(allRounderList[index]);
-                  } else {
-                    selectedPlayerList.remove(allRounderList[index]);
-                  }
-                });
+              if (allRounderList[index].playerSelected || arCount < 6) {
+                if (allRounderList[index].playerSelected ||
+                    selectedPlayerList.length < 11) {
+                  setState(() {
+                    allRounderList[index].playerSelected =
+                        allRounderList[index].playerSelected ? false : true;
+                    arCount = allRounderList[index].playerSelected
+                        ? arCount + 1
+                        : arCount - 1;
+                    if (allRounderList[index].playerSelected) {
+                      selectedPlayerList.add(allRounderList[index]);
+                    } else {
+                      selectedPlayerList.remove(allRounderList[index]);
+                    }
+                  });
+                } else {
+                  CommonFunctions().showToastMessage(
+                      getContext, "Already 11 players selected.");
+                }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "Already 11 players selected.");
+                    getContext, "You can select only 6 all rounders.");
               }
             },
             child: Card(
@@ -790,7 +806,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     Row(
                                       children: [
                                         Icon(
-                                          Icons.call,
+                                          Icons.arrow_forward,
                                           color: allRounderList[index]
                                                   .playerSelected
                                               ? Colors.white
@@ -801,9 +817,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                           width: 5,
                                         ),
                                         Text(
-                                          allRounderList[index]
-                                              .playerType
-                                              .toString(),
+                                          "AR",
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontFamily: "Lato_Semibold",
@@ -849,23 +863,28 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (bowlList[index].playerSelected ||
-                  selectedPlayerList.length < 11) {
-                setState(() {
-                  bowlList[index].playerSelected =
-                      bowlList[index].playerSelected ? false : true;
-                  bowlCount = bowlList[index].playerSelected
-                      ? bowlCount + 1
-                      : bowlCount - 1;
-                  if (bowlList[index].playerSelected) {
-                    selectedPlayerList.add(bowlList[index]);
-                  } else {
-                    selectedPlayerList.remove(bowlList[index]);
-                  }
-                });
+              if (allRounderList[index].playerSelected || arCount < 6) {
+                if (bowlList[index].playerSelected ||
+                    selectedPlayerList.length < 11) {
+                  setState(() {
+                    bowlList[index].playerSelected =
+                        bowlList[index].playerSelected ? false : true;
+                    bowlCount = bowlList[index].playerSelected
+                        ? bowlCount + 1
+                        : bowlCount - 1;
+                    if (bowlList[index].playerSelected) {
+                      selectedPlayerList.add(bowlList[index]);
+                    } else {
+                      selectedPlayerList.remove(bowlList[index]);
+                    }
+                  });
+                } else {
+                  CommonFunctions().showToastMessage(
+                      getContext, "Already 11 players selected.");
+                }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "Already 11 players selected.");
+                    getContext, "You can select only 6 bowlers.");
               }
             },
             child: Card(
@@ -918,7 +937,9 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     Text(
                                       bowlList[index].playerName == null
                                           ? "Player"
-                                          : bowlList[index].playerName.toString(),
+                                          : bowlList[index]
+                                              .playerName
+                                              .toString(),
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontFamily: "Lato_Semibold",
@@ -931,7 +952,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     Row(
                                       children: [
                                         Icon(
-                                          Icons.call,
+                                          Icons.arrow_forward,
                                           color: bowlList[index].playerSelected
                                               ? Colors.white
                                               : AppColor.medGrey,
@@ -977,7 +998,6 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
       ),
     );
   }
-
 
   Widget progressBar() {
     List<Widget> list = [];
