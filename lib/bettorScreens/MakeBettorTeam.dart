@@ -176,15 +176,25 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                 width: MediaQuery.sizeOf(context).width * 0.15,
                               ),
                               CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 30,
-                                child: ClipOval(
-                                    child: Image.asset(
-                                  "assets/team_placeholder.png",
-                                  fit: BoxFit.cover,
-                                  height: 45,
-                                  width: 45,
-                                )),
+                                backgroundColor:
+                                Colors.white,
+                                radius: 40,
+                                child:ClipOval(
+                                    child:widget.matchData.team1Photo !=null?
+                                    Image.network(
+                                      mediaUrl + widget.matchData
+                                          .team1Photo.toString(),
+                                      height: 45,
+                                      width: 45,
+                                      fit: BoxFit.cover,
+                                    )
+                                        :
+                                    Image.asset(
+                                      "assets/team_placeholder.png",
+                                      fit: BoxFit.contain,
+                                      height: 45,
+                                      width: 45,
+                                    )),
                               ),
                             ],
                           ),
@@ -262,15 +272,25 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor: Colors.white,
-                                radius: 30,
-                                child: ClipOval(
-                                    child: Image.asset(
-                                  "assets/team_placeholder.png",
-                                  fit: BoxFit.cover,
-                                  height: 45,
-                                  width: 45,
-                                )),
+                                backgroundColor:
+                                Colors.white,
+                                radius: 40,
+                                child:ClipOval(
+                                    child:widget.matchData.team2Photo !=null?
+                                    Image.network(
+                                      mediaUrl + widget.matchData
+                                          .team2Photo.toString(),
+                                      height: 45,
+                                      width: 45,
+                                      fit: BoxFit.cover,
+                                    )
+                                        :
+                                    Image.asset(
+                                      "assets/team_placeholder.png",
+                                      fit: BoxFit.contain,
+                                      height: 45,
+                                      width: 45,
+                                    )),
                               ),
                               SizedBox(
                                 width: MediaQuery.sizeOf(context).width * 0.15,
@@ -339,6 +359,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                   controller: tabController,
                   labelColor: AppColor.yellowV2,
                   unselectedLabelColor: AppColor.grey,
+                  isScrollable: true,
                   indicatorColor: AppColor.yellowV2,
                   tabs: <Widget>[
                     Tab(
@@ -513,7 +534,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                         ),
                                         Text(
                                           wicketKeeperList[index]
-                                              .playerType
+                                              .teamName
                                               .toString(),
                                           style: TextStyle(
                                             fontSize: 16,
@@ -560,7 +581,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (batingPlayerList[index].playerSelected || batCount < 6) {
+              if (batingPlayerList[index].playerSelected || batCount < 8) {
                 if (batingPlayerList[index].playerSelected ||
                     selectedPlayerList.length < 11) {
                   setState(() {
@@ -588,7 +609,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                 }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "You can select only 6 batsman.");
+                    getContext, "You can select only 8 batsman.");
               }
             },
             child: Card(
@@ -669,7 +690,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                         ),
                                         Text(
                                           batingPlayerList[index]
-                                              .playerType
+                                              .teamName
                                               .toString(),
                                           style: TextStyle(
                                             fontSize: 16,
@@ -716,7 +737,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (allRounderList[index].playerSelected || arCount < 6) {
+              if (allRounderList[index].playerSelected || arCount < 8) {
                 if (allRounderList[index].playerSelected ||
                     selectedPlayerList.length < 11) {
                   setState(() {
@@ -737,7 +758,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                 }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "You can select only 6 all rounders.");
+                    getContext, "You can select only 8 all rounders.");
               }
             },
             child: Card(
@@ -817,7 +838,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                           width: 5,
                                         ),
                                         Text(
-                                          "AR",
+                                          allRounderList[index].teamName!,
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontFamily: "Lato_Semibold",
@@ -863,7 +884,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (allRounderList[index].playerSelected || arCount < 6) {
+              if (allRounderList[index].playerSelected || arCount < 8) {
                 if (bowlList[index].playerSelected ||
                     selectedPlayerList.length < 11) {
                   setState(() {
@@ -884,7 +905,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                 }
               } else {
                 CommonFunctions().showToastMessage(
-                    getContext, "You can select only 6 bowlers.");
+                    getContext, "You can select only 8 bowlers.");
               }
             },
             child: Card(
@@ -962,7 +983,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                           width: 5,
                                         ),
                                         Text(
-                                          bowlList[index].playerType.toString(),
+                                          bowlList[index].teamName.toString(),
                                           style: TextStyle(
                                             fontSize: 16,
                                             fontFamily: "Lato_Semibold",
@@ -1065,7 +1086,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
           const Text(
             "No Data Found!!",
             style: TextStyle(
-                fontFamily: "Ubuntu_Bold",
+                fontFamily: "Lato_Bold",
                 color: AppColor.brown_0,
                 fontSize: 16),
           )

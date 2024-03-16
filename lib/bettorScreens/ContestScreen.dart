@@ -1,16 +1,21 @@
+import 'dart:convert';
+
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/modalClasses/MyContestModel.dart';
 import 'package:crick_team/utils/CommonFunctions.dart';
 import 'package:crick_team/utils/common.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../apiRelatedFiles/rest_apis.dart';
 import '../modalClasses/GetContestModel.dart';
 import '../modalClasses/MatchDetailModel.dart';
+import '../modalClasses/MyContestModel.dart';
 import '../utils/AppColor.dart';
+import '../utils/constant.dart';
 import 'ContestDetailScreen.dart';
 import 'PreviewTeamScreen.dart';
 
@@ -59,7 +64,7 @@ class _ContestScreenState extends State<ContestScreen>
             }
           }
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -88,7 +93,7 @@ class _ContestScreenState extends State<ContestScreen>
             getMyContestListApi();
           });
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -111,8 +116,9 @@ class _ContestScreenState extends State<ContestScreen>
         setState(() {
           myContestList = [];
           myContestList.addAll(res.body!);
+          getMergedTeamList(res);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -179,7 +185,7 @@ class _ContestScreenState extends State<ContestScreen>
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
                                   getFirstLetters(
-                                      widget.matchData.team2Name.toString()),
+                                      widget.matchData.team1Name.toString()),
                                   style: const TextStyle(
                                       fontFamily: "Lato_Semibold",
                                       color: AppColor.white,
@@ -195,14 +201,23 @@ class _ContestScreenState extends State<ContestScreen>
                               ),
                               CircleAvatar(
                                 backgroundColor: Colors.white,
-                                radius: 30,
+                                radius: 40,
                                 child: ClipOval(
-                                    child: Image.asset(
-                                  "assets/team_placeholder.png",
-                                  fit: BoxFit.cover,
-                                  height: 45,
-                                  width: 45,
-                                )),
+                                    child: widget.matchData.team1Photo != null
+                                        ? Image.network(
+                                            mediaUrl +
+                                                widget.matchData.team1Photo
+                                                    .toString(),
+                                            height: 45,
+                                            width: 45,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            "assets/team_placeholder.png",
+                                            fit: BoxFit.contain,
+                                            height: 45,
+                                            width: 45,
+                                          )),
                               ),
                             ],
                           ),
@@ -269,7 +284,7 @@ class _ContestScreenState extends State<ContestScreen>
                               margin: const EdgeInsets.only(right: 20),
                               child: Text(
                                 getFirstLetters(
-                                    widget.matchData.team1Name.toString()),
+                                    widget.matchData.team2Name.toString()),
                                 style: const TextStyle(
                                     fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
@@ -281,14 +296,23 @@ class _ContestScreenState extends State<ContestScreen>
                             children: [
                               CircleAvatar(
                                 backgroundColor: Colors.white,
-                                radius: 30,
+                                radius: 40,
                                 child: ClipOval(
-                                    child: Image.asset(
-                                  "assets/team_placeholder.png",
-                                  fit: BoxFit.cover,
-                                  height: 45,
-                                  width: 45,
-                                )),
+                                    child: widget.matchData.team2Photo != null
+                                        ? Image.network(
+                                            mediaUrl +
+                                                widget.matchData.team2Photo
+                                                    .toString(),
+                                            height: 45,
+                                            width: 45,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            "assets/team_placeholder.png",
+                                            fit: BoxFit.contain,
+                                            height: 45,
+                                            width: 45,
+                                          )),
                               ),
                               SizedBox(
                                 width: MediaQuery.sizeOf(context).width * 0.15,
@@ -369,22 +393,34 @@ class _ContestScreenState extends State<ContestScreen>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) => ContestDetailScreen(
-                            matchData: getMatchDetailData!,
-                            contestData: contestList[index],
-                          ))).then((value) {
-                if (value != null && value == "create_contest") {
-                  Future.delayed(Duration.zero, () {
-                    getContestListApi();
-                  });
-                  Future.delayed(Duration.zero, () {
-                    getMyContestListApi();
-                  });
+              var isContestJoined = false;
+              for (int i = 0; i < myContestList.length; i++) {
+                if (myContestList[i].contestId == contestList[index].id) {
+                  isContestJoined = true;
                 }
-              });
+              }
+              if (isContestJoined &&
+                  contestList[index].totalParticipants! < 10) {
+                CommonFunctions()
+                    .showToastMessage(context, "For this contest you can only join with one team.");
+              } else {
+                Navigator.push(
+                    getContext,
+                    MaterialPageRoute(
+                        builder: (context) => ContestDetailScreen(
+                              matchData: getMatchDetailData!,
+                              contestData: contestList[index],
+                            ))).then((value) {
+                  if (value != null && value == "create_contest") {
+                    Future.delayed(Duration.zero, () {
+                      getContestListApi();
+                    });
+                    Future.delayed(Duration.zero, () {
+                      getMyContestListApi();
+                    });
+                  }
+                });
+              }
             },
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -563,7 +599,7 @@ class _ContestScreenState extends State<ContestScreen>
     };
     await replicateContest(request).then((res) async {
       if (res.success == 1) {
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -670,7 +706,7 @@ class _ContestScreenState extends State<ContestScreen>
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    "₹${myContestList[index].contestId}",
+                                    "₹${myContestList[index].contestDetail!.prizePool!}",
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
                                         color: AppColor.brown2,
@@ -684,7 +720,7 @@ class _ContestScreenState extends State<ContestScreen>
                                         borderRadius: BorderRadius.circular(5),
                                         color: AppColor.green),
                                     child: Text(
-                                      "₹${myContestList[index].id}",
+                                      "₹${myContestList[index].contestDetail!.entryFee!}",
                                       style: const TextStyle(
                                           fontFamily: "Lato_Semibold",
                                           color: AppColor.white,
@@ -697,26 +733,27 @@ class _ContestScreenState extends State<ContestScreen>
                               const SizedBox(
                                 height: 20,
                               ),
-                              Container(
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [AppColor.brown2, AppColor.red],
-                                    // Define gradient colors
-                                    begin: Alignment.centerLeft,
-                                    // Define start point
-                                    end: Alignment
-                                        .centerRight, // Define end point
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  const Text(
+                                    "Number of winner",
+                                    style: TextStyle(
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.brown2,
+                                        fontSize: 16),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  borderRadius: BorderRadius.circular(
-                                      5.0), // Optional: border radius
-                                ),
-                                child: const LinearProgressIndicator(
-                                  value: 0.1, // Adjust value as needed
-                                  backgroundColor: AppColor.grey,
-                                  color: AppColor
-                                      .orange_light, // Make background transparent
-                                ),
+                                  Text(
+                                    "${myContestList[index].contestDetail!.numberOfWinners!}",
+                                    style: const TextStyle(
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.brown2,
+                                        fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
                               ),
                               const SizedBox(
                                 height: 5,
@@ -749,10 +786,10 @@ class _ContestScreenState extends State<ContestScreen>
                   getContext,
                   MaterialPageRoute(
                       builder: (context) => PreviewTeamScreen(
-                        players: myContestList[index].playerList!,
-                        captainId: 0,
-                        viceCaptainId: 0,
-                      )));
+                            players: myContestList[index].playerList!,
+                            captainId: 0,
+                            viceCaptainId: 0,
+                          )));
             },
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
@@ -808,20 +845,21 @@ class _ContestScreenState extends State<ContestScreen>
                                           elevation: 10,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(30.0),
+                                                BorderRadius.circular(30.0),
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(3.0),
                                             child: CircleAvatar(
                                               radius: 25,
-                                              backgroundColor: AppColor.greenDark,
+                                              backgroundColor:
+                                                  AppColor.greenDark,
                                               child: ClipOval(
                                                   child: Image.asset(
-                                                    "assets/player.png",
-                                                    fit: BoxFit.contain,
-                                                    height: 35,
-                                                    width: 35,
-                                                  )),
+                                                "assets/player.png",
+                                                fit: BoxFit.contain,
+                                                height: 35,
+                                                width: 35,
+                                              )),
                                             ),
                                           ),
                                         ),
@@ -883,20 +921,21 @@ class _ContestScreenState extends State<ContestScreen>
                                           elevation: 10,
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
-                                            BorderRadius.circular(30.0),
+                                                BorderRadius.circular(30.0),
                                           ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(3.0),
                                             child: CircleAvatar(
                                               radius: 25,
-                                              backgroundColor: AppColor.greenDark,
+                                              backgroundColor:
+                                                  AppColor.greenDark,
                                               child: ClipOval(
                                                   child: Image.asset(
-                                                    "assets/player.png",
-                                                    fit: BoxFit.contain,
-                                                    height: 35,
-                                                    width: 35,
-                                                  )),
+                                                "assets/player.png",
+                                                fit: BoxFit.contain,
+                                                height: 35,
+                                                width: 35,
+                                              )),
                                             ),
                                           ),
                                         ),
@@ -933,7 +972,7 @@ class _ContestScreenState extends State<ContestScreen>
                                           horizontal: 10, vertical: 3),
                                       decoration: BoxDecoration(
                                           borderRadius:
-                                          BorderRadius.circular(3),
+                                              BorderRadius.circular(3),
                                           color: AppColor.brown3),
                                       child: Text(
                                         "${getViceCaptain(myContestList[index].playerList)}",
@@ -979,9 +1018,7 @@ class _ContestScreenState extends State<ContestScreen>
           const Text(
             "No Data Found!!",
             style: TextStyle(
-                fontFamily: "Ubuntu_Bold",
-                color: AppColor.brown_0,
-                fontSize: 16),
+                fontFamily: "Lato_Bold", color: AppColor.brown_0, fontSize: 16),
           )
         ],
       ),
@@ -995,6 +1032,125 @@ class _ContestScreenState extends State<ContestScreen>
       }
     }
     return "";
+  }
+}
+
+class PlayerLists {
+  List<PlayerList>? mainLis;
+
+  PlayerLists({required List<PlayerList> mainLis}) {
+    this.mainLis = mainLis;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    if (other is PlayerLists) {
+      // Check if the mainLis lists have the same length
+      if (this.mainLis!.length != other.mainLis!.length) return false;
+
+      // Check if each element in the mainLis lists is equal
+      for (int i = 0; i < this.mainLis!.length; i++) {
+        if (this.mainLis![i] != other.mainLis![i]) return false;
+      }
+      return true;
+    }
+
+    return false;
+  }
+
+  @override
+  int get hashCode => mainLis.hashCode;
+}
+
+getMergedTeamList(MyContestModel res) {
+// Extract player data
+  List<PlayerLists> main = [];
+  List<PlayerList> allPlayers = [];
+  for (var i = 0; i < res.body!.length; i++) {
+    allPlayers.clear();
+    PlayerLists list = PlayerLists(mainLis: []);
+    list.mainLis = res.body![i].playerList!;
+    main.add(list);
+  }
+  List<PlayerLists> mNewList = main.toSet().toList();
+
+  print('Common Players: ${mNewList.length.toString()}');
+}
+
+List<Map<String, dynamic>> getSameItems(List<Map<String, dynamic>> inputList) {
+  List<Map<String, dynamic>> result = [];
+  Set<String> uniqueSet = Set<String>();
+
+  for (var item in inputList) {
+    // Sort the keys of the map to ensure consistent comparison
+    List<String> sortedKeys = item.keys.toList()..sort();
+
+    // Create a string representation of the sorted keys and values
+    String keyValues = sortedKeys.map((key) => '${key}:${item[key]}').join(',');
+
+    // If the string representation is not in the unique set, add it to the result
+    if (!uniqueSet.contains(keyValues)) {
+      result.add(item);
+      uniqueSet.add(keyValues);
+    }
+  }
+
+  return result;
+}
+
+bool containsDuplicate(PlayerList player, List<PlayerList> players) {
+  for (var otherPlayer in players) {
+    if (player.playerId == otherPlayer.playerId &&
+        ((player.isCaptain == 1 && otherPlayer.isCaptain == 1) ||
+            (player.isViceCaption == 1 && otherPlayer.isViceCaption == 1))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool isCaptainViceCaptainDifferent(
+    PlayerList player, List<PlayerList> allPlayers) {
+  bool isCaptain = false;
+  bool isViceCaptain = false;
+  for (var otherPlayer in allPlayers) {
+    if (otherPlayer.playerId != player.playerId) {
+      if (otherPlayer.isCaptain == 1 && otherPlayer.teamId == player.teamId) {
+        isCaptain = true;
+      }
+      if (otherPlayer.isViceCaption == 1 &&
+          otherPlayer.teamId == player.teamId) {
+        isViceCaptain = true;
+      }
+    }
+  }
+  return !(isCaptain && isViceCaptain);
+}
+
+void comparePlayerLists(List<dynamic> list1, List<dynamic> list2,
+    List<dynamic> matched, List<dynamic> unique) {
+  for (var player1 in list1) {
+    var found = false;
+    for (var player2 in list2) {
+      if (player1['player_id'] == player2['player_id']) {
+        matched.add(player1);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      var uniquePlayer = {
+        'player_id': player1['player_id'],
+        'player_type': player1['player_type'],
+        'player_name': player1['player_name'],
+        'team_name': player1['team_name'],
+        'is_captain': player1['is_captain'],
+        'is_vice_caption': player1['is_vice_caption']
+      };
+      unique.add(uniquePlayer);
+    }
   }
 }
 

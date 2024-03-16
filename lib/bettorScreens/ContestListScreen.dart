@@ -49,7 +49,7 @@ class _ContestListScreenState extends State<ContestListScreen> {
           contestList = [];
           contestList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -72,7 +72,7 @@ class _ContestListScreenState extends State<ContestListScreen> {
           myContestList = [];
           myContestList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -138,7 +138,7 @@ class _ContestListScreenState extends State<ContestListScreen> {
                           const Text(
                             "No Data Found!!",
                             style: TextStyle(
-                                fontFamily: "Ubuntu_Bold",
+                                fontFamily: "Lato_Bold",
                                 color: AppColor.brown_0,
                                 fontSize: 16),
                           )

@@ -177,7 +177,7 @@ class _OutScreenState extends State<OutScreen> {
             }
           });
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

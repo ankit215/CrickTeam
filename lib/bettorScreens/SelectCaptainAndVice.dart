@@ -97,131 +97,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      getContext,
-                      MaterialPageRoute(
-                          builder: (context) => PreviewTeamScreen(
-                                players: widget.players,
-                                captainId: captainId,
-                                viceCaptainId: viceCaptainId,
-                              )));
-                },
-                child: Card(
-                    color: AppColor.grey,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    elevation: 0.2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColor.red.withOpacity(0.7),
-                              AppColor.brown2.withOpacity(0.7),
-                            ],
-                          ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.remove_red_eye,
-                                color: Colors.white,
-                              ),
-                              SizedBox(
-                                width: 5,
-                              ),
-                              Text(
-                                "TEAM PREVIEW",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "Lato_Bold",
-                                  color: AppColor.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ))),
-              ),
-              GestureDetector(
-                onTap: () {
-                  if (captainId == 0 || viceCaptainId == 0) {
-                    CommonFunctions().showToastMessage(
-                        context, "Please select captain and vice captain.");
-                  } else {
-                    _showBottomSheet(context);
-                  }
-                },
-                child: Card(
-                    color: AppColor.grey,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    elevation: 0.2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        decoration: BoxDecoration(
-                          gradient: captainId == 0 || viceCaptainId == 0
-                              ? LinearGradient(
-                                  colors: [
-                                    AppColor.grey.withOpacity(0.7),
-                                    AppColor.grey.withOpacity(0.7),
-                                  ],
-                                )
-                              : LinearGradient(
-                                  colors: [
-                                    AppColor.red.withOpacity(0.7),
-                                    AppColor.brown2.withOpacity(0.7),
-                                  ],
-                                ),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset(
-                                "assets/trophy.png",
-                                height: 20,
-                                width: 20,
-                                color: Colors.white,
-                              ),
-                              const SizedBox(
-                                width: 5,
-                              ),
-                              const Text(
-                                "CREATE CONTEST",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontFamily: "Lato_Bold",
-                                  color: AppColor.white,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ],
-                          ),
-                        ))),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 10,
-          ),
+
           Expanded(
               child: ListView.builder(
                   itemCount: widget.players.length,
@@ -315,10 +191,8 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                   ),
                                                   Text(
                                                       widget.players[index]
-                                                          .playerType
-                                                          .toString()=="ALD"?"AR":widget.players[index]
-                                                        .playerType
-                                                        .toString(),
+                                                          .teamName
+                                                          .toString(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       fontFamily:
@@ -510,6 +384,134 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                               ))),
                     );
                   })),
+          const SizedBox(
+            height: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => PreviewTeamScreen(
+                            players: widget.players,
+                            captainId: captainId,
+                            viceCaptainId: viceCaptainId,
+                          )));
+                },
+                child: Card(
+                    color: AppColor.grey,
+                    margin:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    elevation: 0.2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColor.red.withOpacity(0.7),
+                              AppColor.brown2.withOpacity(0.7),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.remove_red_eye,
+                                color: Colors.white,
+                              ),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              Text(
+                                "TEAM PREVIEW",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Lato_Bold",
+                                  color: AppColor.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ))),
+              ),
+              GestureDetector(
+                onTap: () {
+                  if (captainId == 0 || viceCaptainId == 0) {
+                    CommonFunctions().showToastMessage(
+                        context, "Please select captain and vice captain.");
+                  } else {
+                    _showBottomSheet(context);
+                  }
+                },
+                child: Card(
+                    color: AppColor.grey,
+                    margin:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    elevation: 0.2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          gradient: captainId == 0 || viceCaptainId == 0
+                              ? LinearGradient(
+                            colors: [
+                              AppColor.grey.withOpacity(0.7),
+                              AppColor.grey.withOpacity(0.7),
+                            ],
+                          )
+                              : LinearGradient(
+                            colors: [
+                              AppColor.red.withOpacity(0.7),
+                              AppColor.brown2.withOpacity(0.7),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                "assets/trophy.png",
+                                height: 20,
+                                width: 20,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(
+                                width: 5,
+                              ),
+                              const Text(
+                                "CREATE CONTEST",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Lato_Bold",
+                                  color: AppColor.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ))),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
         ],
       ),
     );
@@ -648,7 +650,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
           Navigator.pop(context, "create_contest");
           Navigator.pop(context, "create_contest");
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

@@ -823,7 +823,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         Navigator.push(getContext, MaterialPageRoute(builder: (context) =>  MainScreen(index: 0,)));
       }
 
-    } else if (res.success != 1 && res.code == 401) {
+    } else if (res.message == "Invalid Token" && res.code == 400) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,
@@ -833,7 +833,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           (route) => false);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.clear();
-    } else if (res.success != 1 && res.code == 401) {
+    } else if (res.message == "Invalid Token" && res.code == 400) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,

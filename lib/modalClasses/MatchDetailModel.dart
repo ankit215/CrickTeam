@@ -48,6 +48,8 @@ class MatchDetailData {
   String? updatedAt;
   String? team1Name;
   String? team2Name;
+  String? team1Photo;
+  String? team2Photo;
   List<PlayerList>? playerList;
 
   MatchDetailData(
@@ -71,6 +73,8 @@ class MatchDetailData {
         this.updatedAt,
         this.team1Name,
         this.team2Name,
+        this.team1Photo,
+        this.team2Photo,
         this.playerList});
 
   MatchDetailData.fromJson(Map<String, dynamic> json) {
@@ -94,6 +98,8 @@ class MatchDetailData {
     updatedAt = json['updatedAt'];
     team1Name = json['team1_name'];
     team2Name = json['team2_name'];
+    team1Photo = json['team1_photo'];
+    team2Photo = json['team2_photo'];
     if (json['playerList'] != null) {
       playerList = <PlayerList>[];
       json['playerList'].forEach((v) {
@@ -124,6 +130,8 @@ class MatchDetailData {
     data['updatedAt'] = updatedAt;
     data['team1_name'] = team1Name;
     data['team2_name'] = team2Name;
+    data['team1_photo'] = team1Photo;
+    data['team2_photo'] = team2Photo;
     if (playerList != null) {
       data['playerList'] = playerList!.map((v) => v.toJson()).toList();
     }

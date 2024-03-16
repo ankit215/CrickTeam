@@ -517,13 +517,13 @@ class _ScorerScreenState extends State<ScorerScreen>
                             child: ElevatedButton(
                               onPressed: () async {
                                 Navigator.pop(context);
-                                Navigator.pop(context);
-                                /* Navigator.push(
+                                // Navigator.pop(context);
+                                 Navigator.push(
                                     getContext,
                                     MaterialPageRoute(
                                         builder: (context) => MainScreen(
                                           index: 0,
-                                        )));*/
+                                        )));
                               },
                               style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColor.orange_0,
@@ -713,7 +713,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                       children: [
                                         Text(
                                           playerDetail != null
-                                              ? "USER_ID ${playerDetail!.player1Id}"
+                                              ? playerDetail!.player1Name
                                               : "-",
                                           style: const TextStyle(
                                               color: Colors.white,
@@ -824,7 +824,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                       children: [
                                         Text(
                                           playerDetail != null
-                                              ? "USER_ID ${playerDetail!.player2Id}"
+                                              ? "${playerDetail!.player2Name}"
                                               : "-",
                                           style: const TextStyle(
                                               color: Colors.white,
@@ -947,10 +947,10 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 children: [
                                   Text(
                                     playerDetail != null && scoreUpdate == null
-                                        ? "USER_ID ${bowlerId}"
+                                        ? playerDetail!.bowlerName
                                         : playerDetail != null &&
                                                 scoreUpdate != null
-                                            ? "USER_ID ${bowlerId}"
+                                            ? playerDetail!.bowlerName
                                             : "-",
                                     style: const TextStyle(
                                         color: Colors.white,
@@ -2090,7 +2090,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 height: 10,
                               ),
                               Text(
-                                "USER_ID ${batsman.id}",
+                                "${batsman.name}",
                                 style: const TextStyle(
                                     fontSize: 16.0,
                                     color: AppColor.brown2,
@@ -2160,7 +2160,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 height: 10,
                               ),
                               Text(
-                                "USER_ID ${batsman2.id}",
+                                "${batsman2.name}",
                                 style: const TextStyle(
                                     fontSize: 16.0,
                                     color: AppColor.brown2,
@@ -2321,7 +2321,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 height: 10,
                               ),
                               Text(
-                                "USER_ID ${batsman.id}",
+                                "${batsman.name}",
                                 style: const TextStyle(
                                     fontSize: 16.0,
                                     color: AppColor.brown2,
@@ -2373,7 +2373,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                                 height: 10,
                               ),
                               Text(
-                                "USER_ID ${batsman2.id}",
+                                "${batsman2.name}",
                                 style: const TextStyle(
                                     fontSize: 16.0,
                                     color: AppColor.brown2,
@@ -2590,7 +2590,7 @@ class _ScorerScreenState extends State<ScorerScreen>
           _showStrikerBottomSheet(context, nonStrikerId.toString(),
               strikerId.toString(), battingTeamId.toString());
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -2630,7 +2630,7 @@ class _ScorerScreenState extends State<ScorerScreen>
               context, batsman!, batsman2, scoreUpdate!.bowler);
           bowlerRuns.add("W");
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -2665,7 +2665,7 @@ class _ScorerScreenState extends State<ScorerScreen>
                         index: 0,
                       )));
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -2715,7 +2715,7 @@ class _ScorerScreenState extends State<ScorerScreen>
             }
           });
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -2744,7 +2744,7 @@ class _ScorerScreenState extends State<ScorerScreen>
           strikerId = playerId.toInt();
           nonStrikerId = player2Id.toInt();
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

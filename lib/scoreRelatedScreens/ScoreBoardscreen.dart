@@ -169,7 +169,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                         const Text(
                           "No Data Found!!",
                           style: TextStyle(
-                              fontFamily: "Ubuntu_Bold",
+                              fontFamily: "Lato_Bold",
                               color: AppColor.brown_0,
                               fontSize: 16),
                         )
@@ -191,7 +191,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
                         const Text(
                           "No Data Found!!",
                           style: TextStyle(
-                              fontFamily: "Ubuntu_Bold",
+                              fontFamily: "Lato_Bold",
                               color: AppColor.brown_0,
                               fontSize: 16),
                         )
@@ -1129,7 +1129,7 @@ class _ScoreBoardScreenState extends State<ScoreBoardScreen>
           debugPrint("${yetToBatList.length}  Lemnfgngng");
           debugPrint("${battingList.length}  getScoreData!.scoreBoardBowler!");
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

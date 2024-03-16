@@ -12,8 +12,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../apiRelatedFiles/rest_apis.dart';
 import '../modalClasses/GetContestModel.dart';
 import '../modalClasses/MatchDetailModel.dart';
+import '../modalClasses/UserTeamDetailModel.dart';
 import '../utils/AppColor.dart';
 import 'MakeBettorTeam.dart';
+import 'PreviewTeamScreen.dart';
 
 class ContestDetailScreen extends StatefulWidget {
   final MatchDetailData matchData;
@@ -34,7 +36,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
   List<MyContestData> myContestList = [];
   MatchDetailData? getMatchDetailData;
   ContestDetailData? contestDetailData;
-
+  List<SelectedTeam> selectedTeamList = [];
   @override
   void initState() {
     super.initState();
@@ -52,6 +54,43 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
     );
     tabController.addListener(_handleTabSelection);
   }
+  Future getTeamDetailApi(var userId) async {
+    await getUserTeamDetail(widget.contestData.id.toString(),userId!).then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          selectedTeamList.clear();
+          selectedTeamList.addAll(res.body!.selectedTeam!);
+          Navigator.push(
+              getContext,
+              MaterialPageRoute(
+                  builder: (context) => PreviewTeamScreen(
+                    captainId: 0,
+                    viceCaptainId: 0,
+                    players2: selectedTeamList,
+                  ))).then((value) {
+            if (value != null && value == "create_contest") {
+              Future.delayed(Duration.zero, () {
+                Navigator.pop(context, "create_contest");
+              });
+            }
+          });
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
 
   Future getContestListApi() async {
     await getContestList(widget.matchData.id.toString()).then((res) async {
@@ -61,7 +100,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           contestList = [];
           contestList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -91,7 +130,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
             ();
           });
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -121,7 +160,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
             ();
           });
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -145,7 +184,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           myContestList = [];
           myContestList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -460,7 +499,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           controller: tabController,
           children: <Widget>[
             contestList.isEmpty ? noDataFound() : winningsScreen(),
-            myContestList.isEmpty ? noDataFound() : leaderBoardScreen(),
+            contestDetailData==null ||contestDetailData!.player!.isEmpty ? noDataFound() : leaderBoardScreen(),
+
+
           ],
         ),
       ),
@@ -557,69 +598,76 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         itemCount:contestDetailData!.player!.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return Card(
-              color: AppColor.transparent,
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              elevation: 0.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                  width: MediaQuery.sizeOf(context).width * 0.9,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        AppColor.grey.withOpacity(0.2),
-                        AppColor.grey.withOpacity(0.2),
-                      ],
+          return GestureDetector(
+            onTap: (){
+              getTeamDetailApi(contestDetailData!.player![index].userId.toString());
+
+
+            },
+            child: Card(
+                color: AppColor.transparent,
+                margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                elevation: 0.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                child: Container(
+                    width: MediaQuery.sizeOf(context).width * 0.9,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColor.grey.withOpacity(0.2),
+                          AppColor.grey.withOpacity(0.2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 30,
-                                backgroundColor: Colors.white,
-                                child: ClipOval(
-                                    child: Image.asset(
-                                      "assets/player.png",
-                                      fit: BoxFit.contain,
-                                      height: 45,
-                                      width: 45,
-                                    )),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    contestDetailData!.player![index].userName == null
-                                        ? "Player"
-                                        : contestDetailData!.player![index].userName
-                                        .toString(),
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: "Lato_Semibold",
-                                      color: AppColor.medGrey,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 30,
+                                  backgroundColor: Colors.white,
+                                  child: ClipOval(
+                                      child: Image.asset(
+                                        "assets/player.png",
+                                        fit: BoxFit.contain,
+                                        height: 45,
+                                        width: 45,
+                                      )),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      contestDetailData!.player![index].userName == null
+                                          ? "Player"
+                                          : contestDetailData!.player![index].userName
+                                          .toString(),
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.medGrey,
+                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                            ],
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )));
+                        ],
+                      ),
+                    ))),
+          );
         },
       ),
     );
@@ -639,7 +687,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           const Text(
             "No Data Found!!",
             style: TextStyle(
-                fontFamily: "Ubuntu_Bold",
+                fontFamily: "Lato_Bold",
                 color: AppColor.brown_0,
                 fontSize: 16),
           )

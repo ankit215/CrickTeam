@@ -19,7 +19,7 @@ class MyContestModel {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = Map<String, dynamic>();
+    final Map<String, dynamic> data = <String, dynamic>{};
     data['success'] = success;
     data['code'] = code;
     data['message'] = message;
@@ -39,16 +39,18 @@ class MyContestData {
   String? createdAt;
   String? updatedAt;
   List<PlayerList>? playerList;
+  ContestDetail? contestDetail;
 
   MyContestData(
       {this.id,
-        this.matchId,
-        this.contestId,
-        this.userId,
-        this.selectedTeam,
-        this.createdAt,
-        this.updatedAt,
-        this.playerList});
+      this.matchId,
+      this.contestId,
+      this.userId,
+      this.selectedTeam,
+      this.createdAt,
+      this.updatedAt,
+      this.playerList,
+      this.contestDetail});
 
   MyContestData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -64,6 +66,9 @@ class MyContestData {
         playerList!.add(PlayerList.fromJson(v));
       });
     }
+    contestDetail = json['contest_detail'] != null
+        ? ContestDetail.fromJson(json['contest_detail'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -78,6 +83,9 @@ class MyContestData {
     if (playerList != null) {
       data['player_list'] = playerList!.map((v) => v.toJson()).toList();
     }
+    if (contestDetail != null) {
+      data['contest_detail'] = contestDetail!.toJson();
+    }
     return data;
   }
 }
@@ -91,15 +99,16 @@ class PlayerList {
   int? isCaptain;
   int? isViceCaption;
   bool playerSelected = false;
+  int? points;
 
   PlayerList(
       {this.teamId,
-        this.playerId,
-        this.playerType,
-        this.playerName,
-        this.teamName,
-        this.isCaptain,
-        this.isViceCaption});
+      this.playerId,
+      this.playerType,
+      this.playerName,
+      this.teamName,
+      this.isCaptain,
+      this.isViceCaption});
 
   PlayerList.fromJson(Map<String, dynamic> json) {
     teamId = json['team_id'];
@@ -120,6 +129,51 @@ class PlayerList {
     data['team_name'] = teamName;
     data['is_captain'] = isCaptain;
     data['is_vice_caption'] = isViceCaption;
+    return data;
+  }
+}
+
+class ContestDetail {
+  int? id;
+  int? matchId;
+  int? entryFee;
+  int? totalParticipants;
+  int? numberOfWinners;
+  int? prizePool;
+  String? createdAt;
+  String? updatedAt;
+
+  ContestDetail(
+      {this.id,
+      this.matchId,
+      this.entryFee,
+      this.totalParticipants,
+      this.numberOfWinners,
+      this.prizePool,
+      this.createdAt,
+      this.updatedAt});
+
+  ContestDetail.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    matchId = json['match_id'];
+    entryFee = json['entry_fee'];
+    totalParticipants = json['total_participants'];
+    numberOfWinners = json['number_of_winners'];
+    prizePool = json['prize_pool'];
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['id'] = id;
+    data['match_id'] = matchId;
+    data['entry_fee'] = entryFee;
+    data['total_participants'] = totalParticipants;
+    data['number_of_winners'] = numberOfWinners;
+    data['prize_pool'] = prizePool;
+    data['createdAt'] = createdAt;
+    data['updatedAt'] = updatedAt;
     return data;
   }
 }

@@ -266,7 +266,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
-                                                Row(
+                                              /*  Row(
                                                   children: [
                                                     Icon(
                                                       Icons.call,
@@ -304,7 +304,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
                                                           TextAlign.center,
                                                     ),
                                                   ],
-                                                ),
+                                                ),*/
                                               ],
                                             ),
                                           ],
@@ -495,7 +495,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
           });
           debugPrint("wfewfewf" + teamPlayerList.length.toString());
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -529,7 +529,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
           }
           debugPrint("wfewfewf" + teamPlayerList.length.toString());
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -562,7 +562,7 @@ class _SelectPlayerForMatchState extends State<SelectPlayerForMatch> {
             }
           }
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

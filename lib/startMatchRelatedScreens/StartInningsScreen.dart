@@ -524,7 +524,7 @@ class _StartInningsScreenState extends State<StartInningsScreen> {
     await selectPlayers(request).then((res) async {
       if (res.success == 1) {
         // toast(res.message);
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         Navigator.pushAndRemoveUntil(
             getContext,
             MaterialPageRoute(

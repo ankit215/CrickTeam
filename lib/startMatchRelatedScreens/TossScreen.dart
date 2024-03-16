@@ -11,6 +11,7 @@ import '../main.dart';
 import '../mainScreens/MainScreen.dart';
 import '../modalClasses/GetMatchModel.dart';
 import '../utils/common.dart';
+import '../utils/constant.dart';
 import 'StartInningsScreen.dart';
 
 class TossScreen extends StatefulWidget {
@@ -122,15 +123,25 @@ class _TossScreenState extends State<TossScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircleAvatar(
+                                  backgroundColor:
+                                  Colors.white,
                                   radius: 30,
-                                  backgroundColor: Colors.white,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/team_placeholder.png",
-                                    fit: BoxFit.contain,
-                                    height: 45,
-                                    width: 45,
-                                  )),
+                                  child:ClipOval(
+                                      child:widget.matchData.team1Photo !=null?
+                                      Image.network(
+                                        mediaUrl + widget.matchData
+                                            .team1Photo.toString(),
+                                        height: 90,
+                                        width: 90,
+                                        fit: BoxFit.cover,
+                                      )
+                                          :
+                                      Image.asset(
+                                        "assets/team_placeholder.png",
+                                        fit: BoxFit.contain,
+                                        height: 45,
+                                        width: 45,
+                                      )),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -180,15 +191,25 @@ class _TossScreenState extends State<TossScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 CircleAvatar(
-                                  backgroundColor: Colors.white,
+                                  backgroundColor:
+                                  Colors.white,
                                   radius: 30,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/team_placeholder.png",
-                                    fit: BoxFit.contain,
-                                    height: 45,
-                                    width: 45,
-                                  )),
+                                  child:ClipOval(
+                                      child:widget.matchData.team2Photo !=null?
+                                      Image.network(
+                                        mediaUrl + widget.matchData
+                                            .team2Photo.toString(),
+                                        height: 90,
+                                        width: 90,
+                                        fit: BoxFit.cover,
+                                      )
+                                          :
+                                      Image.asset(
+                                        "assets/team_placeholder.png",
+                                        fit: BoxFit.contain,
+                                        height: 45,
+                                        width: 45,
+                                      )),
                                 ),
                                 const SizedBox(
                                   height: 15,
@@ -409,7 +430,7 @@ class _TossScreenState extends State<TossScreen> {
             getContext,
             MaterialPageRoute(
                 builder: (context) =>  StartInningsScreen(matchData: widget.matchData,tossWinnerId:tossWinnerId,tossWinnerElected: isBatSelected ? "1" : "2",)));
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

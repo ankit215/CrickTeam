@@ -555,7 +555,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
           teamList = [];
           teamList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -631,7 +631,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
           }
         });
       }
-    } else if (res.success != 1 && res.code == 401) {
+    } else if (res.message == "Invalid Token" && res.code == 400) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,
@@ -641,7 +641,7 @@ class _SelectTeamState extends State<SelectTeam> with TickerProviderStateMixin {
           (route) => false);
       SharedPreferences preferences = await SharedPreferences.getInstance();
       await preferences.clear();
-    } else if (res.success != 1 && res.code == 401) {
+    } else if (res.message == "Invalid Token" && res.code == 400) {
       toast(res.message);
       Navigator.pushAndRemoveUntil(
           getContext,

@@ -19,6 +19,7 @@ import '../modalClasses/MyContestModel.dart';
 import '../modalClasses/ScoreboardModel.dart';
 import '../modalClasses/ScorerMatchModel.dart';
 import '../modalClasses/UpdateProfileModel.dart';
+import '../modalClasses/UserTeamDetailModel.dart';
 import '../modalClasses/api_response_model.dart';
 import '../utils/common.dart';
 import '../utils/constant.dart';
@@ -308,6 +309,11 @@ Future<GetTeamDetailModel> getTeamDetail(String teamId) async {
   showLoader();
   return GetTeamDetailModel.fromJson(await (handleResponse(
       await buildHttpResponse("team_detail/$teamId", method: HttpMethod.get))));
+}
+Future<UserTeamDetailModel> getUserTeamDetail(String contestId,String userId) async {
+  showLoader();
+  return UserTeamDetailModel.fromJson(await (handleResponse(
+      await buildHttpResponse("user_team_detail?contest_id=$contestId&user_id=$userId", method: HttpMethod.get))));
 }
 
 Future<OutPlayerModel> getOutPlayerList(String teamId, String matchId) async {

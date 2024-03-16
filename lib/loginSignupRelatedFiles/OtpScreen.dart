@@ -143,13 +143,21 @@ class _OtpScreenState extends State<OtpScreen> {
                             MaterialStateProperty.all(Colors.transparent),
                       ),
                       onPressed: () async {
-                        Navigator.push(
-                            getContext,
-                            MaterialPageRoute(
-                                builder: (context) => MainScreen(
-                                  index: 0,
-                                )));
-                       /* showLoader();
+                        if (widget.type == "1" && smsCode != "102030") {
+                          CommonFunctions().showToastMessage(
+                              context, "Please enter valid otp for organiser.");
+                        } else if (widget.type == "1" && smsCode == "102030") {
+                          loginApi();
+                        } else {
+                          Navigator.push(
+                              getContext,
+                              MaterialPageRoute(
+                                  builder: (context) => MainScreen(
+                                        index: 0,
+                                      )));
+                        }
+
+                        /* showLoader();
                         FirebaseAuth auth = FirebaseAuth.instance;
                         try{
                           PhoneAuthCredential credential =
@@ -164,8 +172,6 @@ class _OtpScreenState extends State<OtpScreen> {
                           hideLoader();
                           CommonFunctions().showToastMessage(getContext, "OTP is incorrect.");
                         }*/
-
-
 
                         /*showDialog(
                           context: context,
@@ -288,7 +294,7 @@ class _OtpScreenState extends State<OtpScreen> {
       'mobile_number': widget.mobileNo,
       'type': widget.type,
     };
-    await login(request,1).then((res) async {
+    await login(request, 1).then((res) async {
       debugPrint("res.body!.name: ${res.body!.name.toString()}");
       if (res.success == 1) {
         hideLoader();

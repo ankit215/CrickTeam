@@ -28,7 +28,7 @@ class AddTeams extends StatefulWidget {
 
 class _AddTeamsState extends State<AddTeams> {
   TextEditingController searchController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
   final searchDelay = SearchDelayFunction();
   var searchStr = "";
   List<GetPlayerSearchData> teamPlayerSearchedList = [];
@@ -144,7 +144,7 @@ class _AddTeamsState extends State<AddTeams> {
           ),
           GestureDetector(
             onTap: () {
-              phoneController.text = "";
+              nameController.text = "";
               showDialog(
                 context: context,
                 useRootNavigator: false,//Dialog must not use root navigator
@@ -200,7 +200,7 @@ class _AddTeamsState extends State<AddTeams> {
                                 const Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
-                                    "Player mobile no.*",
+                                    "Player name.*",
                                     style: TextStyle(
                                         fontSize: 16.0,
                                         color: AppColor.brown2,
@@ -220,15 +220,11 @@ class _AddTeamsState extends State<AddTeams> {
                                           Border.all(color: AppColor.border)),
                                   child: Center(
                                     child: TextField(
-                                      controller: phoneController,
-                                      keyboardType: TextInputType.phone,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(10),
-                                      ],
+                                      controller: nameController,
+                                      keyboardType: TextInputType.name,
                                       decoration:
                                           const InputDecoration.collapsed(
-                                              hintText: 'Enter mobile number',
+                                              hintText: 'Enter name',
                                               hintStyle: TextStyle(
                                                   color: AppColor.grey)),
                                     ),
@@ -267,11 +263,11 @@ class _AddTeamsState extends State<AddTeams> {
                                                   Colors.transparent),
                                         ),
                                         onPressed: () {
-                                          if(phoneController.text.trim().isEmpty){
+                                          if(nameController.text.trim().isEmpty){
                                             CommonFunctions().showToastMessage(context,"Please enter player mobile no.");
                                           }else{
                                             Navigator.pop(context);
-                                            createPlayerApi(phoneController.text.trim());
+                                            createPlayerApi(nameController.text.trim());
                                           }
                                         },
                                         child: const Text('Add',
@@ -418,7 +414,7 @@ class _AddTeamsState extends State<AddTeams> {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Row(
+                                       /*     Row(
                                               children: [
                                                 Icon(
                                                   Icons.call,
@@ -444,7 +440,7 @@ class _AddTeamsState extends State<AddTeams> {
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ],
-                                            ),
+                                            ),*/
                                           ],
                                         ),
                                       ],
@@ -663,7 +659,7 @@ class _AddTeamsState extends State<AddTeams> {
           }
           debugPrint("wfewfewf" + teamPlayerList.length.toString());
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -678,9 +674,9 @@ class _AddTeamsState extends State<AddTeams> {
       }
     });
   }
-  createPlayerApi(String mobileNo) async {
+  createPlayerApi(String name) async {
     var request = {
-      'mobile_number': mobileNo,
+      'name': name,
       'team_id': widget.getTeamData.id,
     };
     await createPlayer(request).then((res) async {
@@ -696,7 +692,7 @@ class _AddTeamsState extends State<AddTeams> {
         Future.delayed(Duration.zero, () {
           getTeamDetailApi();
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -719,7 +715,7 @@ class _AddTeamsState extends State<AddTeams> {
           teamPlayerSearchedList.clear();
           teamPlayerSearchedList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

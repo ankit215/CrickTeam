@@ -60,7 +60,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
           upcomingMatchList.addAll(res.body!.upcomingListArr!);
           completedMatchList.addAll(res.body!.completedListArr!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -213,7 +213,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                   const Text(
                     "No Data Found!!",
                     style: TextStyle(
-                        fontFamily: "Ubuntu_Bold",
+                        fontFamily: "Lato_Bold",
                         color: AppColor.brown_0,
                         fontSize: 16),
                   )
@@ -233,7 +233,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                   const Text(
                     "No Data Found!!",
                     style: TextStyle(
-                        fontFamily: "Ubuntu_Bold",
+                        fontFamily: "Lato_Bold",
                         color: AppColor.brown_0,
                         fontSize: 16),
                   )
@@ -253,7 +253,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                   const Text(
                     "No Data Found!!",
                     style: TextStyle(
-                        fontFamily: "Ubuntu_Bold",
+                        fontFamily: "Lato_Bold",
                         color: AppColor.brown_0,
                         fontSize: 16),
                   )
@@ -377,10 +377,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                         MediaQuery.sizeOf(context).width * 0.2,
                                       ),
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:currentMatchList[
+                                            index]
+                                                .team1Photo !=null?
+                                            Image.network(
+                                              mediaUrl + currentMatchList[
+                                              index]
+                                                  .team1Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,
@@ -408,10 +421,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:currentMatchList[
+                                            index]
+                                                .team2Photo !=null?
+                                            Image.network(
+                                              mediaUrl + currentMatchList[
+                                              index]
+                                                  .team2Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,
@@ -566,10 +592,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                         MediaQuery.sizeOf(context).width * 0.1,
                                       ),
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:upcomingMatchList[
+                                            index]
+                                                .team1Photo !=null?
+                                            Image.network(
+                                              mediaUrl + upcomingMatchList[
+                                              index]
+                                                  .team1Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,
@@ -610,10 +649,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:upcomingMatchList[
+                                            index]
+                                                .team2Photo !=null?
+                                            Image.network(
+                                              mediaUrl + upcomingMatchList[
+                                              index]
+                                                  .team2Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,
@@ -678,7 +730,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
           }
 
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -792,10 +844,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                         MediaQuery.sizeOf(context).width * 0.1,
                                       ),
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:completedMatchList[
+                                            index]
+                                                .team1Photo !=null?
+                                            Image.network(
+                                              mediaUrl + completedMatchList[
+                                              index]
+                                                  .team1Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,
@@ -837,10 +902,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                   Row(
                                     children: [
                                       CircleAvatar(
-                                        backgroundColor: Colors.white,
-                                        radius: 30,
+                                        backgroundColor:
+                                        Colors.white,
+                                        radius: 40,
                                         child: ClipOval(
-                                            child: Image.asset(
+                                            child:completedMatchList[
+                                            index]
+                                                .team2Photo !=null?
+                                            Image.network(
+                                              mediaUrl + completedMatchList[
+                                              index]
+                                                  .team2Photo.toString(),
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                            )
+                                                :
+                                            Image.asset(
                                               "assets/team_placeholder.png",
                                               fit: BoxFit.contain,
                                               height: 45,

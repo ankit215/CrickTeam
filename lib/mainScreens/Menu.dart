@@ -239,7 +239,7 @@ class _Menu extends State<Menu> {
             (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 401) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,

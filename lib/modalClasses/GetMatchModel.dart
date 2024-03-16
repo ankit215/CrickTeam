@@ -93,6 +93,8 @@ class UpcomingListArr {
   String? updatedAt;
   String? team1Name;
   String? team2Name;
+  String? team1Photo;
+  String? team2Photo;
 
   UpcomingListArr(
       {this.id,
@@ -115,6 +117,8 @@ class UpcomingListArr {
         this.createdAt,
         this.updatedAt,
         this.team1Name,
+        this.team1Photo,
+        this.team2Photo,
         this.team2Name});
 
   UpcomingListArr.fromJson(Map<String, dynamic> json) {
@@ -139,6 +143,8 @@ class UpcomingListArr {
     updatedAt = json['updatedAt'];
     team1Name = json['team1_name'];
     team2Name = json['team2_name'];
+    team1Photo = json['team1_photo'];
+    team2Photo = json['team2_photo'];
   }
 
   Map<String, dynamic> toJson() {
@@ -164,6 +170,8 @@ class UpcomingListArr {
     data['updatedAt'] = updatedAt;
     data['team1_name'] = team1Name;
     data['team2_name'] = team2Name;
+    data['team1_photo'] = team1Photo;
+    data['team2_photo'] = team2Photo;
     return data;
   }
 }

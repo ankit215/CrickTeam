@@ -115,6 +115,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                   children: [
                                     Expanded(
                                       child: Row(
+
                                         children: [
                                           CircleAvatar(
                                             backgroundColor: AppColor.lightGrey,
@@ -146,13 +147,13 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                                           .userName
                                                           .toString(),
                                                   style: const TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 16,
                                                     fontFamily: "Lato_Semibold",
-                                                    color: AppColor.medGrey,
+                                                    color: AppColor.black,
                                                   ),
                                                   textAlign: TextAlign.center,
                                                 ),
-                                                Text(
+                                                /*Text(
                                                 widget.selectedTeam[index]
                                                           .mobileNumber
                                                           .toString(),
@@ -162,7 +163,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                                     color: AppColor.medGrey,
                                                   ),
                                                   textAlign: TextAlign.center,
-                                                ),
+                                                ),*/
                                                 Text(
                                                   widget.selectedTeam[index]
                                                           .playerCategory
@@ -191,7 +192,7 @@ class _AddPlayerCategoryState extends State<AddPlayerCategory> {
                                                                       ? "All Rounder"
                                                                       : "-",
                                                   style: const TextStyle(
-                                                    fontSize: 20,
+                                                    fontSize: 14,
                                                     fontFamily: "Lato_Semibold",
                                                     color: AppColor.medGrey,
                                                   ),

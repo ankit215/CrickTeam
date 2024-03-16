@@ -88,14 +88,14 @@ class CommonFunctions {
       weekdayLabels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
       weekdayLabelTextStyle: const TextStyle(
         color: AppColor.brown2,
-        fontFamily: "Ubuntu_Bold",
+        fontFamily: "Lato_Bold",
         fontWeight: FontWeight.bold,
       ),
       firstDayOfWeek: 1,
       controlsTextStyle: const TextStyle(
         color: Colors.black,
         fontSize: 16,
-        fontFamily: "Ubuntu_Bold",
+        fontFamily: "Lato_Bold",
       ),
       dayTextStyle: const TextStyle(
         color: Colors.black,
@@ -106,12 +106,12 @@ class CommonFunctions {
       todayTextStyle: const TextStyle(
         color: AppColor.orange,
         fontSize: 18,
-        fontFamily: "Ubuntu_Bold",
+        fontFamily: "Lato_Bold",
       ),
       selectedDayTextStyle: const TextStyle(
         color: AppColor.white,
         fontSize: 18,
-        fontFamily: "Ubuntu_Bold",
+        fontFamily: "Lato_Bold",
       ),
       closeDialogOnCancelTapped: true,
     );
@@ -160,7 +160,7 @@ class CommonFunctions {
                 child: Text(
                   title,
                   style: const TextStyle(
-                      fontFamily: "Ubuntu_Bold",
+                      fontFamily: "Lato_Bold",
                       fontSize: 20,
                       color: AppColor.yellowMed),
                 ),
@@ -205,7 +205,7 @@ class CommonFunctions {
                 child: Text(
                   title,
                   style: TextStyle(
-                      fontFamily: "Ubuntu_Bold",
+                      fontFamily: "Lato_Bold",
                       fontSize: 20,
                       color: (title == "Scan Successful")
                           ? AppColor.green
@@ -217,7 +217,7 @@ class CommonFunctions {
                 child: Text(
                   desc,
                   style: const TextStyle(
-                      fontFamily: "Ubuntu_Bold",
+                      fontFamily: "Lato_Bold",
                       fontSize: 16,
                       color: AppColor.brown2),
                 ),

@@ -242,7 +242,7 @@ class _StartMatchState extends State<StartMatch> {
                                                                 .getTeamData!
                                                                 .teamPhoto
                                                                 .toString(),
-                                                        fit: BoxFit.contain,
+                                                        fit: BoxFit.cover,
                                                         height: 45,
                                                         width: 45,
                                                       )),
@@ -499,8 +499,11 @@ class _StartMatchState extends State<StartMatch> {
                             Future.delayed(Duration.zero, () {
                               FocusManager.instance.primaryFocus?.unfocus();
                             });
-                            var date = await CommonFunctions.selectDate();
-                            dateController.text = date;
+                            Future.delayed(Duration(milliseconds: 500), () async {
+                              var date = await CommonFunctions.selectDate();
+                              dateController.text = date;
+                            });
+
                           },
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.7,
@@ -1065,7 +1068,7 @@ class _StartMatchState extends State<StartMatch> {
         toast("Scorer added successfully");
         scorerId = res.body!.id.toString();
         Navigator.pop(context);
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -1496,7 +1499,7 @@ class _StartMatchState extends State<StartMatch> {
       if (res.success == 1) {
         debugPrint("MATCH_ID_${res.body!.id}");
         createContestApi(res.body!.id.toString());
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -1602,7 +1605,7 @@ class _StartMatchState extends State<StartMatch> {
             );
           },
         );
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
@@ -1626,7 +1629,7 @@ class _StartMatchState extends State<StartMatch> {
           teamPlayerSearchedList.clear();
           teamPlayerSearchedList.addAll(res.body!);
         });
-      } else if (res.success != 1 && res.code == 401) {
+      } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
             getContext,
