@@ -94,7 +94,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
               textAlign: TextAlign.center,
             ),
           ),
-          actions: <Widget>[
+          /*actions: <Widget>[
             Image.asset(
               "assets/wallet.png",
               height: 25,
@@ -119,7 +119,7 @@ class _ScoreScreenState extends State<ScoreScreen>with TickerProviderStateMixin 
             const SizedBox(
               width: 15,
             )
-          ],
+          ],*/
           bottom: TabBar(
             controller: tabController,
             labelColor: AppColor.orange_light,

@@ -2,10 +2,12 @@ import 'package:crick_team/bettorScreens/TeamListScreen.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/ContestDetailModel.dart';
-import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/modalClasses/MyContestModel.dart';
+import 'package:crick_team/modalClasses/WinnerListModal.dart';
 import 'package:crick_team/utils/CommonFunctions.dart';
 import 'package:crick_team/utils/common.dart';
+import 'package:crick_team/utils/constant.dart';
+import 'package:crick_team/utils/shared_pref.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,9 +22,13 @@ import 'PreviewTeamScreen.dart';
 class ContestDetailScreen extends StatefulWidget {
   final MatchDetailData matchData;
   final GetContestData contestData;
-final String?from;
+  final String? from;
+
   const ContestDetailScreen(
-      {super.key, required this.matchData, required this.contestData, this.from});
+      {super.key,
+      required this.matchData,
+      required this.contestData,
+      this.from});
 
   @override
   State<ContestDetailScreen> createState() => _ContestDetailScreenState();
@@ -36,10 +42,16 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
   List<MyContestData> myContestList = [];
   MatchDetailData? getMatchDetailData;
   ContestDetailData? contestDetailData;
+  List<WinnerListData> winnerListData = [];
+  List<WinnerListData> winnerListDataMain = [];
   List<SelectedTeam> selectedTeamList = [];
+
   @override
   void initState() {
     super.initState();
+    Future.delayed(Duration.zero, () {
+      getContestWinnerApi();
+    });
     Future.delayed(Duration.zero, () {
       getMatchDetailApi();
     });
@@ -54,8 +66,10 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
     );
     tabController.addListener(_handleTabSelection);
   }
+
   Future getTeamDetailApi(var userId) async {
-    await getUserTeamDetail(widget.contestData.id.toString(),userId!).then((res) async {
+    await getUserTeamDetail(widget.contestData.id.toString(), userId!)
+        .then((res) async {
       hideLoader();
       if (res.success == 1) {
         setState(() {
@@ -65,10 +79,10 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
               getContext,
               MaterialPageRoute(
                   builder: (context) => PreviewTeamScreen(
-                    captainId: 0,
-                    viceCaptainId: 0,
-                    players2: selectedTeamList,
-                  ))).then((value) {
+                        captainId: 0,
+                        viceCaptainId: 0,
+                        players2: selectedTeamList,
+                      ))).then((value) {
             if (value != null && value == "create_contest") {
               Future.delayed(Duration.zero, () {
                 Navigator.pop(context, "create_contest");
@@ -83,7 +97,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
             MaterialPageRoute(
               builder: (getContext) => const LoginScreen(),
             ),
-                (route) => false);
+            (route) => false);
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
@@ -176,6 +190,43 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
     });
   }
 
+  Future getContestWinnerApi() async {
+    await getContestWinner(
+            widget.contestData.id.toString(), widget.contestData.matchId.toString())
+        .then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          winnerListDataMain = res.body!;
+          winnerListData.clear();
+          for(int i = 0; i <winnerListDataMain.length;i++){
+            if(winnerListDataMain[i].userId.toString()==getStringAsync(userId)){
+              winnerListData.add(winnerListDataMain[i]);
+            }
+          }
+          for(int i = 0; i <winnerListDataMain.length;i++){
+            if(winnerListDataMain[i].userId.toString()!=getStringAsync(userId)){
+              winnerListData.add(winnerListDataMain[i]);
+            }
+          }
+
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
   Future getMyContestListApi() async {
     await getMyContestList(widget.matchData.id.toString()).then((res) async {
       hideLoader();
@@ -208,7 +259,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:widget.from=="my_contest"?Size.fromHeight(MediaQuery.sizeOf(context).height * 0.33): Size.fromHeight(MediaQuery.sizeOf(context).height * 0.41),
+        preferredSize: widget.from == "my_contest"
+            ? Size.fromHeight(MediaQuery.sizeOf(context).height * 0.33)
+            : Size.fromHeight(MediaQuery.sizeOf(context).height * 0.41),
         child: AppBar(
           elevation: 0,
           backgroundColor: AppColor.brown2,
@@ -405,58 +458,71 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                       ],
                     ),
                   ),
-                 widget.from=="my_contest"?SizedBox(): GestureDetector(
-                    onTap: () {
-                      // createContestApi();
-                      Navigator.push(
-                          getContext,
-                          MaterialPageRoute(
-                              builder: (context) =>   myContestList.isNotEmpty?TeamListScreen(matchData: widget.matchData,contestData:widget.contestData,):MakeBettorTeam(matchData: widget.matchData,contestData:widget.contestData,))).then((value) {
-                        if (value != null && value == "create_contest") {
-                          Future.delayed(Duration.zero, () {
-                            Navigator.pop(context,"create_contest");
-                          });
-                        }
-                      });
-                    },
-                    child: Card(
-                        color: AppColor.grey,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        elevation: 0.2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 5.0),
-                            decoration: BoxDecoration(
-                              gradient:  LinearGradient(
-                                colors: [
-                                  Colors.green.shade700,
-                                  Colors.green.shade700,
-                                ],
+                  widget.from == "my_contest"
+                      ? SizedBox()
+                      : GestureDetector(
+                          onTap: () {
+                            // createContestApi();
+                            Navigator.push(
+                                getContext,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        myContestList.isNotEmpty
+                                            ? TeamListScreen(
+                                                matchData: widget.matchData,
+                                                contestData: widget.contestData,
+                                              )
+                                            : MakeBettorTeam(
+                                                matchData: widget.matchData,
+                                                contestData: widget.contestData,
+                                              ))).then((value) {
+                              if (value != null && value == "create_contest") {
+                                Future.delayed(Duration.zero, () {
+                                  Navigator.pop(context, "create_contest");
+                                });
+                              }
+                            });
+                          },
+                          child: Card(
+                              color: AppColor.grey,
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 5),
+                              elevation: 0.2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "JOIN CONTEST",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: "Lato_Bold",
-                                      color: AppColor.white,
+                              child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.green.shade700,
+                                        Colors.green.shade700,
+                                      ],
                                     ),
-                                    textAlign: TextAlign.center,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                ],
-                              ),
-                            ))),
-                  ),
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(vertical: 12.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          "JOIN CONTEST",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontFamily: "Lato_Bold",
+                                            color: AppColor.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ))),
+                        ),
                   TabBar(
                     controller: tabController,
                     labelColor: AppColor.orange_0,
@@ -499,9 +565,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           controller: tabController,
           children: <Widget>[
             contestList.isEmpty ? noDataFound() : winningsScreen(),
-            contestDetailData==null ||contestDetailData!.player!.isEmpty ? noDataFound() : leaderBoardScreen(),
-
-
+             winnerListData.isEmpty
+                ? noDataFound()
+                : leaderBoardScreen(),
           ],
         ),
       ),
@@ -539,8 +605,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
               ],
             ),
           ),
-
-          SizedBox(height: 20,),
+          SizedBox(
+            height: 20,
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
@@ -582,27 +649,39 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
               ],
             ),
           ),
-          SizedBox(height: 10,),
-          Container(height: 1,color: AppColor.grey,),
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            height: 1,
+            color: AppColor.grey,
+          ),
         ],
       ),
     );
   }
 
-
-
   leaderBoardScreen() {
     return Container(
       margin: const EdgeInsets.only(top: 10),
       child: ListView.builder(
-        itemCount:contestDetailData!.player!.length,
+        itemCount: winnerListData.length,
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-            onTap: (){
-              getTeamDetailApi(contestDetailData!.player![index].userId.toString());
-
-
+            onTap: () {
+              if (winnerListData[index].userId.toString() ==
+                  getStringAsync(userId)) {
+                getTeamDetailApi(
+                    winnerListData[index].userId.toString());
+              } else if (checkDateTimeAfterGivenDateTime(widget.matchData.matchDate!,widget.matchData.matchTime!)) {
+                debugPrint("hererrer");
+                getTeamDetailApi(
+                    winnerListData[index].userId.toString());
+              } else {
+                CommonFunctions().showToastMessage(context,
+                    "You can see other user team when the match starts.");
+              }
             },
             child: Card(
                 color: AppColor.transparent,
@@ -634,36 +713,45 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                                   backgroundColor: Colors.white,
                                   child: ClipOval(
                                       child: Image.asset(
-                                        "assets/player.png",
-                                        fit: BoxFit.contain,
-                                        height: 45,
-                                        width: 45,
-                                      )),
+                                    "assets/player.png",
+                                    fit: BoxFit.contain,
+                                    height: 45,
+                                    width: 45,
+                                  )),
                                 ),
                                 const SizedBox(
                                   width: 10,
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      contestDetailData!.player![index].userName == null
-                                          ? "Player"
-                                          : contestDetailData!.player![index].userName
+                                Text(
+                                  winnerListData[index].batterName!.name ==
+                                          null
+                                      ? "Player"
+                                      : winnerListData[index].batterName!.name
                                           .toString(),
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.medGrey,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: "Lato_Semibold",
+                                    color: AppColor.medGrey,
+                                  ),
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
                           ),
+                          checkDateTimeAfterGivenDateTime(widget.matchData.matchDate!,widget.matchData.matchTime!)?Text(
+                            winnerListData[index].totalFantasyPoint ==
+                                null
+                                ? "-"
+                                : winnerListData[index].totalFantasyPoint
+                                .toString(),
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontFamily: "Lato_Semibold",
+                              color: AppColor.medGrey,
+                            ),
+                            textAlign: TextAlign.center,
+                          ):SizedBox(),
+                          SizedBox(width: 10,)
                         ],
                       ),
                     ))),
@@ -671,6 +759,25 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         },
       ),
     );
+  }
+
+  bool checkDateTimeAfterGivenDateTime(
+      String givenDateString, String givenTimeString) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateFormat timeFormat = DateFormat.Hm();
+
+    DateTime currentDate = DateTime.now();
+    DateTime givenDate = dateFormat.parse(givenDateString);
+    DateTime givenTime = timeFormat.parse(givenTimeString);
+
+    DateTime givenDateTime = DateTime(givenDate.year, givenDate.month,
+        givenDate.day, givenTime.hour, givenTime.minute);
+
+    if (currentDate.isAfter(givenDateTime)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   noDataFound() {
@@ -687,9 +794,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           const Text(
             "No Data Found!!",
             style: TextStyle(
-                fontFamily: "Lato_Bold",
-                color: AppColor.brown_0,
-                fontSize: 16),
+                fontFamily: "Lato_Bold", color: AppColor.brown_0, fontSize: 16),
           )
         ],
       ),

@@ -30,7 +30,8 @@ class SelectCaptainAndVice extends StatefulWidget {
       {super.key,
       required this.players,
       required this.matchData,
-      required this.contestData, this.from});
+      required this.contestData,
+      this.from});
 
   @override
   State<SelectCaptainAndVice> createState() => _AddTeamsState();
@@ -48,7 +49,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(widget.from=="team_list"){
+    if (widget.from == "team_list") {
       for (int i = 0; i < widget.players.length; i++) {
         if (widget.players[i].isCaptain == 1) {
           captainId = widget.players[i].playerId!;
@@ -56,13 +57,12 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
           viceCaptainId = widget.players[i].playerId!;
         }
       }
-    }else{
+    } else {
       for (int i = 0; i < widget.players.length; i++) {
         widget.players[i].isCaptain = 0;
         widget.players[i].isViceCaption = 0;
       }
     }
-
   }
 
   @override
@@ -97,7 +97,6 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-
           Expanded(
               child: ListView.builder(
                   itemCount: widget.players.length,
@@ -163,8 +162,8 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                             .playerName ==
                                                         null
                                                     ? "Player"
-                                                    : widget
-                                                        .players[index].playerName
+                                                    : widget.players[index]
+                                                        .playerName
                                                         .toString(),
                                                 style: TextStyle(
                                                   fontSize: 20,
@@ -190,9 +189,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                     width: 5,
                                                   ),
                                                   Text(
-                                                      widget.players[index]
-                                                          .teamName
-                                                          .toString(),
+                                                    widget
+                                                        .players[index].teamName
+                                                        .toString(),
                                                     style: TextStyle(
                                                       fontSize: 16,
                                                       fontFamily:
@@ -228,18 +227,19 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                       .isViceCaption ==
                                                   1) {
                                                 for (int i = 0;
-                                                i < widget.players.length;
-                                                i++) {
+                                                    i < widget.players.length;
+                                                    i++) {
                                                   widget.players[i].isCaptain =
-                                                  0;
-                                                  widget.players[i].isViceCaption =
-                                                  0;
+                                                      0;
+                                                  widget.players[i]
+                                                      .isViceCaption = 0;
                                                 }
                                                 widget.players[index]
                                                     .isCaptain = 1;
                                                 widget.players[index]
                                                     .isViceCaption = 0;
-                                                captainId = widget.players[index].playerId!;
+                                                captainId = widget
+                                                    .players[index].playerId!;
                                                 // CommonFunctions().showToastMessage(
                                                 //     context,
                                                 //     "Player is already selected as Vice Captain.");
@@ -306,18 +306,19 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                                       .isCaptain ==
                                                   1) {
                                                 for (int i = 0;
-                                                i < widget.players.length;
-                                                i++) {
+                                                    i < widget.players.length;
+                                                    i++) {
                                                   widget.players[i].isCaptain =
-                                                  0;
-                                                  widget.players[i].isViceCaption =
-                                                  0;
+                                                      0;
+                                                  widget.players[i]
+                                                      .isViceCaption = 0;
                                                 }
                                                 widget.players[index]
                                                     .isCaptain = 0;
                                                 widget.players[index]
                                                     .isViceCaption = 1;
-                                                viceCaptainId = widget.players[index].playerId!;
+                                                viceCaptainId = widget
+                                                    .players[index].playerId!;
                                                 // CommonFunctions().showToastMessage(
                                                 //     context,
                                                 //     "Player is already selected as Captain.");
@@ -396,15 +397,15 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                       getContext,
                       MaterialPageRoute(
                           builder: (context) => PreviewTeamScreen(
-                            players: widget.players,
-                            captainId: captainId,
-                            viceCaptainId: viceCaptainId,
-                          )));
+                                players: widget.players,
+                                captainId: captainId,
+                                viceCaptainId: viceCaptainId,
+                              )));
                 },
                 child: Card(
                     color: AppColor.grey,
                     margin:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                     elevation: 0.2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
@@ -457,7 +458,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                 child: Card(
                     color: AppColor.grey,
                     margin:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                     elevation: 0.2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10.0),
@@ -467,17 +468,17 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                         decoration: BoxDecoration(
                           gradient: captainId == 0 || viceCaptainId == 0
                               ? LinearGradient(
-                            colors: [
-                              AppColor.grey.withOpacity(0.7),
-                              AppColor.grey.withOpacity(0.7),
-                            ],
-                          )
+                                  colors: [
+                                    AppColor.grey.withOpacity(0.7),
+                                    AppColor.grey.withOpacity(0.7),
+                                  ],
+                                )
                               : LinearGradient(
-                            colors: [
-                              AppColor.red.withOpacity(0.7),
-                              AppColor.brown2.withOpacity(0.7),
-                            ],
-                          ),
+                                  colors: [
+                                    AppColor.red.withOpacity(0.7),
+                                    AppColor.brown2.withOpacity(0.7),
+                                  ],
+                                ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Padding(
@@ -526,7 +527,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             const Text(
               "CONFIRMATION",
               style: TextStyle(
@@ -536,7 +539,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             const Text(
               "Are you sure want to join this contest?",
               style: TextStyle(
@@ -546,7 +551,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
@@ -572,7 +579,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                 ],
               ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(
+              height: 20,
+            ),
             GestureDetector(
               onTap: () {
                 createContestApi();
@@ -580,7 +589,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
               child: Card(
                   color: AppColor.grey,
                   margin:
-                  const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                   elevation: 0.2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -590,17 +599,17 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                       decoration: BoxDecoration(
                         gradient: captainId == 0 || viceCaptainId == 0
                             ? LinearGradient(
-                          colors: [
-                            AppColor.grey.withOpacity(0.7),
-                            AppColor.grey.withOpacity(0.7),
-                          ],
-                        )
+                                colors: [
+                                  AppColor.grey.withOpacity(0.7),
+                                  AppColor.grey.withOpacity(0.7),
+                                ],
+                              )
                             : LinearGradient(
-                          colors: [
-                            AppColor.green,
-                            AppColor.green,
-                          ],
-                        ),
+                                colors: [
+                                  AppColor.green,
+                                  AppColor.green,
+                                ],
+                              ),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
@@ -630,7 +639,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                         ),
                       ))),
             ),
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
           ],
         );
       },
@@ -643,6 +654,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
       'contest_id': widget.contestData.id.toString(),
       'match_id': widget.matchData.id.toString(),
       'selected_team': jsonEncode(widget.players),
+      'contest_fee': widget.contestData.entryFee.toString(),
     };
     await createContestTeam(request).then((res) async {
       if (res.success == 1) {

@@ -884,7 +884,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
-              if (allRounderList[index].playerSelected || arCount < 8) {
+              if (bowlList[index].playerSelected || arCount < 8) {
                 if (bowlList[index].playerSelected ||
                     selectedPlayerList.length < 11) {
                   setState(() {

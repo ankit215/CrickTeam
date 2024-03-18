@@ -20,9 +20,10 @@ import 'ContestDetailScreen.dart';
 import 'PreviewTeamScreen.dart';
 
 class ContestScreen extends StatefulWidget {
+  final String?from;
   final UpcomingListArr matchData;
 
-  const ContestScreen({super.key, required this.matchData});
+  const ContestScreen({super.key, required this.matchData, this.from});
 
   @override
   State<ContestScreen> createState() => _ContestScreenState();
@@ -45,7 +46,7 @@ class _ContestScreenState extends State<ContestScreen>
 
     tabController = TabController(
       initialIndex: 0,
-      length: 3,
+      length: widget.from=="current"?2:3,
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
@@ -324,13 +325,42 @@ class _ContestScreenState extends State<ContestScreen>
                     ],
                   ),
                 ),
-                TabBar(
+                widget.from=="current"?TabBar(
                   controller: tabController,
                   labelColor: AppColor.yellowV2,
                   unselectedLabelColor: AppColor.grey,
                   indicatorColor: AppColor.yellowV2,
                   tabs: <Widget>[
                     Tab(
+                      child: Text(
+                        'My Contests(${myContestList.length})',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: tabController.index == 1
+                              ? "Lato_Semibold"
+                              : "Lato_Regular",
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'My Team(${myContestList.length})',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontFamily: tabController.index == 1
+                              ? "Lato_Semibold"
+                              : "Lato_Regular",
+                        ),
+                      ),
+                    ),
+                  ],
+                ):TabBar(
+                  controller: tabController,
+                  labelColor: AppColor.yellowV2,
+                  unselectedLabelColor: AppColor.grey,
+                  indicatorColor: AppColor.yellowV2,
+                  tabs: <Widget>[
+                  Tab(
                       child: Text(
                         'Contests(${contestList.length})',
                         style: TextStyle(
@@ -372,10 +402,16 @@ class _ContestScreenState extends State<ContestScreen>
       ),
       body: Container(
         color: Colors.white,
-        child: TabBarView(
+        child: widget.from=="current"?TabBarView(
           controller: tabController,
           children: <Widget>[
-            contestList.isEmpty ? noDataFound() : contestScreen(),
+            myContestList.isEmpty ? noDataFound() : myContestScreen(),
+            myContestList.isEmpty ? noDataFound() : myTeamScreen(),
+          ],
+        ):TabBarView(
+          controller: tabController,
+          children: <Widget>[
+            widget.from=="current"?const SizedBox(): contestList.isEmpty ? noDataFound() : contestScreen(),
             myContestList.isEmpty ? noDataFound() : myContestScreen(),
             myContestList.isEmpty ? noDataFound() : myTeamScreen(),
           ],

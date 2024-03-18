@@ -143,401 +143,403 @@ class _PreviewTeamScreenState extends State<PreviewTeamScreen> {
               fit: BoxFit.fill,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context, "add_teams");
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Image.asset(
-                      "assets/back_arrow.png",
-                      height: 30,
-                      width: 30,
-                      color: Colors.white,
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context, "add_teams");
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 10),
+                      child: Image.asset(
+                        "assets/back_arrow.png",
+                        height: 30,
+                        width: 30,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const Text(
-                "Wicket-Keeper",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900),
-              ),
-              Wrap(
-                runSpacing: runSpacing,
-                spacing: spacing,
-                alignment: WrapAlignment.center,
-                children: List.generate(wicketKeeperList.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          children: [
-                            Card(
-                              color: Colors.white,
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColor.greenDark,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 25,
-                                    width: 25,
-                                  )),
+                const Text(
+                  "Wicket-Keeper",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900),
+                ),
+                Wrap(
+                  runSpacing: runSpacing,
+                  spacing: spacing,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(wicketKeeperList.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Stack(
+                            children: [
+                              Card(
+                                color: Colors.white,
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: CircleAvatar(
+                                    radius: 15,
+                                    backgroundColor: AppColor.greenDark,
+                                    child: ClipOval(
+                                        child: Image.asset(
+                                      "assets/player.png",
+                                      fit: BoxFit.contain,
+                                      height: 25,
+                                      width: 25,
+                                    )),
+                                  ),
                                 ),
                               ),
-                            ),
-                            wicketKeeperList[index].playerId == captainId ||
-                                    wicketKeeperList[index].playerId ==
-                                        viceCaptainId
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    margin: const EdgeInsets.only(
-                                        left: 30, top: 20),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.red,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        wicketKeeperList[index].playerId ==
-                                                captainId
-                                            ? "C"
-                                            : "VC",
-                                        style: const TextStyle(
-                                          fontSize: 8,
-                                          fontFamily: "Lato_Bold",
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
+                              wicketKeeperList[index].playerId == captainId ||
+                                      wicketKeeperList[index].playerId ==
+                                          viceCaptainId
+                                  ? Container(
+                                      height: 20,
+                                      width: 20,
+                                      margin: const EdgeInsets.only(
+                                          left: 30, top: 20),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.red,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: AppColor.brown3),
-                          child: Text(
-                            widget.players2!=null?"${wicketKeeperList[index].playerName} (${wicketKeeperList[index].points})":"${wicketKeeperList[index].playerName}",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.white,
-                                fontSize: 12),
-                            textAlign: TextAlign.center,
+                                      child: Center(
+                                        child: Text(
+                                          wicketKeeperList[index].playerId ==
+                                                  captainId
+                                              ? "C"
+                                              : "VC",
+                                          style: const TextStyle(
+                                            fontSize: 8,
+                                            fontFamily: "Lato_Bold",
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const Text(
-                "Batter",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900),
-              ),
-              Wrap(
-                runSpacing: runSpacing,
-                spacing: spacing,
-                alignment: WrapAlignment.center,
-                children: List.generate(batingPlayerList.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Card(
-                              color: Colors.white,
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColor.greenDark,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 25,
-                                    width: 25,
-                                  )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: AppColor.brown3),
+                            child: Text(
+                              widget.players2!=null?"${wicketKeeperList[index].playerName}\n(${wicketKeeperList[index].points})":"${wicketKeeperList[index].playerName}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 10),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+                const Text(
+                  "Batter",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900),
+                ),
+                Wrap(
+                  runSpacing: runSpacing,
+                  spacing: spacing,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(batingPlayerList.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Card(
+                                color: Colors.white,
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: CircleAvatar(
+                                    radius: 15,
+                                    backgroundColor: AppColor.greenDark,
+                                    child: ClipOval(
+                                        child: Image.asset(
+                                      "assets/player.png",
+                                      fit: BoxFit.contain,
+                                      height: 25,
+                                      width: 25,
+                                    )),
+                                  ),
                                 ),
                               ),
-                            ),
-                            batingPlayerList[index].playerId == captainId ||
-                                    batingPlayerList[index].playerId ==
-                                        viceCaptainId
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    margin: const EdgeInsets.only(
-                                        left: 30, top: 20),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.orange_light,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        batingPlayerList[index].playerId ==
-                                                captainId
-                                            ? "C"
-                                            : "VC",
-                                        style: const TextStyle(
-                                          fontSize: 8,
-                                          fontFamily: "Lato_Bold",
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
+                              batingPlayerList[index].playerId == captainId ||
+                                      batingPlayerList[index].playerId ==
+                                          viceCaptainId
+                                  ? Container(
+                                      height: 20,
+                                      width: 20,
+                                      margin: const EdgeInsets.only(
+                                          left: 30, top: 20),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.orange_light,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: AppColor.brown3),
-                          child: Text(
-                            widget.players2!=null?"${batingPlayerList[index].playerName} (${batingPlayerList[index].points})":"${batingPlayerList[index].playerName}",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.white,
-                                fontSize: 12),
-                            textAlign: TextAlign.center,
+                                      child: Center(
+                                        child: Text(
+                                          batingPlayerList[index].playerId ==
+                                                  captainId
+                                              ? "C"
+                                              : "VC",
+                                          style: const TextStyle(
+                                            fontSize: 8,
+                                            fontFamily: "Lato_Bold",
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const Text(
-                "All-Rounder",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900),
-              ),
-              Wrap(
-                runSpacing: runSpacing,
-                spacing: spacing,
-                alignment: WrapAlignment.center,
-                children: List.generate(allRounderList.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Card(
-                              color: Colors.white,
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColor.greenDark,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 25,
-                                    width: 25,
-                                  )),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: AppColor.brown3),
+                            child: Text(
+                              widget.players2!=null?"${batingPlayerList[index].playerName}\n(${batingPlayerList[index].points})":"${batingPlayerList[index].playerName}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 10),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+                const Text(
+                  "All-Rounder",
+                  style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900),
+                ),
+                Wrap(
+                  runSpacing: runSpacing,
+                  spacing: spacing,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(allRounderList.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Card(
+                                color: Colors.white,
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: CircleAvatar(
+                                    radius: 15,
+                                    backgroundColor: AppColor.greenDark,
+                                    child: ClipOval(
+                                        child: Image.asset(
+                                      "assets/player.png",
+                                      fit: BoxFit.contain,
+                                      height: 25,
+                                      width: 25,
+                                    )),
+                                  ),
                                 ),
                               ),
-                            ),
-                            allRounderList[index].playerId == captainId ||
-                                    allRounderList[index].playerId ==
-                                        viceCaptainId
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    margin: const EdgeInsets.only(
-                                        left: 30, top: 20),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.orange_light,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        allRounderList[index].playerId ==
-                                                captainId
-                                            ? "C"
-                                            : "VC",
-                                        style: const TextStyle(
-                                          fontSize: 8,
-                                          fontFamily: "Lato_Bold",
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
+                              allRounderList[index].playerId == captainId ||
+                                      allRounderList[index].playerId ==
+                                          viceCaptainId
+                                  ? Container(
+                                      height: 20,
+                                      width: 20,
+                                      margin: const EdgeInsets.only(
+                                          left: 30, top: 20),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.orange_light,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: AppColor.brown3),
-                          child: Text(
-                            widget.players2!=null?"${allRounderList[index].playerName} (${allRounderList[index].points})":"${allRounderList[index].playerName}",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.white,
-                                fontSize: 12),
-                            textAlign: TextAlign.center,
+                                      child: Center(
+                                        child: Text(
+                                          allRounderList[index].playerId ==
+                                                  captainId
+                                              ? "C"
+                                              : "VC",
+                                          style: const TextStyle(
+                                            fontSize: 8,
+                                            fontFamily: "Lato_Bold",
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const Text(
-                "Bowler",
-                style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900),
-              ),
-              Wrap(
-                runSpacing: runSpacing,
-                spacing: spacing,
-                alignment: WrapAlignment.center,
-                children: List.generate(bowlList.length, (index) {
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Stack(
-                          children: [
-                            Card(
-                              color: Colors.white,
-                              elevation: 10,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30.0),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(3.0),
-                                child: CircleAvatar(
-                                  radius: 15,
-                                  backgroundColor: AppColor.greenDark,
-                                  child: ClipOval(
-                                      child: Image.asset(
-                                    "assets/player.png",
-                                    fit: BoxFit.contain,
-                                    height: 25,
-                                    width: 25,
-                                  )),
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: AppColor.brown3),
+                            child: Text(
+                              widget.players2!=null?"${allRounderList[index].playerName}\n(${allRounderList[index].points})":"${allRounderList[index].playerName}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 10),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+                const Text(
+                  "Bowler",
+                  style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900),
+                ),
+                Wrap(
+                  runSpacing: runSpacing,
+                  spacing: spacing,
+                  alignment: WrapAlignment.center,
+                  children: List.generate(bowlList.length, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Stack(
+                            children: [
+                              Card(
+                                color: Colors.white,
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: CircleAvatar(
+                                    radius: 15,
+                                    backgroundColor: AppColor.greenDark,
+                                    child: ClipOval(
+                                        child: Image.asset(
+                                      "assets/player.png",
+                                      fit: BoxFit.contain,
+                                      height: 25,
+                                      width: 25,
+                                    )),
+                                  ),
                                 ),
                               ),
-                            ),
-                            bowlList[index].playerId == captainId ||
-                                    bowlList[index].playerId == viceCaptainId
-                                ? Container(
-                                    height: 20,
-                                    width: 20,
-                                    margin: const EdgeInsets.only(
-                                        left: 30, top: 20),
-                                    decoration: BoxDecoration(
-                                      color: AppColor.orange_light,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        bowlList[index].playerId == captainId
-                                            ? "C"
-                                            : "VC",
-                                        style: const TextStyle(
-                                          fontSize: 8,
-                                          fontFamily: "Lato_Bold",
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                        ),
-                                        textAlign: TextAlign.center,
+                              bowlList[index].playerId == captainId ||
+                                      bowlList[index].playerId == viceCaptainId
+                                  ? Container(
+                                      height: 20,
+                                      width: 20,
+                                      margin: const EdgeInsets.only(
+                                          left: 30, top: 20),
+                                      decoration: BoxDecoration(
+                                        color: AppColor.orange_light,
+                                        borderRadius: BorderRadius.circular(30),
                                       ),
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 3),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: AppColor.brown3),
-                          child: Text(
-                            widget.players2!=null?"${bowlList[index].playerName} (${bowlList[index].points})":"${bowlList[index].playerName}",
-                            style: const TextStyle(
-                                fontFamily: "Lato_Semibold",
-                                color: AppColor.white,
-                                fontSize: 12),
-                            textAlign: TextAlign.center,
+                                      child: Center(
+                                        child: Text(
+                                          bowlList[index].playerId == captainId
+                                              ? "C"
+                                              : "VC",
+                                          style: const TextStyle(
+                                            fontSize: 8,
+                                            fontFamily: "Lato_Bold",
+                                            fontWeight: FontWeight.w900,
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    )
+                                  : const SizedBox(),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(
-                height: 20,
-              )
-            ],
+                          const SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 3),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: AppColor.brown3),
+                            child: Text(
+                              widget.players2!=null?"${bowlList[index].playerName}\n(${bowlList[index].points})":"${bowlList[index].playerName}",
+                              style: const TextStyle(
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.white,
+                                  fontSize: 10),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+                const SizedBox(
+                  height: 20,
+                )
+              ],
+            ),
           ),
         ),
       ),

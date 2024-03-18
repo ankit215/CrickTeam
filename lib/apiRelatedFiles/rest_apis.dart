@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crick_team/modalClasses/GetContestModel.dart';
 import 'package:crick_team/modalClasses/OutPlayerModel.dart';
+import 'package:crick_team/modalClasses/WinnerListModal.dart';
 import 'package:crick_team/utils/data_type_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -296,6 +297,11 @@ Future<ContestDetailModel> getContestDetail(var contestId) async {
   showLoader();
   return ContestDetailModel.fromJson(await (handleResponse(
       await buildHttpResponse("contest_detail/$contestId", method: HttpMethod.get))));
+}
+Future<WinnerListModel> getContestWinner(var contestId,var matchId) async {
+  showLoader();
+  return WinnerListModel.fromJson(await (handleResponse(
+      await buildHttpResponse("contest_winner_list?contest_id=$contestId&match_id=$matchId", method: HttpMethod.get))));
 }
 
 Future<GetPlayerSearchModel> getPlayerSearch(String mobileNo) async {

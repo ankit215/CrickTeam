@@ -82,7 +82,7 @@ class SelectedTeam {
   String? teamName;
   int? isCaptain;
   int? isViceCaption;
-  int? points;
+  dynamic points;
 
   SelectedTeam(
       {this.teamId,
