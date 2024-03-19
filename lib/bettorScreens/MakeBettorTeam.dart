@@ -1,33 +1,29 @@
 import 'dart:convert';
 
 import 'package:crick_team/bettorScreens/SelectCaptainAndVice.dart';
-import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
 import 'package:crick_team/modalClasses/GetContestModel.dart';
-import 'package:crick_team/modalClasses/GetMatchModel.dart';
 import 'package:crick_team/modalClasses/MatchDetailModel.dart';
-import 'package:crick_team/modalClasses/TeamSelected.dart';
 import 'package:crick_team/utils/CommonFunctions.dart';
 import 'package:crick_team/utils/common.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../apiRelatedFiles/rest_apis.dart';
 import '../modalClasses/MyContestModel.dart';
-import '../modalClasses/ScorerMatchModel.dart';
-import '../scoreRelatedScreens/ScoreBoardscreen.dart';
-import '../startMatchRelatedScreens/StartInningsScreen.dart';
-import '../startMatchRelatedScreens/TossScreen.dart';
 import '../utils/AppColor.dart';
 import '../utils/constant.dart';
-import '../utils/shared_pref.dart';
 
 class MakeBettorTeam extends StatefulWidget {
-  final MatchDetailData matchData;
-  final GetContestData contestData;
+  final MatchDetailData? matchData;
+  final GetContestData? contestData;
+  final List<PlayerList>? playerList;
+  final String? from;
 
   const MakeBettorTeam(
-      {super.key, required this.matchData, required this.contestData});
+      {super.key,
+      this.matchData,
+      this.contestData,
+      this.playerList,
+      this.from});
 
   @override
   State<MakeBettorTeam> createState() => _MakeBettorTeamState();
@@ -60,6 +56,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
     Future.delayed(Duration.zero, () {
       getMatchListApi();
     });
+
   }
 
   void _handleTabSelection() {
@@ -74,7 +71,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
       wicketKeeperList = [];
       // Parse JSON data
       List<dynamic> parsedJson =
-          jsonDecode(jsonEncode(widget.matchData.playerList));
+          jsonDecode(jsonEncode(widget.matchData!.playerList));
       // Create a list to hold player objects
       List<PlayerList> players = [];
       // Add player objects to the list
@@ -95,6 +92,49 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
 
       debugPrint("LENGTH__${wicketKeeperList.length}");
     });
+    if (widget.from == "my_contest") {
+      debugPrint("swswsws__${widget.playerList!.length}");
+      setState(() {
+        for (int i = 0; i < widget.playerList!.length; i++) {
+          for (int j = 0; j < wicketKeeperList.length; j++) {
+            if (widget.playerList![i].playerId == wicketKeeperList[j].playerId) {
+              wicketKeeperList[j].playerSelected = true;
+              selectedPlayerList.add(wicketKeeperList[j]);
+              wkCount = wkCount + 1;
+            }
+          }
+        }
+        for (int i = 0; i < widget.playerList!.length; i++) {
+          for (int j = 0; j < batingPlayerList.length; j++) {
+            if (widget.playerList![i].playerId == batingPlayerList[j].playerId) {
+              batingPlayerList[j].playerSelected = true;
+              selectedPlayerList.add(batingPlayerList[j]);
+              batCount = batCount + 1;
+            }
+          }
+        }
+        for (int i = 0; i < widget.playerList!.length; i++) {
+          for (int j = 0; j < allRounderList.length; j++) {
+            if (widget.playerList![i].playerId == allRounderList[j].playerId) {
+              allRounderList[j].playerSelected = true;
+              selectedPlayerList.add(allRounderList[j]);
+              arCount = arCount + 1;
+            }
+          }
+        }
+        for (int i = 0; i < widget.playerList!.length; i++) {
+          for (int j = 0; j < bowlList.length; j++) {
+            if (widget.playerList![i].playerId == bowlList[j].playerId) {
+              bowlList[j].playerSelected = true;
+              selectedPlayerList.add(bowlList[j]);
+              bowlCount = bowlCount + 1;
+            }
+          }
+        }
+
+
+      });
+    }
   }
 
   @override
@@ -121,10 +161,10 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
               ),
             ),
           ),
-          title: const Center(
+          title:  Center(
             child: Text(
-              "Create Team",
-              style: TextStyle(
+              widget.from=="my_contest"?"Edit Team":"Create Team",
+              style: const TextStyle(
                 fontSize: 16,
                 fontFamily: "Lato_Semibold",
                 color: AppColor.white,
@@ -161,7 +201,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                 margin: const EdgeInsets.only(left: 20),
                                 child: Text(
                                   getFirstLetters(
-                                      widget.matchData.team1Name.toString()),
+                                      widget.matchData!.team1Name.toString()),
                                   style: const TextStyle(
                                       fontFamily: "Lato_Semibold",
                                       color: AppColor.white,
@@ -176,25 +216,24 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                 width: MediaQuery.sizeOf(context).width * 0.15,
                               ),
                               CircleAvatar(
-                                backgroundColor:
-                                Colors.white,
+                                backgroundColor: Colors.white,
                                 radius: 40,
-                                child:ClipOval(
-                                    child:widget.matchData.team1Photo !=null?
-                                    Image.network(
-                                      mediaUrl + widget.matchData
-                                          .team1Photo.toString(),
-                                      height: 45,
-                                      width: 45,
-                                      fit: BoxFit.cover,
-                                    )
-                                        :
-                                    Image.asset(
-                                      "assets/team_placeholder.png",
-                                      fit: BoxFit.contain,
-                                      height: 45,
-                                      width: 45,
-                                    )),
+                                child: ClipOval(
+                                    child: widget.matchData!.team1Photo != null
+                                        ? Image.network(
+                                            mediaUrl +
+                                                widget.matchData!.team1Photo
+                                                    .toString(),
+                                            height: 45,
+                                            width: 45,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            "assets/team_placeholder.png",
+                                            fit: BoxFit.contain,
+                                            height: 45,
+                                            width: 45,
+                                          )),
                               ),
                             ],
                           ),
@@ -202,28 +241,28 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                       ),
                       SizedBox(
                         width: 120,
-                        child: widget.matchData.tossWinnerId.toString() ==
-                                    widget.matchData.team1Id.toString() ||
-                                widget.matchData.tossWinnerId.toString() ==
-                                    widget.matchData.team2Id.toString()
+                        child: widget.matchData!.tossWinnerId.toString() ==
+                                    widget.matchData!.team1Id.toString() ||
+                                widget.matchData!.tossWinnerId.toString() ==
+                                    widget.matchData!.team2Id.toString()
                             ? Text(
-                                widget.matchData.tossDecision.toString() ==
+                                widget.matchData!.tossDecision.toString() ==
                                             "1" &&
-                                        widget.matchData.tossWinnerId
+                                        widget.matchData!.tossWinnerId
                                                 .toString() ==
-                                            widget.matchData.team1Id.toString()
-                                    ? "${getFirstLetters(widget.matchData.team1Name!.toString())} is winner and elected to bat."
-                                    : widget.matchData.tossDecision
+                                            widget.matchData!.team1Id.toString()
+                                    ? "${getFirstLetters(widget.matchData!.team1Name!.toString())} is winner and elected to bat."
+                                    : widget.matchData!.tossDecision
                                                     .toString() ==
                                                 "1" &&
-                                            widget.matchData.tossWinnerId
+                                            widget.matchData!.tossWinnerId
                                                     .toString() ==
-                                                widget.matchData.team2Id
+                                                widget.matchData!.team2Id
                                                     .toString()
-                                        ? "${getFirstLetters(widget.matchData.team2Name!.toString())} is winner and elected to bat."
+                                        ? "${getFirstLetters(widget.matchData!.team2Name!.toString())} is winner and elected to bat."
                                         : "-",
                                 textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.white),
+                                style: const TextStyle(color: Colors.white),
                               )
                             : Center(
                                 child: Row(
@@ -236,7 +275,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                   ),
                                   Text(
                                     DateFormat('h:mm a').format(DateFormat.Hm()
-                                        .parse(widget.matchData.matchTime
+                                        .parse(widget.matchData!.matchTime
                                             .toString())),
                                     style: const TextStyle(
                                         fontFamily: "Lato_Semibold",
@@ -261,7 +300,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                               margin: const EdgeInsets.only(right: 20),
                               child: Text(
                                 getFirstLetters(
-                                    widget.matchData.team2Name.toString()),
+                                    widget.matchData!.team2Name.toString()),
                                 style: const TextStyle(
                                     fontFamily: "Lato_Semibold",
                                     color: AppColor.white,
@@ -272,25 +311,24 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                           Row(
                             children: [
                               CircleAvatar(
-                                backgroundColor:
-                                Colors.white,
+                                backgroundColor: Colors.white,
                                 radius: 40,
-                                child:ClipOval(
-                                    child:widget.matchData.team2Photo !=null?
-                                    Image.network(
-                                      mediaUrl + widget.matchData
-                                          .team2Photo.toString(),
-                                      height: 45,
-                                      width: 45,
-                                      fit: BoxFit.cover,
-                                    )
-                                        :
-                                    Image.asset(
-                                      "assets/team_placeholder.png",
-                                      fit: BoxFit.contain,
-                                      height: 45,
-                                      width: 45,
-                                    )),
+                                child: ClipOval(
+                                    child: widget.matchData!.team2Photo != null
+                                        ? Image.network(
+                                            mediaUrl +
+                                                widget.matchData!.team2Photo
+                                                    .toString(),
+                                            height: 45,
+                                            width: 45,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            "assets/team_placeholder.png",
+                                            fit: BoxFit.contain,
+                                            height: 45,
+                                            width: 45,
+                                          )),
                               ),
                               SizedBox(
                                 width: MediaQuery.sizeOf(context).width * 0.15,
@@ -308,7 +346,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                   style: const TextStyle(color: Colors.white),
                 ),
                 Container(
-                    margin: EdgeInsets.symmetric(vertical: 20),
+                    margin: const EdgeInsets.symmetric(vertical: 20),
                     width: 600,
                     child: Center(child: progressBar())),
                 GestureDetector(
@@ -322,8 +360,9 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                           MaterialPageRoute(
                               builder: (context) => SelectCaptainAndVice(
                                     players: selectedPlayerList,
-                                    matchData: widget.matchData,
-                                    contestData: widget.contestData,
+                                    matchData: widget.matchData!,
+                                    contestData: widget.contestData!,
+                                from: "my_contest",
                                   ))).then((value) {
                         if (value != null && value == "create_contest") {
                           Future.delayed(Duration.zero, () {
@@ -334,7 +373,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                     }
                   },
                   child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 60),
+                    margin: const EdgeInsets.symmetric(horizontal: 60),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(6),
                         color: selectedPlayerList.length < 11
@@ -1060,7 +1099,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                             fontSize: 10),
                       ),
                     )
-                  : SizedBox()
+                  : const SizedBox()
             ],
           ),
         ),
@@ -1086,9 +1125,7 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
           const Text(
             "No Data Found!!",
             style: TextStyle(
-                fontFamily: "Lato_Bold",
-                color: AppColor.brown_0,
-                fontSize: 16),
+                fontFamily: "Lato_Bold", color: AppColor.brown_0, fontSize: 16),
           )
         ],
       ),

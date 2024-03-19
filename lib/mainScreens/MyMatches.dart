@@ -43,6 +43,9 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
     Future.delayed(Duration.zero, () {
       getMatchListApi();
     });
+    Future.delayed(Duration.zero, () {
+      getWalletAmountApi();
+    });
   }
 
   void _handleTabSelection() {
@@ -76,6 +79,30 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
       }
     });
   }
+  Future getWalletAmountApi() async {
+    await getWalletAmount(getStringAsync(userId)).then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          setValue(wallet_amount, res.body!.amount!);
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        debugPrint("${res.message!}  401 MESSAGE");
+        // CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -135,27 +162,23 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
             ),
           ),
           actions: <Widget>[
-            Image.asset(
+            getIntAsync(accountType)==2? Image.asset(
               "assets/wallet.png",
               height: 25,
               width: 25,
-            ),
+            ):const SizedBox(),
             const SizedBox(
               width: 5,
             ),
-            GestureDetector(
-              child: const Center(
-                child: Text(
-                  "45",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontFamily: "Lato_Semibold",
-                    color: AppColor.brown2,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
+            getIntAsync(accountType)==2? Text(
+              getIntAsync(wallet_amount).toString(),
+              style: const TextStyle(
+                fontSize: 18,
+                fontFamily: "Lato_Semibold",
+                color: AppColor.brown2,
               ),
-            ),
+              textAlign: TextAlign.center,
+            ):const SizedBox(),
             const SizedBox(
               width: 15,
             )
@@ -386,7 +409,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       height: 47,
                                       width: MediaQuery.sizeOf(context).width *
                                           0.29,
-                                      padding: EdgeInsets.only(right: 22),
+                                      padding: const EdgeInsets.only(right: 22),
                                       decoration: BoxDecoration(
                                         color:
                                             AppColor.yellowMed.withOpacity(0.4),
@@ -395,7 +418,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                         currentMatchList[index]
                                             .team1Name
                                             .toString(),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontFamily: "Lato_Semibold",
                                             color: AppColor.brown2),
                                       ),
@@ -441,7 +464,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                   Container(
                                     alignment: Alignment.center,
                                     height: 45,
-                                    padding: EdgeInsets.only(left: 20),
+                                    padding: const EdgeInsets.only(left: 20),
                                     width:
                                         MediaQuery.sizeOf(context).width * 0.29,
                                     decoration: BoxDecoration(
@@ -452,7 +475,7 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
                                       currentMatchList[index]
                                           .team2Name
                                           .toString(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontFamily: "Lato_Semibold"),
                                     ),
                                   ),

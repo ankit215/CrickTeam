@@ -1,3 +1,5 @@
+import 'GetContestModel.dart';
+
 class MyContestModel {
   int? success;
   int? code;
@@ -39,7 +41,7 @@ class MyContestData {
   String? createdAt;
   String? updatedAt;
   List<PlayerList>? playerList;
-  ContestDetail? contestDetail;
+  GetContestData? contestDetail;
 
   MyContestData(
       {this.id,
@@ -67,7 +69,7 @@ class MyContestData {
       });
     }
     contestDetail = json['contest_detail'] != null
-        ? ContestDetail.fromJson(json['contest_detail'])
+        ? GetContestData.fromJson(json['contest_detail'])
         : null;
   }
 
@@ -133,7 +135,7 @@ class PlayerList {
   }
 }
 
-class ContestDetail {
+/*class ContestDetail {
   int? id;
   int? matchId;
   int? entryFee;
@@ -176,4 +178,4 @@ class ContestDetail {
     data['updatedAt'] = updatedAt;
     return data;
   }
-}
+}*/

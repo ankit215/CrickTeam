@@ -17,10 +17,11 @@ import '../modalClasses/MyContestModel.dart';
 import '../utils/AppColor.dart';
 import '../utils/constant.dart';
 import 'ContestDetailScreen.dart';
+import 'MakeBettorTeam.dart';
 import 'PreviewTeamScreen.dart';
 
 class ContestScreen extends StatefulWidget {
-  final String?from;
+  final String? from;
   final UpcomingListArr matchData;
 
   const ContestScreen({super.key, required this.matchData, this.from});
@@ -46,7 +47,7 @@ class _ContestScreenState extends State<ContestScreen>
 
     tabController = TabController(
       initialIndex: 0,
-      length: widget.from=="current"?2:3,
+      length: widget.from == "current" ? 1 : 2,
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
@@ -325,24 +326,66 @@ class _ContestScreenState extends State<ContestScreen>
                     ],
                   ),
                 ),
-                widget.from=="current"?TabBar(
-                  controller: tabController,
-                  labelColor: AppColor.yellowV2,
-                  unselectedLabelColor: AppColor.grey,
-                  indicatorColor: AppColor.yellowV2,
-                  tabs: <Widget>[
-                    Tab(
-                      child: Text(
-                        'My Contests(${myContestList.length})',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: tabController.index == 1
-                              ? "Lato_Semibold"
-                              : "Lato_Regular",
-                        ),
-                      ),
-                    ),
-                    Tab(
+                widget.from == "current"
+                    ? TabBar(
+                        controller: tabController,
+                        labelColor: AppColor.yellowV2,
+                        unselectedLabelColor: AppColor.grey,
+                        indicatorColor: AppColor.yellowV2,
+                        tabs: <Widget>[
+                          Tab(
+                            child: Text(
+                              'My Contests(${myContestList.length})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: tabController.index == 1
+                                    ? "Lato_Semibold"
+                                    : "Lato_Regular",
+                              ),
+                            ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'My Team(${myContestList.length})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: tabController.index == 1
+                                    ? "Lato_Semibold"
+                                    : "Lato_Regular",
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : TabBar(
+                        controller: tabController,
+                        labelColor: AppColor.yellowV2,
+                        unselectedLabelColor: AppColor.grey,
+                        indicatorColor: AppColor.yellowV2,
+                        tabs: <Widget>[
+                          Tab(
+                            child: Text(
+                              'Contests(${contestList.length})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: tabController.index == 0
+                                    ? "Lato_Semibold"
+                                    : "Lato_Regular",
+                              ),
+                            ),
+                          ),
+                          Tab(
+                            child: Text(
+                              'My Contests(${myContestList.length})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: tabController.index == 1
+                                    ? "Lato_Semibold"
+                                    : "Lato_Regular",
+                              ),
+                            ),
+                          ),
+                          /* Tab(
                       child: Text(
                         'My Team(${myContestList.length})',
                         style: TextStyle(
@@ -352,49 +395,9 @@ class _ContestScreenState extends State<ContestScreen>
                               : "Lato_Regular",
                         ),
                       ),
-                    ),
-                  ],
-                ):TabBar(
-                  controller: tabController,
-                  labelColor: AppColor.yellowV2,
-                  unselectedLabelColor: AppColor.grey,
-                  indicatorColor: AppColor.yellowV2,
-                  tabs: <Widget>[
-                  Tab(
-                      child: Text(
-                        'Contests(${contestList.length})',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: tabController.index == 0
-                              ? "Lato_Semibold"
-                              : "Lato_Regular",
-                        ),
+                    ),*/
+                        ],
                       ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'My Contests(${myContestList.length})',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: tabController.index == 1
-                              ? "Lato_Semibold"
-                              : "Lato_Regular",
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: Text(
-                        'My Team(${myContestList.length})',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: tabController.index == 1
-                              ? "Lato_Semibold"
-                              : "Lato_Regular",
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
               ],
             ),
           ),
@@ -402,20 +405,26 @@ class _ContestScreenState extends State<ContestScreen>
       ),
       body: Container(
         color: Colors.white,
-        child: widget.from=="current"?TabBarView(
-          controller: tabController,
-          children: <Widget>[
-            myContestList.isEmpty ? noDataFound() : myContestScreen(),
-            myContestList.isEmpty ? noDataFound() : myTeamScreen(),
-          ],
-        ):TabBarView(
-          controller: tabController,
-          children: <Widget>[
-            widget.from=="current"?const SizedBox(): contestList.isEmpty ? noDataFound() : contestScreen(),
-            myContestList.isEmpty ? noDataFound() : myContestScreen(),
-            myContestList.isEmpty ? noDataFound() : myTeamScreen(),
-          ],
-        ),
+        child: widget.from == "current"
+            ? TabBarView(
+                controller: tabController,
+                children: <Widget>[
+                  myContestList.isEmpty ? noDataFound() : myContestScreen(),
+                  myContestList.isEmpty ? noDataFound() : myTeamScreen(),
+                ],
+              )
+            : TabBarView(
+                controller: tabController,
+                children: <Widget>[
+                  widget.from == "current"
+                      ? const SizedBox()
+                      : contestList.isEmpty
+                          ? noDataFound()
+                          : contestScreen(),
+                  myContestList.isEmpty ? noDataFound() : myContestScreen(),
+                  // myContestList.isEmpty ? noDataFound() : myTeamScreen(),
+                ],
+              ),
       ),
     );
   }
@@ -437,8 +446,8 @@ class _ContestScreenState extends State<ContestScreen>
               }
               if (isContestJoined &&
                   contestList[index].totalParticipants! < 10) {
-                CommonFunctions()
-                    .showToastMessage(context, "For this contest you can only join with one team.");
+                CommonFunctions().showToastMessage(context,
+                    "For this contest you can only join with one team.");
               } else {
                 Navigator.push(
                     getContext,
@@ -709,6 +718,57 @@ class _ContestScreenState extends State<ContestScreen>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Number of winner: ${myContestList[index].contestDetail!.numberOfWinners!}",
+                                    style: const TextStyle(
+                                        fontFamily: "Lato_Semibold",
+                                        color: AppColor.brown2,
+                                        fontSize: 16),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          getContext,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  MakeBettorTeam(
+                                                    matchData: getMatchDetailData!,
+                                                    from: "my_contest",
+                                                    contestData: myContestList[index].contestDetail,
+                                                    playerList:
+                                                        myContestList[index]
+                                                            .playerList,
+                                                  ))).then((value) {
+                                        if (value != null &&
+                                            value == "create_contest") {
+                                          Future.delayed(Duration.zero, () {
+                                            Navigator.pop(
+                                                context, "create_contest");
+                                          });
+                                        }
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: const BoxDecoration(
+                                          color: AppColor.orange_light,
+                                          borderRadius: BorderRadius.only(
+                                              bottomRight: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10))),
+                                      child: const Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                               const SizedBox(
                                 height: 10,
                               ),
@@ -768,31 +828,6 @@ class _ContestScreenState extends State<ContestScreen>
                               ),
                               const SizedBox(
                                 height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Number of winner",
-                                    style: TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    "${myContestList[index].contestDetail!.numberOfWinners!}",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 5,
                               ),
                             ],
                           ),

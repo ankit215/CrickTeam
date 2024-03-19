@@ -101,7 +101,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }
@@ -125,7 +126,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }
@@ -155,7 +157,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }
@@ -185,7 +188,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }
@@ -222,7 +226,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
-        CommonFunctions().showToastMessage(context, res.message!);
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
       }
     });
   }
@@ -246,6 +251,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         await preferences.clear();
       } else {
+        debugPrint("NO_DATA____${res.message!}");
         // CommonFunctions().showToastMessage(context, res.message!);
       }
     });

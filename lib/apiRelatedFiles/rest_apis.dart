@@ -21,6 +21,7 @@ import '../modalClasses/ScoreboardModel.dart';
 import '../modalClasses/ScorerMatchModel.dart';
 import '../modalClasses/UpdateProfileModel.dart';
 import '../modalClasses/UserTeamDetailModel.dart';
+import '../modalClasses/WalletModel.dart';
 import '../modalClasses/api_response_model.dart';
 import '../utils/common.dart';
 import '../utils/constant.dart';
@@ -230,6 +231,14 @@ Future<SimpleApiModel> createContestTeam(Map request) async {
   hideLoader();
   return createPlayer;
 }
+Future<SimpleApiModel> editContest(Map request) async {
+  showLoader();
+  var createPlayer = SimpleApiModel.fromJson(await (handleResponse(
+      await buildHttpResponse('edit_contest',
+          request: request, method: HttpMethod.post))));
+  hideLoader();
+  return createPlayer;
+}
 Future<CreateMatchModel> createContest(Map request) async {
   showLoader();
   var createPlayer = CreateMatchModel.fromJson(await (handleResponse(
@@ -334,6 +343,13 @@ Future<ScoreboardModel> getScoreboard(
   showLoader();
   return ScoreboardModel.fromJson(await (handleResponse(await buildHttpResponse(
       "score_board?match_id=$matchId&team_id=$teamId&team2_id=$team2Id",
+      method: HttpMethod.get))));
+}
+Future<WalletModel> getWalletAmount(
+    String userId) async {
+  showLoader();
+  return WalletModel.fromJson(await (handleResponse(await buildHttpResponse(
+      "user_wallet/$userId",
       method: HttpMethod.get))));
 }
 

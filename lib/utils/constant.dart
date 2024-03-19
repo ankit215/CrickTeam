@@ -2,6 +2,7 @@ const isLogin = "is_login_user";
 
 const userId = "id_user";
 const bowlerRunsPerOver = "bowler_runs";
+const wallet_amount = "wallet_amount";
 
 const userName = "name_user";
 const dob = "dob";

@@ -451,7 +451,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                   if (captainId == 0 || viceCaptainId == 0) {
                     CommonFunctions().showToastMessage(
                         context, "Please select captain and vice captain.");
-                  } else {
+                  } else if(widget.from=="my_contest") {
+                    editContestApi();
+                  }else{
                     _showBottomSheet(context);
                   }
                 },
@@ -495,9 +497,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                               const SizedBox(
                                 width: 5,
                               ),
-                              const Text(
-                                "CREATE CONTEST",
-                                style: TextStyle(
+                               Text(
+                              widget.from=="my_contest"?"EDIT CONTEST":  "CREATE CONTEST",
+                                style: const TextStyle(
                                   fontSize: 14,
                                   fontFamily: "Lato_Bold",
                                   color: AppColor.white,
@@ -527,7 +529,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             const Text(
@@ -539,7 +541,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             const Text(
@@ -551,7 +553,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Padding(
@@ -579,7 +581,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             GestureDetector(
@@ -604,7 +606,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                                   AppColor.grey.withOpacity(0.7),
                                 ],
                               )
-                            : LinearGradient(
+                            : const LinearGradient(
                                 colors: [
                                   AppColor.green,
                                   AppColor.green,
@@ -639,7 +641,7 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
                         ),
                       ))),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
           ],
@@ -657,6 +659,34 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
       'contest_fee': widget.contestData.entryFee.toString(),
     };
     await createContestTeam(request).then((res) async {
+      if (res.success == 1) {
+        Future.delayed(Duration.zero, () {
+          Navigator.pop(context, "create_contest");
+          Navigator.pop(context, "create_contest");
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+  editContestApi() async {
+    var request = {
+      'user_id': getStringAsync(userId),
+      'contest_id': widget.contestData.id.toString(),
+      'match_id': widget.matchData.id.toString(),
+      'selected_team': jsonEncode(widget.players),
+    };
+    await editContest(request).then((res) async {
       if (res.success == 1) {
         Future.delayed(Duration.zero, () {
           Navigator.pop(context, "create_contest");
