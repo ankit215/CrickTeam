@@ -338,13 +338,13 @@ class _ContestScreenState extends State<ContestScreen>
                               'My Contests(${myContestList.length})',
                               style: TextStyle(
                                 fontSize: 14,
-                                fontFamily: tabController.index == 1
+                                fontFamily: tabController.index == 0
                                     ? "Lato_Semibold"
                                     : "Lato_Regular",
                               ),
                             ),
                           ),
-                          Tab(
+                          /*Tab(
                             child: Text(
                               'My Team(${myContestList.length})',
                               style: TextStyle(
@@ -354,7 +354,7 @@ class _ContestScreenState extends State<ContestScreen>
                                     : "Lato_Regular",
                               ),
                             ),
-                          ),
+                          ),*/
                         ],
                       )
                     : TabBar(
@@ -410,7 +410,6 @@ class _ContestScreenState extends State<ContestScreen>
                 controller: tabController,
                 children: <Widget>[
                   myContestList.isEmpty ? noDataFound() : myContestScreen(),
-                  myContestList.isEmpty ? noDataFound() : myTeamScreen(),
                 ],
               )
             : TabBarView(
@@ -737,18 +736,20 @@ class _ContestScreenState extends State<ContestScreen>
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   MakeBettorTeam(
-                                                    matchData: getMatchDetailData!,
+                                                    matchData:
+                                                        getMatchDetailData!,
                                                     from: "my_contest",
-                                                    contestData: myContestList[index].contestDetail,
+                                                    contestData:
+                                                        myContestList[index]
+                                                            .contestDetail,
                                                     playerList:
                                                         myContestList[index]
                                                             .playerList,
                                                   ))).then((value) {
                                         if (value != null &&
-                                            value == "create_contest") {
+                                            value == "edit_contest") {
                                           Future.delayed(Duration.zero, () {
-                                            Navigator.pop(
-                                                context, "create_contest");
+                                            tabController.animateTo(1);
                                           });
                                         }
                                       });

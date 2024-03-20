@@ -362,11 +362,15 @@ class _MakeBettorTeamState extends State<MakeBettorTeam>
                                     players: selectedPlayerList,
                                     matchData: widget.matchData!,
                                     contestData: widget.contestData!,
-                                from: "my_contest",
+                                    from: widget.from,
                                   ))).then((value) {
                         if (value != null && value == "create_contest") {
                           Future.delayed(Duration.zero, () {
                             Navigator.pop(context, "create_contest");
+                          });
+                        } else if (value != null && value == "edit_contest") {
+                          Future.delayed(Duration.zero, () {
+                            Navigator.pop(context, "edit_contest");
                           });
                         }
                       });

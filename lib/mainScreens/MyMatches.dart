@@ -853,11 +853,21 @@ class _MyMatchesState extends State<MyMatches> with TickerProviderStateMixin {
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
+               if (getIntAsync(accountType) == 2) {
               Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) => ScoreBoardScreen(
-                          getMatchData: completedMatchList[index])));
+              getContext,
+              MaterialPageRoute(
+              builder: (context) => ContestScreen(
+              from: "current",
+              matchData: completedMatchList[index])));
+              }else{
+                 Navigator.push(
+                     getContext,
+                     MaterialPageRoute(
+                         builder: (context) => ScoreBoardScreen(
+                             getMatchData: completedMatchList[index])));
+               }
+
             },
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),

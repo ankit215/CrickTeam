@@ -307,10 +307,10 @@ Future<ContestDetailModel> getContestDetail(var contestId) async {
   return ContestDetailModel.fromJson(await (handleResponse(
       await buildHttpResponse("contest_detail/$contestId", method: HttpMethod.get))));
 }
-Future<WinnerListModel> getContestWinner(var contestId,var matchId) async {
+Future<WinnerListModel> getContestWinner(var contestId,var matchId,var isResult,var contestCount) async {
   showLoader();
   return WinnerListModel.fromJson(await (handleResponse(
-      await buildHttpResponse("contest_winner_list?contest_id=$contestId&match_id=$matchId", method: HttpMethod.get))));
+      await buildHttpResponse("contest_winner_list?contest_id=$contestId&match_id=$matchId&is_result=$isResult&contest_count=$contestCount", method: HttpMethod.get))));
 }
 
 Future<GetPlayerSearchModel> getPlayerSearch(String mobileNo) async {

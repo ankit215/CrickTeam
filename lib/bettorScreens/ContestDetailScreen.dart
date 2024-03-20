@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crick_team/bettorScreens/TeamListScreen.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
 import 'package:crick_team/main.dart';
@@ -37,26 +39,39 @@ class ContestDetailScreen extends StatefulWidget {
 class _ContestDetailScreenState extends State<ContestDetailScreen>
     with TickerProviderStateMixin {
   late TabController tabController;
-
+  Timer? _timer;
+  Timer? _timer2;
   List<GetContestData> contestList = [];
   List<MyContestData> myContestList = [];
   MatchDetailData? getMatchDetailData;
-  ContestDetailData? contestDetailData;
   List<WinnerListData> winnerListData = [];
   List<WinnerListData> winnerListDataMain = [];
   List<SelectedTeam> selectedTeamList = [];
+  late DateTime targetTime;
 
   @override
   void initState() {
     super.initState();
+    // Set the target time (11:52 PM)
+    targetTime = DateTime(DateTime.now().year, DateTime.now().month,
+        DateTime.now().day, 23, 52, 30);
+    // Start the timer to update countdown every second
+    // _timer2 = Timer.periodic(Duration(seconds: 1), (Timer t) {
+    //   setState(() {});
+    // });
+    // Future.delayed(Duration.zero, () {
+    //   getContestWinnerApi("");
+    // });
+    /*Future.delayed(Duration.zero, () {
+      _startTimer();
+    });*/
+
     Future.delayed(Duration.zero, () {
-      getContestWinnerApi();
+      getContestListApi();
     });
+
     Future.delayed(Duration.zero, () {
-      getMatchDetailApi();
-    });
-    Future.delayed(Duration.zero, () {
-      getContestDetailApi();
+      getMyContestListApi();
     });
 
     tabController = TabController(
@@ -65,6 +80,26 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       vsync: this,
     );
     tabController.addListener(_handleTabSelection);
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _stopTimer();
+    super.dispose();
+  }
+
+  void _stopTimer() {
+    // Cancel the timer
+    _timer?.cancel();
+  }
+
+  void _startTimer() {
+    // Create a timer that triggers every one minute
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      hideLoader();
+      getMatchDetailApi();
+    });
   }
 
   Future getTeamDetailApi(var userId) async {
@@ -114,6 +149,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
         setState(() {
           contestList = [];
           contestList.addAll(res.body!);
+          Future.delayed(Duration.zero, () {
+            getMatchDetailApi();
+          });
         });
       } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
@@ -137,13 +175,13 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       hideLoader();
       if (res.success == 1) {
         setState(() {
-          getMatchDetailData = res.body;
           Future.delayed(Duration.zero, () {
-            getContestListApi();
-          });
-          Future.delayed(Duration.zero, () {
-            getMyContestListApi();
-            ();
+            getMatchDetailData = res.body;
+            getMatchDetailData!.matchResult != null &&
+                    getMatchDetailData!.matchResult != "null" &&
+                    getMatchDetailData!.matchResult != ""
+                ? getContestWinnerApiEndMatch(getMatchDetailData!.matchResult)
+                : getContestWinnerApi();
           });
         });
       } else if (res.message == "Invalid Token" && res.code == 400) {
@@ -163,58 +201,67 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
     });
   }
 
-  Future getContestDetailApi() async {
-    await getContestDetail(widget.contestData.id.toString()).then((res) async {
-      hideLoader();
-      if (res.success == 1) {
-        setState(() {
-          contestDetailData = res.body;
-          Future.delayed(Duration.zero, () {
-            getContestListApi();
-          });
-          Future.delayed(Duration.zero, () {
-            getMyContestListApi();
-            ();
-          });
-        });
-      } else if (res.message == "Invalid Token" && res.code == 400) {
-        toast(res.message);
-        Navigator.pushAndRemoveUntil(
-            getContext,
-            MaterialPageRoute(
-              builder: (getContext) => const LoginScreen(),
-            ),
-            (route) => false);
-        SharedPreferences preferences = await SharedPreferences.getInstance();
-        await preferences.clear();
-      } else {
-        debugPrint("NO_DATA____${res.message!}");
-        // CommonFunctions().showToastMessage(context, res.message!);
-      }
-    });
+  String _formatDuration(Duration duration) {
+    // Format the duration into "dd:hh:mm"
+    return "${duration.inDays}d ${duration.inHours.remainder(24)}h ${duration.inMinutes.remainder(60)}m ${duration.inMinutes.remainder(60)}s";
   }
 
   Future getContestWinnerApi() async {
     await getContestWinner(
-            widget.contestData.id.toString(), widget.contestData.matchId.toString())
+            widget.contestData.id.toString(),
+            widget.contestData.matchId.toString(),
+            "0",
+            winnerListData.length.toString())
         .then((res) async {
       hideLoader();
       if (res.success == 1) {
         setState(() {
           winnerListDataMain = res.body!;
           winnerListData.clear();
-          for(int i = 0; i <winnerListDataMain.length;i++){
-            if(winnerListDataMain[i].userId.toString()==getStringAsync(userId)){
+          for (int i = 0; i < winnerListDataMain.length; i++) {
+            if (winnerListDataMain[i].userId.toString() ==
+                getStringAsync(userId)) {
               winnerListData.add(winnerListDataMain[i]);
             }
           }
-          for(int i = 0; i <winnerListDataMain.length;i++){
-            if(winnerListDataMain[i].userId.toString()!=getStringAsync(userId)){
+          for (int i = 0; i < winnerListDataMain.length; i++) {
+            if (winnerListDataMain[i].userId.toString() !=
+                getStringAsync(userId)) {
               winnerListData.add(winnerListDataMain[i]);
             }
           }
-
         });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
+  Future getContestWinnerApiEndMatch(var matchWinner) async {
+    var matchW = matchWinner;
+    debugPrint("sdsdsd__" + matchWinner.toString());
+    await getContestWinner(
+            widget.contestData.id.toString(),
+            widget.contestData.matchId.toString(),
+            "1",
+            winnerListData.length.toString())
+        .then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        debugPrint("sdsdsd__22" + matchW.toString());
+        _stopTimer();
+        Navigator.pop(context, "create_contest");
       } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
         Navigator.pushAndRemoveUntil(
@@ -263,6 +310,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the remaining duration
+    Duration remainingDuration = targetTime.difference(DateTime.now());
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: widget.from == "my_contest"
@@ -282,6 +331,13 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                     color: AppColor.white,
                     fontSize: 16),
               ),
+              Text(
+                _formatDuration(remainingDuration),
+                style: const TextStyle(
+                    fontFamily: "Lato_Semibold",
+                    color: Colors.white,
+                    fontSize: 16),
+              )
               /*SizedBox(height: 5,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -465,7 +521,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                     ),
                   ),
                   widget.from == "my_contest"
-                      ? SizedBox()
+                      ? const SizedBox()
                       : GestureDetector(
                           onTap: () {
                             // createContestApi();
@@ -485,6 +541,11 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                               if (value != null && value == "create_contest") {
                                 Future.delayed(Duration.zero, () {
                                   Navigator.pop(context, "create_contest");
+                                });
+                              } else if (value != null &&
+                                  value == "edit_contest") {
+                                Future.delayed(Duration.zero, () {
+                                  Navigator.pop(context, "edit_contest");
                                 });
                               }
                             });
@@ -571,9 +632,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
           controller: tabController,
           children: <Widget>[
             contestList.isEmpty ? noDataFound() : winningsScreen(),
-             winnerListData.isEmpty
-                ? noDataFound()
-                : leaderBoardScreen(),
+            winnerListData.isEmpty ? noDataFound() : leaderBoardScreen(),
           ],
         ),
       ),
@@ -586,8 +645,8 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       margin: const EdgeInsets.only(top: 10),
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -611,7 +670,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Padding(
@@ -628,7 +687,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                       width: 15,
                       color: AppColor.yellowV2,
                     ),
-                    Text(
+                    const Text(
                       "1",
                       style: TextStyle(
                           fontFamily: "Lato_Bold",
@@ -646,7 +705,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                 ),
                 Text(
                   "₹${widget.contestData.prizePool}",
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontFamily: "Lato_Semibold",
                       color: AppColor.brown2,
                       fontSize: 16),
@@ -655,7 +714,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Container(
@@ -678,12 +737,11 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
             onTap: () {
               if (winnerListData[index].userId.toString() ==
                   getStringAsync(userId)) {
-                getTeamDetailApi(
-                    winnerListData[index].userId.toString());
-              } else if (checkDateTimeAfterGivenDateTime(widget.matchData.matchDate!,widget.matchData.matchTime!)) {
+                getTeamDetailApi(winnerListData[index].userId.toString());
+              } else if (checkDateTimeAfterGivenDateTime(
+                  widget.matchData.matchDate!, widget.matchData.matchTime!)) {
                 debugPrint("hererrer");
-                getTeamDetailApi(
-                    winnerListData[index].userId.toString());
+                getTeamDetailApi(winnerListData[index].userId.toString());
               } else {
                 CommonFunctions().showToastMessage(context,
                     "You can see other user team when the match starts.");
@@ -729,11 +787,13 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                                   width: 10,
                                 ),
                                 Text(
-                                  winnerListData[index].batterName!.name ==
-                                          null
+                                  winnerListData[index].batterName!.name == null
                                       ? "Player"
-                                      : winnerListData[index].batterName!.name
-                                          .toString(),
+                                      : winnerListData[index]
+                                              .batterName!
+                                              .name
+                                              .toString() +
+                                          "s",
                                   style: const TextStyle(
                                     fontSize: 20,
                                     fontFamily: "Lato_Semibold",
@@ -744,20 +804,34 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                               ],
                             ),
                           ),
-                          checkDateTimeAfterGivenDateTime(widget.matchData.matchDate!,widget.matchData.matchTime!)?Text(
-                            winnerListData[index].totalFantasyPoint ==
-                                null
-                                ? "-"
-                                : winnerListData[index].totalFantasyPoint
-                                .toString(),
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontFamily: "Lato_Semibold",
-                              color: AppColor.medGrey,
-                            ),
-                            textAlign: TextAlign.center,
-                          ):SizedBox(),
-                          SizedBox(width: 10,)
+                          Column(
+                            children: [
+                              /*widget.matchData.inningStatus!=null||  checkDateTimeAfterGivenDateTime(widget.matchData.matchDate!,widget.matchData.matchTime!)?*/
+                              Text(
+                                winnerListData[index].totalFantasyPoint == null
+                                    ? "-"
+                                    : "#${winnerListData[index].totalFantasyPoint}",
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.medGrey,
+                                ),
+                                textAlign: TextAlign.center,
+                              ) /*:const SizedBox()*/,
+                              /* Text(
+                                "Winning Zone",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: "Lato_Semibold",
+                                  color: AppColor.green,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),*/
+                            ],
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          )
                         ],
                       ),
                     ))),

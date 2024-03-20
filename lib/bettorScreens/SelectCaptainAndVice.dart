@@ -688,9 +688,9 @@ class _AddTeamsState extends State<SelectCaptainAndVice> {
     };
     await editContest(request).then((res) async {
       if (res.success == 1) {
+        toast(res.message.toString());
         Future.delayed(Duration.zero, () {
-          Navigator.pop(context, "create_contest");
-          Navigator.pop(context, "create_contest");
+          Navigator.pop(context, "edit_contest");
         });
       } else if (res.message == "Invalid Token" && res.code == 400) {
         toast(res.message);
