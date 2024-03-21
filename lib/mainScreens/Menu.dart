@@ -8,12 +8,14 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../apiRelatedFiles/rest_apis.dart';
+import '../bettorScreens/WebviewContainer.dart';
 import '../loginSignupRelatedFiles/LoginScreen.dart';
 import '../utils/AppColor.dart';
 import '../utils/CommonFunctions.dart';
 import '../utils/common.dart';
 import '../utils/constant.dart';
 import '../utils/shared_pref.dart';
+import 'HelpScreen.dart';
 import 'MainScreen.dart';
 
 class Menu extends StatefulWidget {
@@ -73,17 +75,23 @@ class _Menu extends State<Menu> {
                   title: 'PROFILE',
                 ),
               ),
-          /*    ElevatedButton(
+
+              getIntAsync(accountType)==2?ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
                   Scaffold.of(context).openEndDrawer();
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const WebViewContainer()));
                 },
                 child: const CustomListTile(
-                  image: "assets/bell.png",
-                  title: 'NOTIFICATIONS',
+                  image: "assets/trophy.png",
+                  title: 'FANTASY POINTS',
                 ),
-              ),*/
+              ):SizedBox(),
               getIntAsync(accountType)==1?ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
@@ -99,21 +107,21 @@ class _Menu extends State<Menu> {
                   title: 'START THE MATCH',
                 ),
               ):const SizedBox(),
-              /*getIntAsync(accountType)==2?ElevatedButton(
+              ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),
                 onPressed: () {
-                  Navigator.pop(context);
-                  // Navigator.push(
-                  //     getContext,
-                  //     MaterialPageRoute(
-                  //         builder: (context) =>  const MakeBettorTeam()));
+                  Scaffold.of(context).openEndDrawer();
+                  Navigator.push(
+                      getContext,
+                      MaterialPageRoute(
+                          builder: (context) => const HelpScreen()));
                 },
                 child: const CustomListTile(
-                  image: "assets/cricket.png",
-                  title: 'CONTESTS',
+                  image: "assets/support.png",
+                  title: 'CONTACT US',
                 ),
-              ):const SizedBox(),*/
+              ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.transparent, elevation: 0),

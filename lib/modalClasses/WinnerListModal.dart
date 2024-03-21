@@ -39,7 +39,7 @@ class WinnerListData {
   String? selectedTeam;
   String? createdAt;
   String? updatedAt;
-  int? totalFantasyPoint;
+  dynamic totalFantasyPoint;
   BatterName? batterName;
 
   WinnerListData(

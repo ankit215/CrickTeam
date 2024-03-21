@@ -46,6 +46,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
   MatchDetailData? getMatchDetailData;
   List<WinnerListData> winnerListData = [];
   List<WinnerListData> winnerListDataMain = [];
+  var contestWinnerId = "";
   List<SelectedTeam> selectedTeamList = [];
   late DateTime targetTime;
 
@@ -62,9 +63,9 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
     // Future.delayed(Duration.zero, () {
     //   getContestWinnerApi("");
     // });
-    /*Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () {
       _startTimer();
-    });*/
+    });
 
     Future.delayed(Duration.zero, () {
       getContestListApi();
@@ -176,12 +177,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       if (res.success == 1) {
         setState(() {
           Future.delayed(Duration.zero, () {
-            getMatchDetailData = res.body;
-            getMatchDetailData!.matchResult != null &&
-                    getMatchDetailData!.matchResult != "null" &&
-                    getMatchDetailData!.matchResult != ""
-                ? getContestWinnerApiEndMatch(getMatchDetailData!.matchResult)
-                : getContestWinnerApi();
+            getContestWinnerApi();
           });
         });
       } else if (res.message == "Invalid Token" && res.code == 400) {
@@ -217,6 +213,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       if (res.success == 1) {
         setState(() {
           winnerListDataMain = res.body!;
+          contestWinnerId = winnerListDataMain[0].batterName!.id!.toString();
           winnerListData.clear();
           for (int i = 0; i < winnerListDataMain.length; i++) {
             if (winnerListDataMain[i].userId.toString() ==
@@ -255,7 +252,13 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
             widget.contestData.id.toString(),
             widget.contestData.matchId.toString(),
             "1",
-            winnerListData.length.toString())
+            (widget.contestData.totalParticipants! -
+                        widget.contestData.count!) ==
+                    0
+                ? widget.contestData.totalParticipants!.toString()
+                : (widget.contestData.totalParticipants! -
+                        widget.contestData.count!)
+                    .toString())
         .then((res) async {
       hideLoader();
       if (res.success == 1) {
@@ -524,31 +527,36 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                       ? const SizedBox()
                       : GestureDetector(
                           onTap: () {
-                            // createContestApi();
-                            Navigator.push(
-                                getContext,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        myContestList.isNotEmpty
-                                            ? TeamListScreen(
-                                                matchData: widget.matchData,
-                                                contestData: widget.contestData,
-                                              )
-                                            : MakeBettorTeam(
-                                                matchData: widget.matchData,
-                                                contestData: widget.contestData,
-                                              ))).then((value) {
-                              if (value != null && value == "create_contest") {
-                                Future.delayed(Duration.zero, () {
-                                  Navigator.pop(context, "create_contest");
-                                });
-                              } else if (value != null &&
-                                  value == "edit_contest") {
-                                Future.delayed(Duration.zero, () {
-                                  Navigator.pop(context, "edit_contest");
-                                });
-                              }
-                            });
+                            if (getIntAsync(wallet_amount) <
+                                widget.contestData.entryFee!.toInt()) {
+                              CommonFunctions().showToastMessage(context, "Wallet amount is less then the entry fee. Please add amount in your wallet to join the contest.");
+                            } else {
+                              Navigator.push(
+                                  getContext,
+                                  MaterialPageRoute(
+                                      builder: (context) => myContestList
+                                              .isNotEmpty
+                                          ? TeamListScreen(
+                                              matchData: widget.matchData,
+                                              contestData: widget.contestData,
+                                            )
+                                          : MakeBettorTeam(
+                                              matchData: widget.matchData,
+                                              contestData: widget.contestData,
+                                            ))).then((value) {
+                                if (value != null &&
+                                    value == "create_contest") {
+                                  Future.delayed(Duration.zero, () {
+                                    Navigator.pop(context, "create_contest");
+                                  });
+                                } else if (value != null &&
+                                    value == "edit_contest") {
+                                  Future.delayed(Duration.zero, () {
+                                    Navigator.pop(context, "edit_contest");
+                                  });
+                                }
+                              });
+                            }
                           },
                           child: Card(
                               color: AppColor.grey,
@@ -646,6 +654,35 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
       child: Column(
         children: [
           const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.info_outlined,
+                  size: 20,
+                ),
+                SizedBox(
+                  width: 4,
+                ),
+                Expanded(
+                  child: Text(
+                    "The prize depends on how many people enter the contest. If all the spots are filled, the prize stays the same and gets added up.",
+                    style: TextStyle(
+                        fontFamily: "Lato_Semibold",
+                        color: AppColor.brown2,
+                        fontSize: 14),
+                    textAlign: TextAlign.start,
+                  ),
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          const Padding(
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -739,7 +776,7 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                   getStringAsync(userId)) {
                 getTeamDetailApi(winnerListData[index].userId.toString());
               } else if (checkDateTimeAfterGivenDateTime(
-                  widget.matchData.matchDate!, widget.matchData.matchTime!)) {
+                  widget.matchData.matchDate!, widget.matchData.matchTime!)||widget.matchData.status==2) {
                 debugPrint("hererrer");
                 getTeamDetailApi(winnerListData[index].userId.toString());
               } else {
@@ -757,12 +794,23 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                 child: Container(
                     width: MediaQuery.sizeOf(context).width * 0.9,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColor.grey.withOpacity(0.2),
-                          AppColor.grey.withOpacity(0.2),
-                        ],
-                      ),
+                      gradient: widget.matchData.matchResult != null &&
+                              widget.matchData.matchResult != "null" &&
+                              widget.matchData.matchResult != "" &&
+                              contestWinnerId ==
+                                  winnerListData[index].userId.toString()
+                          ? LinearGradient(
+                              colors: [
+                                AppColor.yellow.withOpacity(0.5),
+                                AppColor.yellow.withOpacity(0.5),
+                              ],
+                            )
+                          : LinearGradient(
+                              colors: [
+                                AppColor.grey.withOpacity(0.2),
+                                AppColor.grey.withOpacity(0.2),
+                              ],
+                            ),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
@@ -786,21 +834,42 @@ class _ContestDetailScreenState extends State<ContestDetailScreen>
                                 const SizedBox(
                                   width: 10,
                                 ),
-                                Text(
-                                  winnerListData[index].batterName!.name == null
-                                      ? "Player"
-                                      : winnerListData[index]
-                                              .batterName!
-                                              .name
-                                              .toString() +
-                                          "s",
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: "Lato_Semibold",
-                                    color: AppColor.medGrey,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
+                                widget.matchData.matchResult != null &&
+                                        widget.matchData.matchResult !=
+                                            "null" &&
+                                        widget.matchData.matchResult != "" &&
+                                        contestWinnerId ==
+                                            winnerListData[index]
+                                                .userId
+                                                .toString()
+                                    ? Text(
+                                        winnerListData[index]
+                                                    .batterName!
+                                                    .name ==
+                                                null
+                                            ? "Player"
+                                            : "${winnerListData[index].batterName!.name}\nwon ₹${widget.contestData.prizePool}",
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontFamily: "Lato_Semibold",
+                                          color: AppColor.medGrey,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      )
+                                    : Text(
+                                        winnerListData[index]
+                                                    .batterName!
+                                                    .name ==
+                                                null
+                                            ? "Player"
+                                            : "${winnerListData[index].batterName!.name}",
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontFamily: "Lato_Semibold",
+                                          color: AppColor.medGrey,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
                               ],
                             ),
                           ),

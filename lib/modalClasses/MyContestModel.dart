@@ -37,6 +37,8 @@ class MyContestData {
   int? matchId;
   int? contestId;
   int? userId;
+  int? isWinner;
+  int? walletAdd;
   String? selectedTeam;
   String? createdAt;
   String? updatedAt;
@@ -48,6 +50,8 @@ class MyContestData {
       this.matchId,
       this.contestId,
       this.userId,
+      this.isWinner,
+      this.walletAdd,
       this.selectedTeam,
       this.createdAt,
       this.updatedAt,
@@ -59,6 +63,8 @@ class MyContestData {
     matchId = json['match_id'];
     contestId = json['contest_id'];
     userId = json['user_id'];
+    isWinner = json['is_winner'];
+    walletAdd = json['wallet_add'];
     selectedTeam = json['selected_team'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -79,6 +85,8 @@ class MyContestData {
     data['match_id'] = matchId;
     data['contest_id'] = contestId;
     data['user_id'] = userId;
+    data['is_winner'] = isWinner;
+    data['wallet_add'] = walletAdd;
     data['selected_team'] = selectedTeam;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;

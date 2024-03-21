@@ -53,6 +53,43 @@ class _ContestScreenState extends State<ContestScreen>
     tabController.addListener(_handleTabSelection);
   }
 
+  Future getContestWinnerApiEndMatch(
+      var contestId, var matchId, var isResult, var contestCount,MyContestData contestData) async {
+    await getContestWinner(contestId, matchId, isResult, contestCount)
+        .then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        Navigator.push(
+            getContext,
+            MaterialPageRoute(
+                builder: (context) => ContestDetailScreen(
+                  matchData: getMatchDetailData!,
+                  contestData: contestData.contestDetail!,
+                  from: "my_contest",
+                ))).then((value) {
+          if (value != null && value == "create_contest") {
+            Future.delayed(Duration.zero, () {
+              getContestListApi();
+            });
+          }
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+            (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+
   Future getContestListApi() async {
     await getContestList(widget.matchData.id.toString()).then((res) async {
       hideLoader();
@@ -429,210 +466,224 @@ class _ContestScreenState extends State<ContestScreen>
   }
 
   contestScreen() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: ListView.builder(
-        itemCount: contestList.length,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              var isContestJoined = false;
-              for (int i = 0; i < myContestList.length; i++) {
-                if (myContestList[i].contestId == contestList[index].id) {
-                  isContestJoined = true;
-                }
-              }
-              if (isContestJoined &&
-                  contestList[index].totalParticipants! < 10) {
-                CommonFunctions().showToastMessage(context,
-                    "For this contest you can only join with one team.");
-              } else {
-                Navigator.push(
-                    getContext,
-                    MaterialPageRoute(
-                        builder: (context) => ContestDetailScreen(
-                              matchData: getMatchDetailData!,
-                              contestData: contestList[index],
-                            ))).then((value) {
-                  if (value != null && value == "create_contest") {
-                    Future.delayed(Duration.zero, () {
-                      getContestListApi();
-                    });
-                    Future.delayed(Duration.zero, () {
-                      getMyContestListApi();
-                    });
-                  }
-                });
-              }
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              elevation: 0.5,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                width: MediaQuery.sizeOf(context).width * 0.9,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    AppColor.yellowV2.withOpacity(0.2),
-                    AppColor.yellowV2.withOpacity(0.2),
-                  ]),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            "assets/crick_layout_background.png",
-                            fit: BoxFit.contain,
-                            height: 140,
-                            width: 140,
-                            opacity: const AlwaysStoppedAnimation(.09),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: ListView.builder(
+              itemCount: contestList.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    var isContestJoined = false;
+                    for (int i = 0; i < myContestList.length; i++) {
+                      if (myContestList[i].contestId == contestList[index].id) {
+                        isContestJoined = true;
+                      }
+                    }
+                    if (isContestJoined &&
+                        contestList[index].totalParticipants! < 10) {
+                      CommonFunctions().showToastMessage(context,
+                          "For this contest you can only join with one team.");
+                    } else {
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => ContestDetailScreen(
+                                    matchData: getMatchDetailData!,
+                                    contestData:contestList[index],
+                                  ))).then((value) {
+                        if (value != null && value == "create_contest") {
+                          Future.delayed(Duration.zero, () {
+                            getContestListApi();
+                          });
+                          Future.delayed(Duration.zero, () {
+                            getMyContestListApi();
+                          });
+                        }
+                      });
+                    }
+                  },
+                  child: Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    elevation: 0.5,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      width: MediaQuery.sizeOf(context).width * 0.9,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          AppColor.yellowV2.withOpacity(0.2),
+                          AppColor.yellowV2.withOpacity(0.2),
+                        ]),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Stack(
                             children: [
-                              const SizedBox(
-                                height: 10,
+                              Center(
+                                child: Image.asset(
+                                  "assets/crick_layout_background.png",
+                                  fit: BoxFit.contain,
+                                  height: 140,
+                                  width: 140,
+                                  opacity: const AlwaysStoppedAnimation(.09),
+                                ),
                               ),
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Prize Pool",
-                                    style: TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    "Entry",
-                                    style: TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "₹${contestList[index].prizePool}",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 22),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 5),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: AppColor.green),
-                                    child: Text(
-                                      "₹${contestList[index].entryFee}",
-                                      style: const TextStyle(
-                                          fontFamily: "Lato_Semibold",
-                                          color: AppColor.white,
-                                          fontSize: 16),
-                                      textAlign: TextAlign.center,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                height: 5,
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [AppColor.brown2, AppColor.red],
-                                    // Define gradient colors
-                                    begin: Alignment.centerLeft,
-                                    // Define start point
-                                    end: Alignment
-                                        .centerRight, // Define end point
-                                  ),
-                                  borderRadius: BorderRadius.circular(
-                                      5.0), // Optional: border radius
+                                    const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Prize Pool",
+                                          style: TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 16),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Text(
+                                          "Entry",
+                                          style: TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 16),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "₹${contestList[index].prizePool}",
+                                          style: const TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 22),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              color: AppColor.green),
+                                          child: Text(
+                                            "₹${contestList[index].entryFee}",
+                                            style: const TextStyle(
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.white,
+                                                fontSize: 16),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    Container(
+                                      height: 5,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            AppColor.brown2,
+                                            AppColor.red
+                                          ],
+                                          // Define gradient colors
+                                          begin: Alignment.centerLeft,
+                                          // Define start point
+                                          end: Alignment
+                                              .centerRight, // Define end point
+                                        ),
+                                        borderRadius: BorderRadius.circular(
+                                            5.0), // Optional: border radius
+                                      ),
+                                      child: LinearProgressIndicator(
+                                        value: (contestList[index].count! /
+                                                contestList[index]
+                                                    .totalParticipants!)
+                                            .clamp(0.0, 1.0),
+                                        backgroundColor: AppColor.grey,
+                                        color: AppColor
+                                            .orange_light, // Make background transparent
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "${contestList[index].totalParticipants! - contestList[index].count!} spots left",
+                                          style: const TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.red,
+                                              fontSize: 14),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Text(
+                                          "${contestList[index].totalParticipants!} spots",
+                                          style: const TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.black,
+                                              fontSize: 14),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                child: LinearProgressIndicator(
-                                  value: (contestList[index].count! /
-                                          contestList[index].totalParticipants!)
-                                      .clamp(0.0, 1.0),
-                                  backgroundColor: AppColor.grey,
-                                  color: AppColor
-                                      .orange_light, // Make background transparent
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 5,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "${contestList[index].totalParticipants! - contestList[index].count!} spots left",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.red,
-                                        fontSize: 14),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    "${contestList[index].totalParticipants!} spots",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.black,
-                                        fontSize: 14),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
+                              )
                             ],
                           ),
-                        )
-                      ],
+                          /*  Container(
+                                          alignment: Alignment.bottomCenter,
+                                          height: 40,
+                                          width: MediaQuery.sizeOf(context).width,
+                                          decoration: BoxDecoration(
+                                            color: AppColor.grey.withOpacity(0.4),
+                                            borderRadius: const BorderRadius.only(
+                                                bottomLeft: Radius.circular(10),
+                                                bottomRight: Radius.circular(10)),
+                                          ),
+                                          child: const Row(
+                                            children: [],
+                                          ),
+                                        ),*/
+                        ],
+                      ),
                     ),
-                    /*  Container(
-                                    alignment: Alignment.bottomCenter,
-                                    height: 40,
-                                    width: MediaQuery.sizeOf(context).width,
-                                    decoration: BoxDecoration(
-                                      color: AppColor.grey.withOpacity(0.4),
-                                      borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(10),
-                                          bottomRight: Radius.circular(10)),
-                                    ),
-                                    child: const Row(
-                                      children: [],
-                                    ),
-                                  ),*/
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }
@@ -660,187 +711,295 @@ class _ContestScreenState extends State<ContestScreen>
   }
 
   myContestScreen() {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      child: ListView.builder(
-        itemCount: myContestList.length,
-        shrinkWrap: true,
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  getContext,
-                  MaterialPageRoute(
-                      builder: (context) => ContestDetailScreen(
-                            matchData: getMatchDetailData!,
-                            contestData: contestList[index],
-                            from: "my_contest",
-                          ))).then((value) {
-                if (value != null && value == "create_contest") {
-                  Future.delayed(Duration.zero, () {
-                    getContestListApi();
-                  });
-                }
-              });
-            },
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-              elevation: 0.5,
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Container(
-                width: MediaQuery.sizeOf(context).width * 0.9,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    AppColor.yellowV2.withOpacity(0.2),
-                    AppColor.yellowV2.withOpacity(0.2),
-                  ]),
-                  borderRadius: BorderRadius.circular(10),
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 5,
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outlined),
+                SizedBox(
+                  width: 4,
                 ),
-                child: Column(
-                  children: [
-                    Stack(
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            "assets/crick_layout_background.png",
-                            fit: BoxFit.contain,
-                            height: 140,
-                            width: 140,
-                            opacity: const AlwaysStoppedAnimation(.09),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                Expanded(
+                  child: Text(
+                    "Tap on the contest to see the result and to redeem the prize money if you won the contest.",
+                    style: TextStyle(
+                        fontFamily: "Lato_Semibold",
+                        color: AppColor.brown2,
+                        fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                )
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 5),
+            child: ListView.builder(
+              itemCount: myContestList.length,
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (BuildContext context, int index) {
+                return GestureDetector(
+                  onTap: () {
+                    if (myContestList[index].isWinner == 0&&myContestList[index].walletAdd == 0) {
+                      getContestWinnerApiEndMatch(
+                                      myContestList[index].contestId.toString(),
+                                      myContestList[index].matchId.toString(),
+                                      "1",
+                          (myContestList[index]
+                                              .contestDetail!
+                                              .totalParticipants! -
+                                          myContestList[index]
+                                              .contestDetail!
+                                              .count!)
+                                  .toString() ==
+                              "0"
+                          ? myContestList[index]
+                              .contestDetail!
+                              .totalParticipants!
+                              .toString()
+                          : (myContestList[index]
+                                      .contestDetail!
+                                      .totalParticipants! -
+                                  myContestList[index].contestDetail!.count!)
+                              .toString(),myContestList[index]);
+                    } else {
+                      Navigator.push(
+                          getContext,
+                          MaterialPageRoute(
+                              builder: (context) => ContestDetailScreen(
+                                    matchData: getMatchDetailData!,
+                                    contestData: myContestList[index].contestDetail!,
+                                    from: "my_contest",
+                                  ))).then((value) {
+                        if (value != null && value == "create_contest") {
+                          Future.delayed(Duration.zero, () {
+                            getContestListApi();
+                          });
+                        }
+                      });
+                    }
+                  },
+                  child: Card(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    elevation: 0.5,
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: Container(
+                      width: MediaQuery.sizeOf(context).width * 0.9,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(colors: [
+                          AppColor.yellowV2.withOpacity(0.2),
+                          AppColor.yellowV2.withOpacity(0.2),
+                        ]),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Stack(
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Number of winner: ${myContestList[index].contestDetail!.numberOfWinners!}",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          getContext,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MakeBettorTeam(
-                                                    matchData:
-                                                        getMatchDetailData!,
-                                                    from: "my_contest",
-                                                    contestData:
-                                                        myContestList[index]
-                                                            .contestDetail,
-                                                    playerList:
-                                                        myContestList[index]
-                                                            .playerList,
-                                                  ))).then((value) {
-                                        if (value != null &&
-                                            value == "edit_contest") {
-                                          Future.delayed(Duration.zero, () {
-                                            tabController.animateTo(1);
-                                          });
-                                        }
-                                      });
-                                    },
-                                    child: Container(
-                                      height: 40,
-                                      width: 40,
-                                      decoration: const BoxDecoration(
-                                          color: AppColor.orange_light,
-                                          borderRadius: BorderRadius.only(
-                                              bottomRight: Radius.circular(10),
-                                              bottomLeft: Radius.circular(10))),
-                                      child: const Icon(
-                                        Icons.edit,
-                                        color: Colors.white,
-                                      ),
+                              Center(
+                                child: Image.asset(
+                                  "assets/crick_layout_background.png",
+                                  fit: BoxFit.contain,
+                                  height: 140,
+                                  width: 140,
+                                  opacity: const AlwaysStoppedAnimation(.09),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 8.0),
+                                          child: Text(
+                                            "Number of winner: ${myContestList[index].contestDetail!.numberOfWinners!}",
+                                            style: const TextStyle(
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.brown2,
+                                                fontSize: 16),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                        widget.matchData.matchResult != null &&
+                                                widget.matchData.matchResult !=
+                                                    "null" &&
+                                                widget.matchData.matchResult !=
+                                                    ""
+                                            ? const SizedBox()
+                                            : GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                      getContext,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MakeBettorTeam(
+                                                                matchData:
+                                                                    getMatchDetailData!,
+                                                                from:
+                                                                    "my_contest",
+                                                                contestData:
+                                                                    myContestList[
+                                                                            index]
+                                                                        .contestDetail,
+                                                                playerList:
+                                                                    myContestList[
+                                                                            index]
+                                                                        .playerList,
+                                                              ))).then((value) {
+                                                    if (value != null &&
+                                                        value ==
+                                                            "edit_contest") {
+                                                      Future.delayed(
+                                                          Duration.zero, () {
+                                                        tabController
+                                                            .animateTo(1);
+                                                      });
+                                                    }
+                                                  });
+                                                },
+                                                child: Container(
+                                                  height: 40,
+                                                  width: 40,
+                                                  decoration: const BoxDecoration(
+                                                      color:
+                                                          AppColor.orange_light,
+                                                      borderRadius:
+                                                          BorderRadius.only(
+                                                              bottomRight:
+                                                                  Radius
+                                                                      .circular(
+                                                                          10),
+                                                              bottomLeft: Radius
+                                                                  .circular(
+                                                                      10))),
+                                                  child: const Icon(
+                                                    Icons.edit,
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              )
+                                      ],
                                     ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Prize Pool",
-                                    style: TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    "Entry",
-                                    style: TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 16),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "₹${myContestList[index].contestDetail!.prizePool!}",
-                                    style: const TextStyle(
-                                        fontFamily: "Lato_Semibold",
-                                        color: AppColor.brown2,
-                                        fontSize: 22),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 5),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: AppColor.green),
-                                    child: Text(
-                                      "₹${myContestList[index].contestDetail!.entryFee!}",
-                                      style: const TextStyle(
-                                          fontFamily: "Lato_Semibold",
-                                          color: AppColor.white,
-                                          fontSize: 16),
-                                      textAlign: TextAlign.center,
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
+                                    const Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "Prize Pool",
+                                          style: TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 16),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Text(
+                                          "Entry",
+                                          style: TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 16),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          "₹${myContestList[index].contestDetail!.prizePool!}",
+                                          style: const TextStyle(
+                                              fontFamily: "Lato_Semibold",
+                                              color: AppColor.brown2,
+                                              fontSize: 22),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 15, vertical: 5),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(5),
+                                              color: AppColor.green),
+                                          child: Text(
+                                            "₹${myContestList[index].contestDetail!.entryFee!}",
+                                            style: const TextStyle(
+                                                fontFamily: "Lato_Semibold",
+                                                color: AppColor.white,
+                                                fontSize: 16),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    widget.matchData.matchResult != null &&
+                                            widget.matchData.matchResult !=
+                                                "null" &&
+                                            widget.matchData.matchResult !=
+                                                "" &&
+                                            myContestList[index].isWinner == 1
+                                        ? Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 8.0),
+                                            child: Text(
+                                              myContestList[index].isWinner == 1
+                                                  ? "You Won"
+                                                  : "You Loss",
+                                              style: TextStyle(
+                                                  fontFamily: "Lato_Semibold",
+                                                  color: myContestList[index]
+                                                              .isWinner ==
+                                                          1
+                                                      ? AppColor.green
+                                                      : AppColor.red,
+                                                  fontSize: 16),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          )
+                                        : const SizedBox(),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                  ],
+                                ),
+                              )
                             ],
                           ),
-                        )
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ],
       ),
     );
   }

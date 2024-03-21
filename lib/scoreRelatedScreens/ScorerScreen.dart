@@ -99,7 +99,7 @@ class _ScorerScreenState extends State<ScorerScreen>
     matchId = widget.map["match_id"]!;
     battingTeamId = widget.map["team_id"]!;
     bowlingTeamId = widget.map["team2_id"]!;
-    init();
+    Future.delayed(Duration.zero,(){ init();});
   }
 
   void init() {

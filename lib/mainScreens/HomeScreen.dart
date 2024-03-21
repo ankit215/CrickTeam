@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:crick_team/apiRelatedFiles/rest_apis.dart';
 import 'package:crick_team/bettorScreens/ContestListScreen.dart';
 import 'package:crick_team/loginSignupRelatedFiles/LoginScreen.dart';
@@ -45,7 +47,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<UpcomingListArr> matchList = [];
-
+  Timer? _timer;
   @override
   void initState() {
     // TODO: implement initState
@@ -1048,6 +1050,39 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
   }
+
+/*
+  Future getMatchDetailApi() async {
+    await getMatchDetail(widget.matchData.id.toString()).then((res) async {
+      hideLoader();
+      if (res.success == 1) {
+        setState(() {
+          Future.delayed(Duration.zero, () {
+            getMatchDetailData = res.body;
+            getMatchDetailData!.matchResult != null &&
+                getMatchDetailData!.matchResult != "null" &&
+                getMatchDetailData!.matchResult != ""
+                ? getContestWinnerApiEndMatch(getMatchDetailData!.matchResult)
+                : getContestWinnerApi();
+          });
+        });
+      } else if (res.message == "Invalid Token" && res.code == 400) {
+        toast(res.message);
+        Navigator.pushAndRemoveUntil(
+            getContext,
+            MaterialPageRoute(
+              builder: (getContext) => const LoginScreen(),
+            ),
+                (route) => false);
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        await preferences.clear();
+      } else {
+        debugPrint("NO_DATA____${res.message!}");
+        // CommonFunctions().showToastMessage(context, res.message!);
+      }
+    });
+  }
+*/
 
   Future getWalletAmountApi() async {
     await getWalletAmount(getStringAsync(userId)).then((res) async {
